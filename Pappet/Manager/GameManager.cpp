@@ -48,6 +48,8 @@ void GameManager::Update()
 	pMap->Update();
 	pPlayer->SetCameraAngle(pCamera->GetAngle().y);
 	pPlayer->Update();
+
+	//•¨—XV
 	pPhysics->Update();
 }
 

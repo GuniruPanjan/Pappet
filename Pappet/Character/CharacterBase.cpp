@@ -1,5 +1,10 @@
 #include "CharacterBase.h"
 
+namespace
+{
+	float nowFrame = 0.0f;
+}
+
 CharacterBase::CharacterBase(Priority priority, ObjectTag tag) :
 	Collidable(priority, tag),
 	m_modelHandle(-1),
@@ -37,7 +42,6 @@ bool CharacterBase::UpdateAnim(int attachNo, float startTime)
 	if (attachNo == -1) return false;
 
 	//アニメーションを進行させる
-	float nowFrame = MV1GetAttachAnimTotalTime(m_modelHandle, attachNo);
 	nowFrame += m_animTime;
 
 	//現在再生中のアニメーションの総カウントを取得する

@@ -65,47 +65,45 @@ void Map::Init()
 
 	effectPlayBack = 50;
 
+	//モデル読み込み
+	m_handle = handle.GetModelHandle("Data/Map/Map.mv1");
+	m_collisionHandle = handle.GetModelHandle("Data/Map/Collision.mv1");
+
+	//モデルのサイズ
+	m_size = 0.12f;
+
+	//ポジション初期化
+	m_Xposition = 0.0f;
+	m_Yposition = 250.0f;
+	m_Zposition = 0.0f;
+
+	m_XCollisionposition = -241.0f;
+	m_YCollisionposition = -277.0f;
+	m_ZCollisionposition = -173.0f;
+
+	m_restPos = VGet(100.0f, 50.0f, -75.0f);
+
+	//モデルのサイズ変更
+	MV1SetScale(m_handle, VGet(m_size, m_size, m_size));
+	MV1SetScale(m_collisionHandle, VGet(m_size, m_size, m_size));
+
+	//マップのポジション設定
+	m_MapPosition = VGet(m_Xposition, m_Yposition, m_Zposition);
+	m_collisionMapPosition = VGet(m_XCollisionposition, m_YCollisionposition, m_ZCollisionposition);
+
+	//for (int i = 0; i < ITEM_NUMBER; i++)
+	//{
+	//	m_itemPos[i] = Pos3(-10000.0f, -10000.0f, -10000.0f);
+	//	m_itemCol[i].Init(m_itemPos[i], m_itemRadius);
+	//}
+
+	//ライト関係
+	ChangeLightTypeDir(VGet(-1.0f, 0.0f, 0.0f));
+	m_light = CreateDirLightHandle(VGet(1.0f, 0.0f, 0.0f));
+
 	if (m_oneInit == false)
 	{
-		//モデル読み込み
-		m_handle = handle.GetModelHandle("Data/Map/Map.mv1");
-		m_collisionHandle = handle.GetModelHandle("Data/Map/Collision.mv1");
-
-		//effect.EffectLoad("Item", "Data/Effect/Item.efkefc", 60, 5.0f);
-
-		//モデルのサイズ
-		m_size = 0.12f;
-
-		//ポジション初期化
-		m_Xposition = 0.0f;
-		m_Yposition = 250.0f;
-		m_Zposition = 0.0f;
-
-		m_XCollisionposition = -241.0f;
-		m_YCollisionposition = -277.0f;
-		m_ZCollisionposition = -173.0f;
-
-		m_restPos = VGet(100.0f, 50.0f, -75.0f);
-
-		//モデルのサイズ変更
-		MV1SetScale(m_handle, VGet(m_size, m_size, m_size));
-		MV1SetScale(m_collisionHandle, VGet(m_size, m_size, m_size));
-
-		//マップのポジション設定
-		m_MapPosition = VGet(m_Xposition, m_Yposition, m_Zposition);
-		m_collisionMapPosition = VGet(m_XCollisionposition, m_YCollisionposition, m_ZCollisionposition);
-
-
-
-		//for (int i = 0; i < ITEM_NUMBER; i++)
-		//{
-		//	m_itemPos[i] = Pos3(-10000.0f, -10000.0f, -10000.0f);
-		//	m_itemCol[i].Init(m_itemPos[i], m_itemRadius);
-		//}
-
-		//ライト関係
-		ChangeLightTypeDir(VGet(-1.0f, 0.0f, 0.0f));
-		m_light = CreateDirLightHandle(VGet(1.0f, 0.0f, 0.0f));
+		
 
 		m_oneInit = true;
 	}
@@ -228,7 +226,7 @@ void Map::Draw()
 
 	//モデル描画
 	MV1DrawModel(m_handle);
-	MV1DrawModel(m_collisionHandle);
+	//MV1DrawModel(m_collisionHandle);
 }
 
 /// <summary>

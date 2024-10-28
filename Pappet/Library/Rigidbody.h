@@ -33,6 +33,8 @@ namespace MyLibrary
 		const VECTOR GetPosVECTOR() { return m_pos.ConversionToVECTOR(); }
 		//移動予定座標を所得
 		const VECTOR GetNextPosVECTOR() { return m_nextPos.ConversionToVECTOR(); }
+		//ベクターを取得
+		const VECTOR GetVec() { return m_vec.ConversionToVECTOR(); }
 		//向きを所得
 		const VECTOR GetDirVECTOR() { return m_dir.ConversionToVECTOR(); }
 		//移動速度を所得
@@ -45,6 +47,8 @@ namespace MyLibrary
 		void SetPos(const LibVec3& set) { m_pos = set; }
 		//移動予定座標を設定
 		void SetNextPos(const LibVec3& set) { m_nextPos = set; }
+		//ベクターを設定
+		void SetVec(const LibVec3& set) { m_vec = set; }
 		//向きを設定
 		void SetVelocity(LibVec3 set, float mul = 1.0f);
 		//移動速度を設定
@@ -55,6 +59,8 @@ namespace MyLibrary
 		LibVec3 m_pos;
 		//移動予定座標
 		LibVec3 m_nextPos;
+		//ベクター
+		LibVec3 m_vec;
 
 		//向き
 		LibVec3 m_dir;
@@ -62,6 +68,8 @@ namespace MyLibrary
 		LibVec3 m_velocity;
 		//重力を与えるか判定する
 		bool m_useGravity;
+		//高さが合わないため
+		LibVec3 m_higth = MyLibrary::LibVec3(0.0f, 50.0f, 0.0f);
 	};
 }
 

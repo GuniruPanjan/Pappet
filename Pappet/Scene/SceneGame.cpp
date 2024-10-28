@@ -16,6 +16,10 @@ void SceneGame::Init()
 
 std::shared_ptr<SceneBase> SceneGame::Update()
 {
+#if _DEBUG
+	MyLibrary::DebugDraw::Clear();
+#endif
+
 	game->Update();
 
 	return shared_from_this();  //自身のポインタを返す
@@ -24,6 +28,10 @@ std::shared_ptr<SceneBase> SceneGame::Update()
 void SceneGame::Draw()
 {
 	game->Draw();
+
+#if _DEBUG
+	MyLibrary::DebugDraw::Draw();
+#endif
 }
 
 void SceneGame::End()

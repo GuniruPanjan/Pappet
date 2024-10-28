@@ -6,6 +6,7 @@
 MyLibrary::Rigidbody::Rigidbody():
 	m_pos(),
 	m_nextPos(),
+	m_vec(),
 	m_dir(),
 	m_velocity(),
 	m_useGravity(true)

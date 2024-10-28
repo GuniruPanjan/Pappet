@@ -156,15 +156,17 @@ void MyLibrary::Physics::Update()
 		if (item->GetTag() == ObjectTag::Player || item->GetTag() == ObjectTag::Enemy)
 		{
 			float rad = 0;
-			int madelHandle = -1;
+			int modelHandle = -1;
 
 			for (auto& col : item->m_colliders)
 			{
 				rad = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_radius;
 
-				madelHandle = m_stageCollisionHandle;
+				modelHandle = m_stageCollisionHandle;
 			}
-			m_hitDim = MV1CollCheck_Sphere(madelHandle, -1, item->rigidbody.GetNextPosVECTOR(), rad);
+			//m_hitDim = MV1CollCheck_Sphere(modelHandle, -1, item->rigidbody.GetNextPosVECTOR(), rad);
+			m_hitDim = MV1CollCheck_Capsule(modelHandle, -1, VAdd(item->rigidbody.GetNextPosVECTOR(), item->rigidbody.GetVec()),
+				VSub(item->rigidbody.GetNextPosVECTOR(), item->rigidbody.GetVec()), rad);
 		}
 		else
 		{
@@ -696,7 +698,7 @@ void MyLibrary::Physics::CheckWallAndFloor(std::shared_ptr<Collidable>& col)
 				m_pFloorPoly[m_floorNum] = &m_hitDim.Dim[i];
 
 				//°ƒ|ƒŠƒSƒ“‚Ì”‚ğ‰ÁZ‚·‚é
-				m_floorNum;
+				m_floorNum++;
 			}
 		}
 	}

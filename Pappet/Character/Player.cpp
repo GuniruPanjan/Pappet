@@ -78,10 +78,10 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	Collidable::Init(m_pPhysics);
 
 	//プレイヤーの初期位置設定
-	m_modelPos = MyLibrary::LibVec3(485.0f, 0.0f, -800.0f);
 	rigidbody.Init(true);
-	rigidbody.SetPos(MyLibrary::LibVec3(0.0f, 1.0f * cModelSizeScale, 0.0f));
+	rigidbody.SetPos(MyLibrary::LibVec3(0.0f, 90.0f * cModelSizeScale, 0.0f));
 	rigidbody.SetNextPos(rigidbody.GetPos());
+	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
 	m_collisionPos = rigidbody.GetPos();
 	SetModelPos();
 	MV1SetPosition(m_modelHandle, m_modelPos.ConversionToVECTOR());
@@ -102,10 +102,6 @@ void Player::Update()
 	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
 
 	//アニメーションの更新
-	if (!m_isDead)
-	{
-		UpdateAnim(m_nowAnimNo);
-	}
 	m_isAnimationFinish = UpdateAnim(m_nowAnimNo);
 
 	//アニメーションの切り替え
@@ -193,10 +189,14 @@ void Player::Update()
 		m_moveflag = false;
 	}
 
+	MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
+	MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(m_moveVec.x, prevVelocity.y, m_moveVec.z);
+	rigidbody.SetVelocity(newVelocity);
+
 	//プレイヤーが生きている時だけ
 	if (!m_isDead)
 	{
-		m_modelPos.ConversionToVECTOR() = VAdd(m_modelPos.ConversionToVECTOR(), moveVec);
+		m_modelPos = m_modelPos + m_moveVec;
 
 		NotWeaponAnimation();
 		AllAnimation();
@@ -262,6 +262,10 @@ void Player::Draw()
 	DrawFormatString(0, 300, 0xffffff, "posz : %f", m_modelPos.z);
 	DrawFormatString(0, 400, 0xffffff, "m_nowAnim : %d", m_nowAnimIdx);
 	DrawFormatString(0, 500, 0xffffff, "m_nowSpeed : %f", m_animSpeed);
+	DrawFormatString(0, 600, 0xffffff, "moveVecx : %f", m_moveVec.x);
+	DrawFormatString(0, 700, 0xffffff, "moveVecy : %f", m_moveVec.y);
+	DrawFormatString(0, 800, 0xffffff, "moveVecz : %f", m_moveVec.z);
+
 #endif
 
 	//モデルの回転地
@@ -282,4 +286,5 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 void Player::SetModelPos()
 {
 	m_modelPos = m_collisionPos;
+	m_modelPos.y -= 90.0f * cModelSizeScale;
 }
