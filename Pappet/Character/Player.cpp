@@ -104,7 +104,7 @@ void Player::Update()
 	//アニメーションの更新
 	if (!m_isDead)
 	{
-		//UpdateAnimation()
+		UpdateAnim(m_nowAnimNo);
 	}
 	m_isAnimationFinish = UpdateAnim(m_nowAnimNo);
 
@@ -260,7 +260,12 @@ void Player::Draw()
 	DrawFormatString(0, 100, 0xffffff, "posx : %f", m_modelPos.x);
 	DrawFormatString(0, 200, 0xffffff, "posy : %f", m_modelPos.y);
 	DrawFormatString(0, 300, 0xffffff, "posz : %f", m_modelPos.z);
+	DrawFormatString(0, 400, 0xffffff, "m_nowAnim : %d", m_nowAnimIdx);
+	DrawFormatString(0, 500, 0xffffff, "m_nowSpeed : %f", m_animSpeed);
 #endif
+
+	//モデルの回転地
+	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
 
 	//描画
 	MV1DrawModel(m_modelHandle);

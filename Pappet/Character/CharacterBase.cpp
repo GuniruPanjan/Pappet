@@ -16,7 +16,8 @@ CharacterBase::CharacterBase(Priority priority, ObjectTag tag) :
 	m_isAnimationFinish(false),
 	m_angle(0.0f),
 	m_moveflag(false),
-	m_hit(false)
+	m_hit(false),
+	m_animSpeed(0.0f)
 {
 }
 
@@ -36,19 +37,21 @@ bool CharacterBase::UpdateAnim(int attachNo, float startTime)
 	if (attachNo == -1) return false;
 
 	//アニメーションを進行させる
-	float nowFrame = MV1GetAttachAnimTime(m_modelHandle, attachNo);
+	float nowFrame = MV1GetAttachAnimTotalTime(m_modelHandle, attachNo);
 	nowFrame += m_animTime;
 
 	//現在再生中のアニメーションの総カウントを取得する
-	float totalAnimFrame = MV1GetAttachAnimTime(m_modelHandle, attachNo);
+	float totalAnimFrame = MV1GetAttachAnimTotalTime(m_modelHandle, attachNo);
 	bool isLoop = false;
 
-	while (totalAnimFrame >= nowFrame)
+	while (totalAnimFrame <= nowFrame)
 	{
 		nowFrame -= totalAnimFrame;
 		nowFrame += startTime;
 		isLoop = true;
 	}
+
+	m_animSpeed = nowFrame;
 
 	//進めた時間に設定
 	MV1SetAttachAnimTime(m_modelHandle, attachNo, nowFrame);

@@ -55,6 +55,7 @@ protected:
 
 	float m_animTime;         //アニメーション再生速度
 	bool m_isAnimationFinish; //アニメーションが終わったかどうか
+	float m_animSpeed;        //アニメーションの進んだタイムを入れる
 
 	//使う変数
 	float m_angle;  //キャラのアングル
