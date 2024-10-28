@@ -1,5 +1,7 @@
 #include "DxLib.h"
 #include "EffekseerForDXLib.h"
+#include "Scene/SceneManager.h"
+#include "Manager/EffectManager.h"
 #include <cmath>
 #include <memory>
 #include "Icon/Icon.h"
@@ -17,11 +19,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	SetWindowIconID(IDI_ICON1);    //アイコンの設定
 
-	// 一部の関数はDxLib_Init()の前に実行する必要がある
-	ChangeWindowMode(true);
-
 	if (DxLib_Init() == -1)		// ＤＸライブラリ初期化処理
-
 	{
 
 		return -1;			// エラーが起きたら直ちに終了
@@ -49,46 +47,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//ダブルバッファモード
 	SetDrawScreen(DX_SCREEN_BACK);
 
+	//シーンを管理するポインタ
+	std::shared_ptr<SceneManager> pScene = std::make_shared<SceneManager>();
+
+	//初期化
+	pScene->Init();
+
 	// ゲームループ
-
-	while (ProcessMessage() != -1)
-
+	while (ProcessMessage() == 0)
 	{
-
 		// このフレームの開始時刻を覚えておく
-
 		LONGLONG start = GetNowHiPerformanceCount();
 
 		// 描画を行う前に画面をクリアする
-
 		ClearDrawScreen();
 
 		// ゲームの処理
-
+		pScene->Update();
 		Effekseer_Sync3DSetting();
 
 
 		UpdateEffekseer3D();
 
+		//ゲームの描画
+		pScene->Draw();
 
 		// 画面が切り替わるのを待つ
-
 		ScreenFlip();
 
-		// escキーでゲーム終了
 
-		if (CheckHitKey(KEY_INPUT_ESCAPE))
-
+		if (pScene->GetEnd() == true)
 		{
-
 			break;
-
 		}
 
+		// escキーでゲーム終了
+		if (CheckHitKey(KEY_INPUT_ESCAPE))  break;
+
 		// FPS60に固定する
-
 		while (GetNowHiPerformanceCount() - start < 16667)
-
 		{
 
 			// 16.66ミリ秒(16667マイクロ秒)経過するまで待つ
@@ -96,7 +93,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 	}
+	pScene->End();
 
+
+	EffectManager::GetInstance().Destroy();
 	Effkseer_End();
 	DxLib_End();				// ＤＸライブラリ使用の終了処理
 

@@ -139,10 +139,74 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera\Camera.cpp" />
+    <ClCompile Include="Character\CharacterBase.cpp" />
+    <ClCompile Include="Character\Player.cpp" />
+    <ClCompile Include="External\CsvLoad.cpp" />
+    <ClCompile Include="Library\Collidable.cpp" />
+    <ClCompile Include="Library\CollidableData.cpp" />
+    <ClCompile Include="Library\CollidableDataCapsule.cpp" />
+    <ClCompile Include="Library\CollidableDataRect.cpp" />
+    <ClCompile Include="Library\CollidableDataSphere.cpp" />
+    <ClCompile Include="Library\DebugDraw.cpp" />
+    <ClCompile Include="Library\Physics.cpp" />
+    <ClCompile Include="Library\Rigidbody.cpp" />
+    <ClCompile Include="Manager\BgmManager.cpp" />
+    <ClCompile Include="Manager\EffectManager.cpp" />
+    <ClCompile Include="Manager\GameManager.cpp" />
+    <ClCompile Include="Manager\HandleManager.cpp" />
+    <ClCompile Include="Manager\SelectManager.cpp" />
+    <ClCompile Include="Manager\SEManager.cpp" />
+    <ClCompile Include="Map\Map.cpp" />
+    <ClCompile Include="Object\AttackObject.cpp" />
+    <ClCompile Include="Object\ObjectBase.cpp" />
+    <ClCompile Include="Object\RectObject.cpp" />
+    <ClCompile Include="Object\SearchObject.cpp" />
+    <ClCompile Include="Scene\SceneBase.cpp" />
+    <ClCompile Include="Scene\SceneGame.cpp" />
+    <ClCompile Include="Scene\SceneManager.cpp" />
+    <ClCompile Include="Scene\SceneTitle.cpp" />
+    <ClCompile Include="Ui\Setting.cpp" />
+    <ClCompile Include="Ui\UI.cpp" />
+    <ClCompile Include="Ui\UIBase.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera\Camera.h" />
+    <ClInclude Include="Character\CharacterBase.h" />
+    <ClInclude Include="Character\Player.h" />
+    <ClInclude Include="External\CsvLoad.h" />
     <ClInclude Include="Icon\Icon.h" />
+    <ClInclude Include="Library\Collidable.h" />
+    <ClInclude Include="Library\CollidableData.h" />
+    <ClInclude Include="Library\CollidableDataCapsule.h" />
+    <ClInclude Include="Library\CollidableDataRect.h" />
+    <ClInclude Include="Library\CollidableDataSphere.h" />
+    <ClInclude Include="Library\DebugDraw.h" />
+    <ClInclude Include="Library\LibMatrix3.h" />
+    <ClInclude Include="Library\LibVec3.h" />
+    <ClInclude Include="Library\MyLibrary.h" />
+    <ClInclude Include="Library\ObjectTag.h" />
+    <ClInclude Include="Library\Physics.h" />
+    <ClInclude Include="Library\Rigidbody.h" />
+    <ClInclude Include="Manager\BgmManager.h" />
+    <ClInclude Include="Manager\EffectManager.h" />
+    <ClInclude Include="Manager\GameManager.h" />
+    <ClInclude Include="Manager\HandleManager.h" />
+    <ClInclude Include="Manager\SelectManager.h" />
+    <ClInclude Include="Manager\SEManager.h" />
+    <ClInclude Include="Map\Map.h" />
+    <ClInclude Include="Object\AttackObject.h" />
+    <ClInclude Include="Object\ObjectBase.h" />
+    <ClInclude Include="Object\RectObject.h" />
+    <ClInclude Include="Object\SearchObject.h" />
+    <ClInclude Include="Scene\SceneBase.h" />
+    <ClInclude Include="Scene\SceneGame.h" />
+    <ClInclude Include="Scene\SceneManager.h" />
+    <ClInclude Include="Scene\SceneTitle.h" />
+    <ClInclude Include="Ui\Setting.h" />
+    <ClInclude Include="Ui\UI.h" />
+    <ClInclude Include="Ui\UIBase.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Icon\Icon.rc" />
