@@ -1,10 +1,5 @@
 #include "CharacterBase.h"
 
-namespace
-{
-	float nowFrame = 0.0f;
-}
-
 CharacterBase::CharacterBase(Priority priority, ObjectTag tag) :
 	Collidable(priority, tag),
 	m_modelHandle(-1),
@@ -12,13 +7,17 @@ CharacterBase::CharacterBase(Priority priority, ObjectTag tag) :
 	m_collisionPos(),
 	m_status(),
 	m_moveVec(),
+	m_nowPos(),
+	m_prevPos(),
 	m_nowAnimNo(-1),
 	m_equipAnimNo(-1),
 	m_nowAnimIdx(-1),
 	m_prevAnimNo(-1),
 	m_animBlendRate(1.0f),
+	m_nowFrame(0.0f),
 	m_animTime(0.5f),
 	m_isAnimationFinish(false),
+	m_reset(false),
 	m_angle(0.0f),
 	m_moveflag(false),
 	m_hit(false),
@@ -42,23 +41,23 @@ bool CharacterBase::UpdateAnim(int attachNo, float startTime)
 	if (attachNo == -1) return false;
 
 	//アニメーションを進行させる
-	nowFrame += m_animTime;
+	m_nowFrame += m_animTime;
 
 	//現在再生中のアニメーションの総カウントを取得する
 	float totalAnimFrame = MV1GetAttachAnimTotalTime(m_modelHandle, attachNo);
 	bool isLoop = false;
 
-	while (totalAnimFrame <= nowFrame)
+	while (totalAnimFrame <= m_nowFrame)
 	{
-		nowFrame -= totalAnimFrame;
-		nowFrame += startTime;
+		m_nowFrame -= totalAnimFrame;
+		m_nowFrame += startTime;
 		isLoop = true;
 	}
 
-	m_animSpeed = nowFrame;
+	m_animSpeed = m_nowFrame;
 
 	//進めた時間に設定
-	MV1SetAttachAnimTime(m_modelHandle, attachNo, nowFrame);
+	MV1SetAttachAnimTime(m_modelHandle, attachNo, m_nowFrame);
 
 
 	return isLoop;
@@ -75,6 +74,13 @@ void CharacterBase::ChangeAnim(int animIndex, float animSpeed)
 	if (m_prevAnimNo != -1)
 	{
 		MV1DetachAnim(m_modelHandle, m_prevAnimNo);
+	}
+	//一回だけ実行
+	if (!m_reset)
+	{
+		m_nowFrame = 0.0f;
+
+		m_reset = true;
 	}
 
 	//現在再生中の待機アニメーションは変更目のアニメーションの扱いにする

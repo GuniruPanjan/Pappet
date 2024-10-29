@@ -53,9 +53,13 @@ protected:
 	int m_prevAnimNo;         //変更前のアニメーション
 	float m_animBlendRate;    //アニメーションの合成割合
 
+	float m_nowFrame;         //アニメーションを進める時間
 	float m_animTime;         //アニメーション再生速度
 	bool m_isAnimationFinish; //アニメーションが終わったかどうか
+	bool m_reset;             //アニメーションタイムをリセットする
 	float m_animSpeed;        //アニメーションの進んだタイムを入れる
+	MyLibrary::LibVec3 m_nowPos;        //現在のフレームの座標を取得する
+	MyLibrary::LibVec3 m_prevPos;    //アニメーションで移動しているフレームの座標取得
 
 	//使う変数
 	float m_angle;  //キャラのアングル

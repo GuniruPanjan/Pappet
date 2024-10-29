@@ -29,10 +29,19 @@ namespace
 Player::Player() :
 	CharacterBase(Collidable::Priority::High, ObjectTag::Player),
 	m_xpad(),
+	m_moveAnimFrameIndex(0),
+	m_moveAnimFrameRight(0),
+	m_moveAnimShieldFrameIndex(0),
+	m_moveAnimShieldFrameHandIndex(0),
 	m_cameraAngle(0.0f),
 	m_isDead(false),
-	m_dashMove(false)
+	m_dashMove(false),
+	m_avoidance(false),
+	m_avoidanceNow(false),
+	m_moveWeaponFrameMatrix(),
+	m_moveShieldFrameMatrix()
 {
+
 	//カプセル型
 	auto collider = Collidable::AddCollider(MyLibrary::CollidableData::Kind::Capsule, false);
 	auto capsuleCol = dynamic_cast<MyLibrary::CollidableDataCapsule*>(collider.get());
@@ -104,6 +113,9 @@ void Player::Finalize()
 
 void Player::Update()
 {
+
+
+
 	//パッド入力取得
 	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
 
@@ -209,6 +221,12 @@ void Player::Update()
 		NotWeaponAnimation();
 		AllAnimation();
 	}
+
+	//回避中にいれる
+	if (m_avoidance)
+	{
+
+	}
 }
 
 /// <summary>
@@ -219,8 +237,11 @@ void Player::Action()
 	//Aボタンが押されたらダッシュか回避
 	if (m_xpad.Buttons[12] == 1)
 	{
+		//ダッシュ
 		if (cAbutton > 50)
 		{
+			m_avoidance = false;
+
 			//ダッシ中
 			m_dashMove = true;
 
@@ -237,6 +258,13 @@ void Player::Action()
 		m_dashMove = false;
 
 		m_status.s_speed = 2.0f;
+
+		//回避
+		//離した瞬間
+		if (cAbutton > 0 && cAbutton < 30 && m_avoidance == false)
+		{
+			m_avoidance = true;
+		}
 
 		cAbutton = 0;
 	}
@@ -282,11 +310,18 @@ void Player::AllAnimation()
 		else if (!m_hit)
 		{
 			//動いてない時
-			if (!m_moveflag)
+			if (!m_moveflag && !m_avoidance)
 			{
 				m_nowAnimIdx = m_animIdx["Idle"];
 				ChangeAnim(m_nowAnimIdx);
 			}
+			//回避
+			else if (m_avoidance)
+			{
+				m_nowAnimIdx = m_animIdx["Roll"];
+				ChangeAnim(m_nowAnimIdx);
+			}
+			
 		}
 	}
 }
@@ -298,7 +333,34 @@ void Player::Draw()
 {
 	rigidbody.SetPos(rigidbody.GetNextPos());
 	m_collisionPos = rigidbody.GetPos();
-	SetModelPos();
+
+	//プレイヤーのポジションを入れる
+	//回避してない時に座標を入れる
+	if (!m_avoidance)
+	{
+		SetModelPos();
+	}
+	//回避行動中
+	else if (!m_isAnimationFinish && m_avoidance)
+	{
+		//フレーム回避
+		if (m_nowFrame >= 0.0f && m_nowFrame <= 20.0f)
+		{
+			m_avoidanceNow = true;
+		}
+		else
+		{
+			m_avoidanceNow = false;
+		}
+	}
+	//回避終了
+	else if (m_isAnimationFinish)
+	{
+		SetModelPos();
+
+		m_avoidance = false;
+	}
+	
 	MV1SetPosition(m_modelHandle, VSub(m_modelPos.ConversionToVECTOR(), VGet(0.0f, 12.0f, 0.0f)));
 
 #if false
