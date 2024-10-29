@@ -15,6 +15,9 @@ namespace
 	//アニメーションブレンド率の最大
 	constexpr float cAnimBlendRateMax = 1.0f;
 
+	//ダッシュを確認するための変数
+	int cAbutton = 0;
+
 	//ポジション設定
 	VECTOR m_pos;
 
@@ -27,12 +30,13 @@ Player::Player() :
 	CharacterBase(Collidable::Priority::High, ObjectTag::Player),
 	m_xpad(),
 	m_cameraAngle(0.0f),
-	m_isDead(false)
+	m_isDead(false),
+	m_dashMove(false)
 {
 	//カプセル型
 	auto collider = Collidable::AddCollider(MyLibrary::CollidableData::Kind::Capsule, false);
 	auto capsuleCol = dynamic_cast<MyLibrary::CollidableDataCapsule*>(collider.get());
-	capsuleCol->m_len = 40.0f;
+	capsuleCol->m_len = 50.0f;
 	capsuleCol->m_radius = 12.0f;
 	capsuleCol->m_vec = MyLibrary::LibVec3(0.0f, capsuleCol->m_vec.y + 2.0f, 0.0f);
 
@@ -62,6 +66,8 @@ Player::~Player()
 {
 	//メモリ解放
 	MV1DeleteModel(m_modelHandle);
+	//メモリ削除
+	handle.Clear();
 }
 
 /// <summary>
@@ -78,8 +84,8 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	Collidable::Init(m_pPhysics);
 
 	//プレイヤーの初期位置設定
-	rigidbody.Init(true);
-	rigidbody.SetPos(MyLibrary::LibVec3(0.0f, 90.0f * cModelSizeScale, 0.0f));
+	rigidbody.Init(false);
+	rigidbody.SetPos(MyLibrary::LibVec3(485.0f, 0.0f, -800.0f));
 	rigidbody.SetNextPos(rigidbody.GetPos());
 	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
 	m_collisionPos = rigidbody.GetPos();
@@ -198,8 +204,41 @@ void Player::Update()
 	{
 		m_modelPos = m_modelPos + m_moveVec;
 
+		Action();
+
 		NotWeaponAnimation();
 		AllAnimation();
+	}
+}
+
+/// <summary>
+/// プレイヤーのアクション実装
+/// </summary>
+void Player::Action()
+{
+	//Aボタンが押されたらダッシュか回避
+	if (m_xpad.Buttons[12] == 1)
+	{
+		if (cAbutton > 50)
+		{
+			//ダッシ中
+			m_dashMove = true;
+
+			m_status.s_speed = 3.0f;
+		}
+
+		if (cAbutton < 51)
+		{
+			cAbutton++;
+		}
+	}
+	else
+	{
+		m_dashMove = false;
+
+		m_status.s_speed = 2.0f;
+
+		cAbutton = 0;
 	}
 }
 
@@ -211,8 +250,14 @@ void Player::NotWeaponAnimation()
 	//攻撃が当たってない時
 	if (!m_hit)
 	{
+		//走り
+		if (m_dashMove)
+		{
+			m_nowAnimIdx = m_animIdx["Run"];
+			ChangeAnim(m_nowAnimIdx);
+		}
 		//歩き
-		if (m_moveflag)
+		else if (m_moveflag)
 		{
 			m_nowAnimIdx = m_animIdx["Walk"];
 			ChangeAnim(m_nowAnimIdx);
@@ -254,9 +299,9 @@ void Player::Draw()
 	rigidbody.SetPos(rigidbody.GetNextPos());
 	m_collisionPos = rigidbody.GetPos();
 	SetModelPos();
-	MV1SetPosition(m_modelHandle, m_modelPos.ConversionToVECTOR());
+	MV1SetPosition(m_modelHandle, VSub(m_modelPos.ConversionToVECTOR(), VGet(0.0f, 12.0f, 0.0f)));
 
-#if _DEBUG
+#if false
 	DrawFormatString(0, 100, 0xffffff, "posx : %f", m_modelPos.x);
 	DrawFormatString(0, 200, 0xffffff, "posy : %f", m_modelPos.y);
 	DrawFormatString(0, 300, 0xffffff, "posz : %f", m_modelPos.z);
@@ -275,6 +320,14 @@ void Player::Draw()
 	MV1DrawModel(m_modelHandle);
 }
 
+void Player::End()
+{
+	//メモリ解放
+	MV1DeleteModel(m_modelHandle);
+	//メモリ削除
+	handle.Clear();
+}
+
 void Player::OnCollideEnter(const std::shared_ptr<Collidable>& collidable)
 {
 }
@@ -286,5 +339,6 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 void Player::SetModelPos()
 {
 	m_modelPos = m_collisionPos;
-	m_modelPos.y -= 90.0f * cModelSizeScale;
+	//m_collisionPos.y += 50.0f * cModelSizeScale;
+	//m_modelPos.y -= 90.0f * cModelSizeScale;
 }

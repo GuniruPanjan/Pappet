@@ -876,11 +876,14 @@ void MyLibrary::Physics::FixNowPositionWithFloor(std::shared_ptr<Collidable>& co
 	if (m_floorNum == 0) return;
 
 	float radius = 0.0f;
-	VECTOR vec = VGet(0.0f, 0.0f, 0.0f);
+	MyLibrary::LibVec3 vec;
+	float len = 0.0f;
 	for (auto& col : col->m_colliders)
 	{
 		radius = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_radius;
-		vec = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_vec.ConversionToVECTOR();
+		len = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_len;
+
+		vec = vec.GetNormalized() * len * 0.5f;
 	}
 
 	//床ポリゴンとの当たり判定処理
@@ -898,7 +901,7 @@ void MyLibrary::Physics::FixNowPositionWithFloor(std::shared_ptr<Collidable>& co
 		m_pPoly = m_pFloorPoly[i];
 
 		//ポリゴンとプレイヤーが当たっていなかったら次のカウントへ
-		if (HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec), VSub(col->rigidbody.GetNextPosVECTOR(), vec), radius,
+		if (HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), VSub(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), radius,
 			m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2])) continue;
 
 		float mostHeightY = m_pPoly->Position[0].y;

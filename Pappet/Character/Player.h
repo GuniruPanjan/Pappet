@@ -20,9 +20,11 @@ public:
 	void Init(std::shared_ptr<MyLibrary::Physics> physics);
 	void Finalize();
 	void Update();
+	void Action();
 	void NotWeaponAnimation();
 	void AllAnimation();
 	void Draw();
+	void End();
 
 	//衝突したとき
 	void OnCollideEnter(const std::shared_ptr<Collidable>& collidable) override;
@@ -38,6 +40,6 @@ private:
 	XINPUT_STATE m_xpad;  //パッド入力
 	float m_cameraAngle;  //カメラ情報
 	bool m_isDead;        //死亡判定
-
+	bool m_dashMove;      //ダッシュ判断
 };
 

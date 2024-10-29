@@ -3,6 +3,8 @@
 #include "Camera/Camera.h"
 #include "Map/Map.h"
 
+//カメラの初期化で描画バグが発生する
+//カメラのせいでマップとモデルの描画がバグる
 
 namespace
 {
@@ -28,11 +30,11 @@ GameManager::~GameManager()
 /// </summary>
 void GameManager::Init()
 {
-	
-	pCamera->Init();
 	pMap->Init();
 
 	pPhysics = std::make_shared<MyLibrary::Physics>(pMap->GetCollisionMap());
+
+	//pCamera->Init();
 
 	pPlayer->Init(pPhysics);
 
@@ -44,10 +46,15 @@ void GameManager::Init()
 /// </summary>
 void GameManager::Update()
 {
-	pCamera->Update(*pPlayer);
 	pMap->Update();
+
 	pPlayer->SetCameraAngle(pCamera->GetAngle().y);
+
 	pPlayer->Update();
+
+	pCamera->Update(*pPlayer);
+
+	
 
 	//物理更新
 	pPhysics->Update();
@@ -58,8 +65,8 @@ void GameManager::Update()
 /// </summary>
 void GameManager::Draw()
 {
-	pCamera->Draw();
 	pMap->Draw();
+	pCamera->Draw();
 	pPlayer->Draw();
 }
 
@@ -68,7 +75,7 @@ void GameManager::Draw()
 /// </summary>
 void GameManager::End()
 {
-	pMap->End();
+	pPlayer->End();
 	pCamera->End();
-	pPlayer->Finalize();
+	pMap->End();
 }

@@ -34,10 +34,6 @@ Camera::~Camera()
 /// </summary>
 void Camera::Init()
 {
-	SetUseZBuffer3D(true);
-	SetWriteZBuffer3D(true);
-	SetUseBackCulling(true);
-
 	m_radius = 3.0f;
 
 	//基準となるカメラの座標
@@ -60,7 +56,7 @@ void Camera::Update(Player& player)
 {
 	GetJoypadDirectInputState(DX_INPUT_PAD1, &input);
 
-	cPlayerPos = VGet(player.GetPos().x, player.GetPos().y, player.GetPos().z);
+	cPlayerPos = player.GetPos().GetVector();
 
 	//左キー
 	if (input.Rx < 0)

@@ -2,10 +2,15 @@
 #include "SceneGame.h"
 #include "Manager/HandleManager.h"
 #include "Manager/SelectManager.h"
+#include "Map/Map.h"
 
 namespace
 {
 	int selectDecision = 0;  //選択し、決定したもの
+
+	float cCameraTargetx = 485.0f;
+	float cCameraTargety = 80.0f;
+	float cCameraTargetz = -550.0f;
 
 	//シングルトン
 	auto& handle = HandleManager::GetInstance();
@@ -73,6 +78,8 @@ void SceneTitle::Init()
 	m_playerHandle = handle.GetModelHandle("Data/Player/PuppetPlayerModel.mv1");
 	m_anim = handle.GetModelHandle("Data/PlayerAnimation/JumpingDown.mv1");
 
+	pmap->Init();
+
 	selectDecision = 0;
 
 	//アニメーションアタッチ
@@ -95,9 +102,7 @@ void SceneTitle::Init()
 	}
 
 	m_cameraPos = VGet(550.0f, 20.0f, -450.0f);
-	m_cameraTarget = VGet(485.0f, 80.0f, -550.0f);
-
-	pmap->Init();
+	m_cameraTarget = VGet(cCameraTargetx, cCameraTargety, cCameraTargetz);
 
 	//設定関係
 	psetting->Init();
@@ -124,11 +129,23 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 		if (m_xpad.ThumbLY > 2000)
 		{
 			m_button++;
+
+			m_cameraTarget.x++;
 		}
 		//下
 		else if (m_xpad.ThumbLY < 0)
 		{
 			m_button--;
+
+			m_cameraTarget.z++;
+		}
+		else if (m_xpad.ThumbLX > 2000)
+		{
+			m_cameraTarget.x--;
+		}
+		else if (m_xpad.ThumbLX < 0)
+		{
+			m_cameraTarget.z--;
 		}
 		else
 		{
@@ -256,7 +273,6 @@ void SceneTitle::SelectBlend(int select, int now, int other1, int other2)
 /// </summary>
 void SceneTitle::Draw()
 {
-
 	pmap->Draw();
 
 	MV1SetPosition(m_playerHandle, m_pos);
