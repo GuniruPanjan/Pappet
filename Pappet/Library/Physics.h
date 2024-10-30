@@ -57,6 +57,8 @@ namespace MyLibrary
 		//更新(登録オブジェクトの物理移動、衝突通知)
 		void Update();
 
+		bool GetFlag() { return m_isHitFlag; }
+
 	private:
 		//当たり判定チェック
 		void CheckCollide();

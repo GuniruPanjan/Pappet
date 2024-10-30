@@ -38,15 +38,20 @@ private:
 	void SetModelPos();
 private:
 	XINPUT_STATE m_xpad;                //パッド入力
-	int m_moveAnimFrameIndex;           //アニメーションで移動しているフレームの番号を検索する変数
-	int m_moveAnimFrameRight;        
-	int m_moveAnimShieldFrameIndex;     //盾を構えるときのアニメーションのフレーム取得
-	int m_moveAnimShieldFrameHandIndex; 
 	float m_cameraAngle;                //カメラ情報
+
+	//アニメーション用変数
+	bool m_animOne[ANIMATION_MAX];      //アニメーション関係をリセットするための判定
 	bool m_isDead;                      //死亡判定
 	bool m_dashMove;                    //ダッシュ判断
 	bool m_avoidance;                   //回避判断
 	bool m_avoidanceNow;                //フレーム回避中の判断
+
+	//フレーム用変数
+	int m_moveAnimFrameIndex;           //アニメーションで移動しているフレームの番号を検索する変数
+	int m_moveAnimFrameRight;
+	int m_moveAnimShieldFrameIndex;     //盾を構えるときのアニメーションのフレーム取得
+	int m_moveAnimShieldFrameHandIndex;
 	MATRIX m_moveWeaponFrameMatrix;     //武器をアタッチするフレームのローカル座標をワールド変換行列を取得する
 	MATRIX m_moveShieldFrameMatrix;
 };

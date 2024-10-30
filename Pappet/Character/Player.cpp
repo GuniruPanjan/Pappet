@@ -41,6 +41,10 @@ Player::Player() :
 	m_moveWeaponFrameMatrix(),
 	m_moveShieldFrameMatrix()
 {
+	for (int i = 0; i < ANIMATION_MAX; i++)
+	{
+		m_animOne[i] = false;
+	}
 
 	//カプセル型
 	auto collider = Collidable::AddCollider(MyLibrary::CollidableData::Kind::Capsule, false);
@@ -93,8 +97,8 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	Collidable::Init(m_pPhysics);
 
 	//プレイヤーの初期位置設定
-	rigidbody.Init(false);
-	rigidbody.SetPos(MyLibrary::LibVec3(485.0f, 0.0f, -800.0f));
+	rigidbody.Init(true);
+	rigidbody.SetPos(MyLibrary::LibVec3(485.0f, 12.0f, -800.0f));
 	rigidbody.SetNextPos(rigidbody.GetPos());
 	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
 	m_collisionPos = rigidbody.GetPos();
@@ -113,14 +117,24 @@ void Player::Finalize()
 
 void Player::Update()
 {
+	//アニメーションで移動しているフレームの番号を検索する
+	m_moveAnimFrameIndex = MV1SearchFrame(m_modelHandle, "mixamorig:Hips");
+	m_moveAnimFrameRight = MV1SearchFrame(m_modelHandle, "mixamorig:RightHandThumb2");
 
+	//盾を構える時のアニメーションフレーム取得
+	m_moveAnimShieldFrameIndex = MV1SearchFrame(m_modelHandle, "mixamorig:LeftShoulder");
+	m_moveAnimShieldFrameHandIndex = MV1SearchFrame(m_modelHandle, "mixamorig:LeftHand");
+
+	//武器や盾をアタッチするフレームのローカル→ワールド変換行列を取得する
+	m_moveWeaponFrameMatrix = MV1GetFrameLocalWorldMatrix(m_modelHandle, m_moveAnimFrameRight);
+	m_moveShieldFrameMatrix = MV1GetFrameLocalWorldMatrix(m_modelHandle, m_moveAnimShieldFrameHandIndex);
 
 
 	//パッド入力取得
 	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
 
 	//アニメーションの更新
-	m_isAnimationFinish = UpdateAnim(m_nowAnimNo);
+	m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
 
 	//アニメーションの切り替え
 	if (m_prevAnimNo != -1)
@@ -145,7 +159,8 @@ void Player::Update()
 			m_isDead = true;
 
 			m_nowAnimIdx = m_animIdx["Death"];
-			ChangeAnim(m_nowAnimIdx);
+
+			ChangeAnim(m_nowAnimIdx, m_animOne[0], m_animOne);
 
 			Finalize();
 		}
@@ -161,7 +176,7 @@ void Player::Update()
 	float SetAngleX = 0.0f;
 	float SetAngleY = 0.0f;
 
-	if (!m_isDead)
+	if (!m_isDead && !m_avoidance)
 	{
 		GetJoypadAnalogInput(&analogX, &analogY, DX_INPUT_PAD1);
 	}
@@ -207,25 +222,76 @@ void Player::Update()
 		m_moveflag = false;
 	}
 
-	MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
-	MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(m_moveVec.x, prevVelocity.y, m_moveVec.z);
-	rigidbody.SetVelocity(newVelocity);
+	if (!m_avoidance)
+	{
+		MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
+		MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(m_moveVec.x, prevVelocity.y, m_moveVec.z);
+		rigidbody.SetVelocity(newVelocity);
+	}
 
 	//プレイヤーが生きている時だけ
 	if (!m_isDead)
 	{
-		m_modelPos = m_modelPos + m_moveVec;
-
-		Action();
+		//回避中はアクションができない
+		if (!m_avoidance)
+		{
+			Action();
+		}
+		
 
 		NotWeaponAnimation();
 		AllAnimation();
 	}
 
+	//プレイヤーのポジションを入れる
+	//回避してない時に座標を入れる
+	if (!m_avoidance)
+	{
+		SetModelPos();
+	}
+	//回避行動中
+	else if (!m_isAnimationFinish && m_avoidance)
+	{
+		//フレーム回避
+		if (m_nowFrame >= 0.0f && m_nowFrame <= 20.0f)
+		{
+			m_avoidanceNow = true;
+		}
+		else
+		{
+			m_avoidanceNow = false;
+		}
+	}
+	//回避終了
+	else if (m_isAnimationFinish && m_avoidance)
+	{
+		SetModelPos();
+
+		m_avoidance = false;
+	}
+
 	//回避中にいれる
 	if (m_avoidance)
 	{
+		//向いている方向の逆側を算出
+		float angle = atan2f(moveVec.z, -moveVec.x) - DX_PI_F / 2;
 
+		//アニメーションが経過中の座標取得
+		m_nowPos = MV1GetFramePosition(m_modelHandle, m_moveAnimFrameIndex);
+
+		rigidbody.SetPos(MyLibrary::LibVec3(m_collisionPos.x = m_nowPos.x, m_collisionPos.y, m_collisionPos.z = m_nowPos.z));
+		rigidbody.SetNextPos(rigidbody.GetPos());
+
+		//壁に当たった時はモデルのポジションを変えれば行けると思う
+		if (m_pPhysics->GetFlag())
+		{
+			//モデルの座標を変える
+			//m_modelPos = VAdd(m_modelPos.ConversionToVECTOR(), )
+		}
+
+		//MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
+		//MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(m_avoidVec.x, prevVelocity.y, m_avoidVec.z);
+		//rigidbody.SetVelocity(newVelocity);
 	}
 }
 
@@ -282,13 +348,13 @@ void Player::NotWeaponAnimation()
 		if (m_dashMove)
 		{
 			m_nowAnimIdx = m_animIdx["Run"];
-			ChangeAnim(m_nowAnimIdx);
+			ChangeAnim(m_nowAnimIdx, m_animOne[1], m_animOne);
 		}
 		//歩き
 		else if (m_moveflag)
 		{
 			m_nowAnimIdx = m_animIdx["Walk"];
-			ChangeAnim(m_nowAnimIdx);
+			ChangeAnim(m_nowAnimIdx, m_animOne[2], m_animOne);
 		}
 	}
 }
@@ -313,13 +379,13 @@ void Player::AllAnimation()
 			if (!m_moveflag && !m_avoidance)
 			{
 				m_nowAnimIdx = m_animIdx["Idle"];
-				ChangeAnim(m_nowAnimIdx);
+				ChangeAnim(m_nowAnimIdx, m_animOne[3], m_animOne);
 			}
 			//回避
 			else if (m_avoidance)
 			{
 				m_nowAnimIdx = m_animIdx["Roll"];
-				ChangeAnim(m_nowAnimIdx);
+				ChangeAnim(m_nowAnimIdx, m_animOne[4], m_animOne);
 			}
 			
 		}
@@ -333,45 +399,20 @@ void Player::Draw()
 {
 	rigidbody.SetPos(rigidbody.GetNextPos());
 	m_collisionPos = rigidbody.GetPos();
-
-	//プレイヤーのポジションを入れる
-	//回避してない時に座標を入れる
-	if (!m_avoidance)
-	{
-		SetModelPos();
-	}
-	//回避行動中
-	else if (!m_isAnimationFinish && m_avoidance)
-	{
-		//フレーム回避
-		if (m_nowFrame >= 0.0f && m_nowFrame <= 20.0f)
-		{
-			m_avoidanceNow = true;
-		}
-		else
-		{
-			m_avoidanceNow = false;
-		}
-	}
-	//回避終了
-	else if (m_isAnimationFinish)
-	{
-		SetModelPos();
-
-		m_avoidance = false;
-	}
 	
 	MV1SetPosition(m_modelHandle, VSub(m_modelPos.ConversionToVECTOR(), VGet(0.0f, 12.0f, 0.0f)));
 
-#if false
+#if _DEBUG
 	DrawFormatString(0, 100, 0xffffff, "posx : %f", m_modelPos.x);
 	DrawFormatString(0, 200, 0xffffff, "posy : %f", m_modelPos.y);
 	DrawFormatString(0, 300, 0xffffff, "posz : %f", m_modelPos.z);
 	DrawFormatString(0, 400, 0xffffff, "m_nowAnim : %d", m_nowAnimIdx);
-	DrawFormatString(0, 500, 0xffffff, "m_nowSpeed : %f", m_animSpeed);
-	DrawFormatString(0, 600, 0xffffff, "moveVecx : %f", m_moveVec.x);
-	DrawFormatString(0, 700, 0xffffff, "moveVecy : %f", m_moveVec.y);
-	DrawFormatString(0, 800, 0xffffff, "moveVecz : %f", m_moveVec.z);
+	DrawFormatString(0, 500, 0xffffff, "m_nowSpeed : %f", m_nowFrame);
+	DrawFormatString(0, 600, 0xffffff, "colPosx : %f", m_collisionPos.x);
+	DrawFormatString(0, 700, 0xffffff, "colPosy : %f", m_collisionPos.y);
+	DrawFormatString(0, 800, 0xffffff, "colPosz : %f", m_collisionPos.z);
+	DrawFormatString(200, 100, 0xffffff, "m_blend : %f", m_animBlendRate);
+	DrawFormatString(200, 200, 0xffffff, "angle : %f", m_angle);
 
 #endif
 

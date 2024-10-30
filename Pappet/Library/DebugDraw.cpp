@@ -37,12 +37,12 @@ void MyLibrary::DebugDraw::Draw()
 		DrawCapsule3D(pos1.GetVector(), capsule.center.ConversionToVECTOR(),
 			capsule.radius, 16, capsule.color, capsule.color, false);
 
-		DrawFormatString(0, 100, 0xffffff, "posx : %f", capsule.center.x);
-		DrawFormatString(0, 200, 0xffffff, "posy : %f", capsule.center.y);
-		DrawFormatString(0, 300, 0xffffff, "posz : %f", capsule.center.z);
-		DrawFormatString(0, 400, 0xffffff, "pos1x : %f", pos1.x);
-		DrawFormatString(0, 450, 0xffffff, "pos1y : %f", pos1.y);
-		DrawFormatString(0, 500, 0xffffff, "pos1z : %f", pos1.z);
+		//DrawFormatString(0, 100, 0xffffff, "posx : %f", capsule.center.x);
+		//DrawFormatString(0, 200, 0xffffff, "posy : %f", capsule.center.y);
+		//DrawFormatString(0, 300, 0xffffff, "posz : %f", capsule.center.z);
+		//DrawFormatString(0, 400, 0xffffff, "pos1x : %f", pos1.x);
+		//DrawFormatString(0, 450, 0xffffff, "pos1y : %f", pos1.y);
+		//DrawFormatString(0, 500, 0xffffff, "pos1z : %f", pos1.z);
 		//DrawFormatString(0, 550, 0xffffff, "pos2x : %f", pos2.x);
 		//DrawFormatString(0, 600, 0xffffff, "pos2y : %f", pos2.y);
 		//DrawFormatString(0, 650, 0xffffff, "pos2z : %f", pos2.z);

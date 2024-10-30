@@ -2,6 +2,7 @@
 #include "Library/MyLibrary.h"
 #include <map>
 #include <string>
+#define ANIMATION_MAX   30
 
 class CharacterBase : public MyLibrary::Collidable
 {
@@ -27,9 +28,9 @@ public:
 
 protected:
 	//アニメーションの更新
-	bool UpdateAnim(int attachNo, float startTime = 0.0f);
+	bool UpdateAnim(int attachNo, int max, float startTime = 0.0f);
 	//アニメーションの変更
-	void ChangeAnim(int animIndex, float animSpeed = 0.5f);
+	void ChangeAnim(int animIndex, bool& one, bool (&all)[30], float animSpeed = 0.5f);
 
 protected:
 	//物理クラスのポインタ
@@ -56,19 +57,12 @@ protected:
 	float m_nowFrame;         //アニメーションを進める時間
 	float m_animTime;         //アニメーション再生速度
 	bool m_isAnimationFinish; //アニメーションが終わったかどうか
-	bool m_reset;             //アニメーションタイムをリセットする
 	float m_animSpeed;        //アニメーションの進んだタイムを入れる
-	MyLibrary::LibVec3 m_nowPos;        //現在のフレームの座標を取得する
-	MyLibrary::LibVec3 m_prevPos;    //アニメーションで移動しているフレームの座標取得
+	VECTOR m_nowPos;        //現在のフレームの座標を取得する
 
 	//使う変数
 	float m_angle;  //キャラのアングル
 	bool m_moveflag;  //キャラが動いたか判断するフラグ
 	bool m_hit;           //怯み判定
-	int m_moveAnimFrameIndex;       //アニメーションで移動しているフレームを取る
-	int m_moveAnimFrameRight;       //右手に装備するフレームを取る
-	int m_moveAnimLeftFrameIndex;   //左肩のフレームを取る
-	int m_moveAnimFrameLeft;        //左手に装備するフレームを取る
-	MATRIX m_moveWeaponFrameMatrix; //武器をアタッチするフレームのローカル座標をワールド座標に変える
 };
 
