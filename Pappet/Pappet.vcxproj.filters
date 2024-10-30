@@ -70,6 +70,12 @@
     <Filter Include="ソース ファイル\Camera">
       <UniqueIdentifier>{ffd166e8-8009-4e9b-9c83-baed1296bb1d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Item">
+      <UniqueIdentifier>{c1f3a2be-b8f3-47ca-99b2-9186b3893711}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Item">
+      <UniqueIdentifier>{43456884-ce10-405d-b4ab-474f1fbfb76d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp">
@@ -164,6 +170,9 @@
     </ClCompile>
     <ClCompile Include="Camera\Camera.cpp">
       <Filter>ソース ファイル\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Item\ItemBase.cpp">
+      <Filter>ソース ファイル\Item</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -271,6 +280,9 @@
     </ClInclude>
     <ClInclude Include="Camera\Camera.h">
       <Filter>ヘッダー ファイル\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Item\ItemBase.h">
+      <Filter>ヘッダー ファイル\Item</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

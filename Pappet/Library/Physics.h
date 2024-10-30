@@ -57,7 +57,9 @@ namespace MyLibrary
 		//更新(登録オブジェクトの物理移動、衝突通知)
 		void Update();
 
-		bool GetFlag() { return m_isHitFlag; }
+		bool GetFlag() { return m_isHitWallFlag; }
+
+		VECTOR GetVECTOR() { return m_ret; }
 
 	private:
 		//当たり判定チェック
@@ -108,10 +110,14 @@ namespace MyLibrary
 		bool m_isMoveFlag = false;
 		//ポリゴンに当たったかどうか
 		bool m_isHitFlag = false;
+		//壁ポリゴンに当たったかどうか
+		bool m_isHitWallFlag;
 		//壁ポリゴンと判断されたポリゴン数
 		int m_wallNum = 0;
 		//床ポリゴンと判断されたポリゴン数
 		int m_floorNum = 0;
+
+		VECTOR m_ret;
 
 		//当たり判定結果構造体
 		MV1_COLL_RESULT_POLY_DIM m_hitDim{};

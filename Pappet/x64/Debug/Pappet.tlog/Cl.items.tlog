@@ -2,6 +2,7 @@ C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Camera\Camera.c
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Character\CharacterBase.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\CharacterBase.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Character\Player.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\Player.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\External\CsvLoad.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\CsvLoad.obj
+C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Item\ItemBase.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\ItemBase.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Library\Collidable.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\Collidable.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Library\CollidableData.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\CollidableData.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Library\CollidableDataCapsule.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\CollidableDataCapsule.obj

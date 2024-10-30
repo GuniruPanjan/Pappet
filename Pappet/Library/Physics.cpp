@@ -13,7 +13,7 @@ namespace
 	//壁ポリゴンか床ポリゴンかを判断するための変数
 	constexpr float kWallPolyBorder = 0.4f;
 	//壁ポリゴンと判断するための高さ変数
-	constexpr float kWallPolyHeight = 5.0f;
+	constexpr float kWallPolyHeight = 1.0f;
 
 	//重力
 	constexpr float kGravity = -0.018f;
@@ -32,7 +32,9 @@ namespace
 /// コンストラクタ
 /// </summary>
 /// <param name="mapStageCollisionHandle">キャラクターのステージ当たり判定ハンドル</param>
-MyLibrary::Physics::Physics(int mapStageCollisionHandle)
+MyLibrary::Physics::Physics(int mapStageCollisionHandle) :
+	m_ret(VGet(0.0f,0.0f,0.0f)),
+	m_isHitWallFlag(false)
 {
 	m_stageCollisionHandle = mapStageCollisionHandle;
 }
@@ -123,7 +125,9 @@ void MyLibrary::Physics::Update()
 				auto vec = capsuleData->m_vec;
 				auto len = capsuleData->m_len;
 				auto radius = capsuleData->m_radius;
+				//緑がコリジョン
 				MyLibrary::DebugDraw::AddDrawCapsule(pos, vec, radius, len, kBeforeColor);
+				//白がポジション
 				MyLibrary::DebugDraw::AddDrawCapsule(nextPos, vec, radius, len, kBeforePlanColor);
 			}
 			else if (kind == CollidableData::Kind::Sphere)
@@ -724,6 +728,8 @@ void MyLibrary::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 	//壁ポリゴンとの当たり判定処理
 	//壁に当たったかどうかのフラグは初期状態では「当たっていない」にしておく
 	m_isHitFlag = false;
+	m_isHitWallFlag = false;
+
 
 	//移動したかどうかで処理を分岐
 	if (col->rigidbody.GetDir().Length() != 0.0f)
@@ -740,12 +746,16 @@ void MyLibrary::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 
 			//ここにきたらポリゴンとプレイヤーが当たっているということなので、ポリゴンに当たったフラグを立てる
 			m_isHitFlag = true;
+			m_isHitWallFlag = true;
 
 			//壁を考慮した移動を外積を使って算出
 			MyLibrary::LibVec3 SlideVec;
 
 			VECTOR ret;
 			ret = VCross(col->rigidbody.GetVelocityVECTOR(), m_pPoly->Normal);
+
+			m_ret = VScale(m_pPoly->Normal, 3.0f);
+
 			//進行方向ベクトルと壁ポリゴンの法線ベクトルに垂直なベクトルを算出
 			SlideVec = MyLibrary::LibVec3(ret.x, ret.y, ret.z);
 
@@ -774,6 +784,7 @@ void MyLibrary::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 			{
 				//ヒットフラグを倒す
 				m_isHitFlag = false;
+				m_isHitWallFlag = false;
 				break;
 			}
 		}
@@ -793,6 +804,7 @@ void MyLibrary::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 				m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2]))
 			{
 				m_isHitFlag = true;
+				m_isHitWallFlag = false;
 				break;
 			}
 		}

@@ -97,7 +97,7 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	Collidable::Init(m_pPhysics);
 
 	//プレイヤーの初期位置設定
-	rigidbody.Init(true);
+	rigidbody.Init(false);
 	rigidbody.SetPos(MyLibrary::LibVec3(485.0f, 12.0f, -800.0f));
 	rigidbody.SetNextPos(rigidbody.GetPos());
 	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
@@ -227,6 +227,7 @@ void Player::Update()
 		MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
 		MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(m_moveVec.x, prevVelocity.y, m_moveVec.z);
 		rigidbody.SetVelocity(newVelocity);
+		rigidbody.AddForce(MyLibrary::LibVec3(0.0f, 0.0f, 0.0f));
 	}
 
 	//プレイヤーが生きている時だけ
@@ -273,9 +274,6 @@ void Player::Update()
 	//回避中にいれる
 	if (m_avoidance)
 	{
-		//向いている方向の逆側を算出
-		float angle = atan2f(moveVec.z, -moveVec.x) - DX_PI_F / 2;
-
 		//アニメーションが経過中の座標取得
 		m_nowPos = MV1GetFramePosition(m_modelHandle, m_moveAnimFrameIndex);
 
@@ -283,15 +281,14 @@ void Player::Update()
 		rigidbody.SetNextPos(rigidbody.GetPos());
 
 		//壁に当たった時はモデルのポジションを変えれば行けると思う
-		if (m_pPhysics->GetFlag())
+		if (m_pPhysics->GetFlag() == true)
 		{
 			//モデルの座標を変える
-			//m_modelPos = VAdd(m_modelPos.ConversionToVECTOR(), )
-		}
+			m_pos = VAdd(m_modelPos.ConversionToVECTOR(), m_pPhysics->GetVECTOR());
 
-		//MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
-		//MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(m_avoidVec.x, prevVelocity.y, m_avoidVec.z);
-		//rigidbody.SetVelocity(newVelocity);
+			m_modelPos = MyLibrary::LibVec3(m_pos.x, m_pos.y, m_pos.z);
+		
+		}
 	}
 }
 
@@ -311,7 +308,7 @@ void Player::Action()
 			//ダッシ中
 			m_dashMove = true;
 
-			m_status.s_speed = 3.0f;
+			m_status.s_speed = 4.0f;
 		}
 
 		if (cAbutton < 51)
@@ -413,6 +410,7 @@ void Player::Draw()
 	DrawFormatString(0, 800, 0xffffff, "colPosz : %f", m_collisionPos.z);
 	DrawFormatString(200, 100, 0xffffff, "m_blend : %f", m_animBlendRate);
 	DrawFormatString(200, 200, 0xffffff, "angle : %f", m_angle);
+	DrawFormatString(200, 300, 0xffffff, "hit : %d", m_pPhysics->GetFlag());
 
 #endif
 
