@@ -14,6 +14,17 @@ public:
 
 	}m_levelStatus;
 
+	//アニメーション関係の構造体
+	struct AnimationChange
+	{
+		bool sa_dashMove;                    //ダッシュ判断
+		bool sa_avoidance;                   //回避判断
+		bool sa_recovery;                    //回復判定
+		bool sa_taking;                      //アイテムを取得する判定
+		bool sa_touch;                       //ギミックを作動させる判定
+
+	}m_animChange;
+
 	Player();
 	virtual ~Player();
 
@@ -23,6 +34,7 @@ public:
 	void Action();
 	void NotWeaponAnimation();
 	void AllAnimation();
+	void WeaponAnimation();
 	void Draw();
 	void End();
 
@@ -42,9 +54,6 @@ private:
 
 	//アニメーション用変数
 	bool m_animOne[ANIMATION_MAX];      //アニメーション関係をリセットするための判定
-	bool m_isDead;                      //死亡判定
-	bool m_dashMove;                    //ダッシュ判断
-	bool m_avoidance;                   //回避判断
 	bool m_avoidanceNow;                //フレーム回避中の判断
 
 	//フレーム用変数
@@ -54,5 +63,6 @@ private:
 	int m_moveAnimShieldFrameHandIndex;
 	MATRIX m_moveWeaponFrameMatrix;     //武器をアタッチするフレームのローカル座標をワールド変換行列を取得する
 	MATRIX m_moveShieldFrameMatrix;
+	VECTOR m_rollMove;                  //回避で移動する距離
 };
 

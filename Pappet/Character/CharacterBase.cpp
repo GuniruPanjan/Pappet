@@ -23,8 +23,6 @@ CharacterBase::CharacterBase(Priority priority, ObjectTag tag) :
 	m_animTime(0.5f),
 	m_isAnimationFinish(false),
 	m_angle(0.0f),
-	m_moveflag(false),
-	m_hit(false),
 	m_animSpeed(0.0f)
 {
 }

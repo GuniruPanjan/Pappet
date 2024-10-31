@@ -715,11 +715,14 @@ void MyLibrary::Physics::CheckWallAndFloor(std::shared_ptr<Collidable>& col)
 void MyLibrary::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 {
 	float radius = 0.0f;
-	VECTOR vec = VGet(0.0f, 0.0f, 0.0f);
+	MyLibrary::LibVec3 vec;
+	float len = 0.0f;
 	for (auto& col : col->m_colliders)
 	{
 		radius = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_radius;
-		vec = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_vec.ConversionToVECTOR();
+		len = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_len;
+
+		vec = vec.GetNormalized() * len * 0.5f;
 	}
 
 	//壁ポリゴンがない場合は何もしない
@@ -741,7 +744,7 @@ void MyLibrary::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 			m_pPoly = m_pWallPoly[i];
 
 			//ポリゴンとプレイヤーが当たっていなかったら次のカウントへ
-			if (!HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec), VSub(col->rigidbody.GetNextPosVECTOR(), vec), radius,
+			if (!HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), VSub(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), radius,
 				m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2])) continue;
 
 			//ここにきたらポリゴンとプレイヤーが当たっているということなので、ポリゴンに当たったフラグを立てる
@@ -770,7 +773,7 @@ void MyLibrary::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 				m_pPoly = m_pWallPoly[j];
 
 				//当たっていたらループから抜ける
-				if (HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec), VSub(col->rigidbody.GetNextPosVECTOR(), vec), radius,
+				if (HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), VSub(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), radius,
 					m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2]))
 				{
 					//trueにする
@@ -788,6 +791,13 @@ void MyLibrary::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 				break;
 			}
 		}
+
+		//壁に当たっていたら壁から押し出す処理を行う
+		if (m_isHitFlag)
+		{
+			FixPositionWithWallInternal(col);
+		}
+
 	}
 	else
 	{
@@ -800,11 +810,11 @@ void MyLibrary::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 			m_pPoly = m_pWallPoly[i];
 
 			//ポリゴンに当たっていたら当たったフラグを立てた上でループから抜ける
-			if (HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec), VSub(col->rigidbody.GetNextPosVECTOR(), vec), radius,
+			if (HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), VSub(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), radius,
 				m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2]))
 			{
 				m_isHitFlag = true;
-				m_isHitWallFlag = false;
+				m_isHitWallFlag = true;
 				break;
 			}
 		}
@@ -825,11 +835,14 @@ void MyLibrary::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 void MyLibrary::Physics::FixPositionWithWallInternal(std::shared_ptr<Collidable>& col)
 {
 	float radius = 0.0f;
-	VECTOR vec = VGet(0.0f, 0.0f, 0.0f);
+	MyLibrary::LibVec3 vec;
+	float len = 0.0f;
 	for (auto& col : col->m_colliders)
 	{
 		radius = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_radius;
-		vec = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_vec.ConversionToVECTOR();
+		len = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_len;
+
+		vec = vec.GetNormalized() * len * 0.5f;
 	}
 
 	//壁からの押し出し処理を試みる最大数だけ繰り返し
@@ -844,7 +857,7 @@ void MyLibrary::Physics::FixPositionWithWallInternal(std::shared_ptr<Collidable>
 			m_pPoly = m_pWallPoly[j];
 
 			//ポリゴンとプレイヤーが当たっていなかったら次のカウントへ
-			if (!HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec), VSub(col->rigidbody.GetNextPosVECTOR(), vec), radius,
+			if (!HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), VSub(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), radius,
 				m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2])) continue;
 
 			auto ret = VAdd(col->rigidbody.GetNextPosVECTOR(), VScale(m_pPoly->Normal, kColHitSlideLength));
@@ -860,7 +873,7 @@ void MyLibrary::Physics::FixPositionWithWallInternal(std::shared_ptr<Collidable>
 			{
 				//当たっていたらループを抜ける
 				m_pPoly = m_pWallPoly[k];
-				if (HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec), VSub(col->rigidbody.GetNextPosVECTOR(), vec), radius,
+				if (HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), VSub(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), radius,
 					m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2]))
 				{
 					isHitWall = true;

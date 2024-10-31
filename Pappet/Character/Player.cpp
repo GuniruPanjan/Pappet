@@ -15,8 +15,15 @@ namespace
 	//アニメーションブレンド率の最大
 	constexpr float cAnimBlendRateMax = 1.0f;
 
-	//ダッシュを確認するための変数
+	//歩きにより代入される速度
+	constexpr float cWalkSpeed = 2.0f;
+	//ダッシュにより代入される速度
+	constexpr float cDashSpeed = 4.0f;
+	//Aボタンが押されているかの確認用変数
 	int cAbutton = 0;
+
+	//回避での移動距離
+	float cAvoidanceMove = 0.0f;
 
 	//ポジション設定
 	VECTOR m_pos;
@@ -34,12 +41,10 @@ Player::Player() :
 	m_moveAnimShieldFrameIndex(0),
 	m_moveAnimShieldFrameHandIndex(0),
 	m_cameraAngle(0.0f),
-	m_isDead(false),
-	m_dashMove(false),
-	m_avoidance(false),
 	m_avoidanceNow(false),
 	m_moveWeaponFrameMatrix(),
-	m_moveShieldFrameMatrix()
+	m_moveShieldFrameMatrix(),
+	m_rollMove(VGet(0.0f,0.0f,0.0f))
 {
 	for (int i = 0; i < ANIMATION_MAX; i++)
 	{
@@ -58,6 +63,17 @@ Player::Player() :
 	m_levelStatus.sl_stamina = 1;
 	m_levelStatus.sl_muscle = 1;
 	m_levelStatus.sl_skill = 1;
+
+	//アニメーションの判定初期化
+	m_anim.s_attack = false;
+	m_anim.s_hit = false;
+	m_anim.s_isDead = false;
+	m_anim.s_moveflag = false;
+	m_animChange.sa_avoidance = false;
+	m_animChange.sa_dashMove = false;
+	m_animChange.sa_recovery = false;
+	m_animChange.sa_taking = false;
+	m_animChange.sa_touch = false;
 	
 	//エフェクト読み込み
 	effect.EffectLoad("Rest", "Data/Effect/Benediction.efkefc", 210, 10.0f);
@@ -65,7 +81,8 @@ Player::Player() :
 	effect.EffectLoad("Imapct", "Data/Effect/HitEffect.efkefc", 30, 7.0f);
 
 	//モデル読み込み
-	m_modelHandle = handle.GetModelHandle("Data/Player/PlayerModel.mv1");
+	//m_modelHandle = handle.GetModelHandle("Data/Player/PlayerModel.mv1");
+	m_modelHandle = handle.GetModelHandle("Data/Player/PlayerModelPuppet.mv1");
 
 	//モデルのサイズ設定
 	MV1SetScale(m_modelHandle, VGet(cModelSizeScale, cModelSizeScale, cModelSizeScale));
@@ -154,9 +171,9 @@ void Player::Update()
 	//死んだ時のアニメーション
 	if (m_status.s_hp <= 0)
 	{
-		if (!m_isDead)
+		if (!m_anim.s_isDead)
 		{
-			m_isDead = true;
+			m_anim.s_isDead = true;
 
 			m_nowAnimIdx = m_animIdx["Death"];
 
@@ -176,7 +193,7 @@ void Player::Update()
 	float SetAngleX = 0.0f;
 	float SetAngleY = 0.0f;
 
-	if (!m_isDead && !m_avoidance)
+	if (!m_anim.s_isDead && !m_animChange.sa_avoidance)
 	{
 		GetJoypadAnalogInput(&analogX, &analogY, DX_INPUT_PAD1);
 	}
@@ -214,27 +231,38 @@ void Player::Update()
 		m_angle = atan2f(-moveVec.z, moveVec.x) - DX_PI_F / 2;
 
 		//プレイヤーが動いたら
-		m_moveflag = true;
+		m_anim.s_moveflag = true;
 	}
 	//プレイヤーが動いてなかったら
 	else if (VSquareSize(moveVec) <= 0.0f)
 	{
-		m_moveflag = false;
+		m_anim.s_moveflag = false;
 	}
 
-	if (!m_avoidance)
+	//回避してないとき
+	if (!m_animChange.sa_avoidance)
 	{
 		MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
 		MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(m_moveVec.x, prevVelocity.y, m_moveVec.z);
 		rigidbody.SetVelocity(newVelocity);
-		rigidbody.AddForce(MyLibrary::LibVec3(0.0f, 0.0f, 0.0f));
+	}
+	//回避してるとき
+	else if(m_animChange.sa_avoidance)
+	{
+		//回避で移動する距離
+		m_rollMove = VScale(VGet(sinf(m_angle), 0.0f, cosf(m_angle)), cAvoidanceMove);
+
+		//アングルの方向に一定距離移動させたい
+		MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
+		MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(-m_rollMove.x, prevVelocity.y, -m_rollMove.z);
+		rigidbody.SetVelocity(newVelocity);
 	}
 
 	//プレイヤーが生きている時だけ
-	if (!m_isDead)
+	if (!m_anim.s_isDead)
 	{
-		//回避中はアクションができない
-		if (!m_avoidance)
+		//アクションをできなくする
+		if (!m_animChange.sa_avoidance || !m_anim.s_hit)
 		{
 			Action();
 		}
@@ -246,49 +274,34 @@ void Player::Update()
 
 	//プレイヤーのポジションを入れる
 	//回避してない時に座標を入れる
-	if (!m_avoidance)
-	{
-		SetModelPos();
-	}
+	SetModelPos();
+
 	//回避行動中
-	else if (!m_isAnimationFinish && m_avoidance)
+	if (!m_isAnimationFinish && m_animChange.sa_avoidance)
 	{
 		//フレーム回避
 		if (m_nowFrame >= 0.0f && m_nowFrame <= 20.0f)
 		{
 			m_avoidanceNow = true;
+
+			cAvoidanceMove = 2.0f;
+		}
+		else if (m_nowFrame >= 20.0f && m_nowFrame <= 30.0f)
+		{
+			cAvoidanceMove = 1.0f;
 		}
 		else
 		{
 			m_avoidanceNow = false;
+
+			cAvoidanceMove = 0.2f;
 		}
 	}
 	//回避終了
-	else if (m_isAnimationFinish && m_avoidance)
+	else if (m_isAnimationFinish && m_animChange.sa_avoidance)
 	{
-		SetModelPos();
 
-		m_avoidance = false;
-	}
-
-	//回避中にいれる
-	if (m_avoidance)
-	{
-		//アニメーションが経過中の座標取得
-		m_nowPos = MV1GetFramePosition(m_modelHandle, m_moveAnimFrameIndex);
-
-		rigidbody.SetPos(MyLibrary::LibVec3(m_collisionPos.x = m_nowPos.x, m_collisionPos.y, m_collisionPos.z = m_nowPos.z));
-		rigidbody.SetNextPos(rigidbody.GetPos());
-
-		//壁に当たった時はモデルのポジションを変えれば行けると思う
-		if (m_pPhysics->GetFlag() == true)
-		{
-			//モデルの座標を変える
-			m_pos = VAdd(m_modelPos.ConversionToVECTOR(), m_pPhysics->GetVECTOR());
-
-			m_modelPos = MyLibrary::LibVec3(m_pos.x, m_pos.y, m_pos.z);
-		
-		}
+		m_animChange.sa_avoidance = false;
 	}
 }
 
@@ -303,12 +316,12 @@ void Player::Action()
 		//ダッシュ
 		if (cAbutton > 50)
 		{
-			m_avoidance = false;
+			m_animChange.sa_avoidance = false;
 
 			//ダッシ中
-			m_dashMove = true;
+			m_animChange.sa_dashMove = true;
 
-			m_status.s_speed = 4.0f;
+			m_status.s_speed = cDashSpeed;
 		}
 
 		if (cAbutton < 51)
@@ -318,18 +331,25 @@ void Player::Action()
 	}
 	else
 	{
-		m_dashMove = false;
+		m_animChange.sa_dashMove = false;
 
-		m_status.s_speed = 2.0f;
+		m_status.s_speed = cWalkSpeed;
 
 		//回避
 		//離した瞬間
-		if (cAbutton > 0 && cAbutton < 30 && m_avoidance == false)
+		if (cAbutton > 0 && cAbutton < 30 && m_animChange.sa_avoidance == false)
 		{
-			m_avoidance = true;
+			m_animChange.sa_avoidance = true;
 		}
 
 		cAbutton = 0;
+	}
+
+	//攻撃
+	//Rボタンを押すことで攻撃
+	if (m_xpad.Buttons[9] == 1)
+	{
+
 	}
 }
 
@@ -339,16 +359,16 @@ void Player::Action()
 void Player::NotWeaponAnimation()
 {
 	//攻撃が当たってない時
-	if (!m_hit)
+	if (!m_anim.s_hit)
 	{
 		//走り
-		if (m_dashMove)
+		if (m_animChange.sa_dashMove)
 		{
 			m_nowAnimIdx = m_animIdx["Run"];
 			ChangeAnim(m_nowAnimIdx, m_animOne[1], m_animOne);
 		}
 		//歩き
-		else if (m_moveflag)
+		else if (m_anim.s_moveflag)
 		{
 			m_nowAnimIdx = m_animIdx["Walk"];
 			ChangeAnim(m_nowAnimIdx, m_animOne[2], m_animOne);
@@ -362,31 +382,62 @@ void Player::NotWeaponAnimation()
 void Player::AllAnimation()
 {
 	//プレイヤーが生きているときだけ
-	if (!m_isDead)
+	if (!m_anim.s_isDead)
 	{
 		//攻撃が当たった時
-		if (m_hit)
+		if (m_anim.s_hit)
 		{
-
+			m_nowAnimIdx = m_animIdx["Hit"];
+			ChangeAnim(m_nowAnimIdx, m_animOne[3], m_animOne);
 		}
 		//攻撃が当たってないとき
-		else if (!m_hit)
+		else if (!m_anim.s_hit)
 		{
 			//動いてない時
-			if (!m_moveflag && !m_avoidance)
+			if (!m_anim.s_moveflag && !m_animChange.sa_avoidance)
 			{
 				m_nowAnimIdx = m_animIdx["Idle"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[3], m_animOne);
-			}
-			//回避
-			else if (m_avoidance)
-			{
-				m_nowAnimIdx = m_animIdx["Roll"];
 				ChangeAnim(m_nowAnimIdx, m_animOne[4], m_animOne);
 			}
-			
+			//回避
+			else if (m_animChange.sa_avoidance)
+			{
+				m_nowAnimIdx = m_animIdx["Roll"];
+				ChangeAnim(m_nowAnimIdx, m_animOne[5], m_animOne);
+			}
+			//攻撃
+			else if (m_anim.s_attack)
+			{
+				m_nowAnimIdx = m_animIdx["Attack1"];
+				ChangeAnim(m_nowAnimIdx, m_animOne[6], m_animOne);
+			}
+			//回復
+			else if (m_animChange.sa_recovery)
+			{
+				m_nowAnimIdx = m_animIdx["Recovery"];
+				ChangeAnim(m_nowAnimIdx, m_animOne[7], m_animOne);
+			}
+			//アイテムを取得するとき
+			else if (m_animChange.sa_taking)
+			{
+				m_nowAnimIdx = m_animIdx["Taking"];
+				ChangeAnim(m_nowAnimIdx, m_animOne[8], m_animOne);
+			}
+			//ギミックを作動させるとき
+			else if (m_animChange.sa_touch)
+			{
+				m_nowAnimIdx = m_animIdx["Touch"];
+				ChangeAnim(m_nowAnimIdx, m_animOne[9], m_animOne);
+			}
 		}
 	}
+}
+
+/// <summary>
+/// 武器を持ってる状態の時に行うアニメーション
+/// </summary>
+void Player::WeaponAnimation()
+{
 }
 
 /// <summary>
@@ -410,7 +461,7 @@ void Player::Draw()
 	DrawFormatString(0, 800, 0xffffff, "colPosz : %f", m_collisionPos.z);
 	DrawFormatString(200, 100, 0xffffff, "m_blend : %f", m_animBlendRate);
 	DrawFormatString(200, 200, 0xffffff, "angle : %f", m_angle);
-	DrawFormatString(200, 300, 0xffffff, "hit : %d", m_pPhysics->GetFlag());
+	DrawFormatString(200, 300, 0xffffff, "avoidancemove : %f", cAvoidanceMove);
 
 #endif
 

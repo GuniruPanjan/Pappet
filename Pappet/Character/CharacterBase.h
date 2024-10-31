@@ -19,6 +19,16 @@ public:
 		float s_speed;       //速度
 		int s_core;          //コア
 	};
+
+	//アニメーション関係の構造体
+	struct AnimationChange
+	{
+		bool s_moveflag;      //キャラが動いたか判断するフラグ
+		bool s_isDead;        //キャラの死亡判定
+		bool s_hit;           //怯み判定
+		bool s_attack;        //キャラが攻撃したかの判定
+	};
+
 public:
 	CharacterBase(Priority priority, ObjectTag tag);
 	virtual ~CharacterBase();
@@ -45,6 +55,8 @@ protected:
 	MyLibrary::LibVec3 m_moveVec;
 	//ステータス
 	Status m_status;
+	//アニメーション
+	AnimationChange m_anim;
 
 	//アニメーション関係
 	std::map<std::string, int> m_animIdx;
@@ -61,8 +73,6 @@ protected:
 	VECTOR m_nowPos;        //現在のフレームの座標を取得する
 
 	//使う変数
-	float m_angle;  //キャラのアングル
-	bool m_moveflag;  //キャラが動いたか判断するフラグ
-	bool m_hit;           //怯み判定
+	float m_angle;        //キャラのアングル
 };
 
