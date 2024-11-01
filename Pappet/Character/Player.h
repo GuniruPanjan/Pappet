@@ -53,6 +53,7 @@ private:
 	float m_cameraAngle;                //カメラ情報
 
 	//アニメーション用変数
+	int m_attackNumber;                 //現在の攻撃段階の代入
 	bool m_animOne[ANIMATION_MAX];      //アニメーション関係をリセットするための判定
 	bool m_avoidanceNow;                //フレーム回避中の判断
 

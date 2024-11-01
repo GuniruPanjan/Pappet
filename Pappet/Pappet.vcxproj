@@ -144,6 +144,7 @@
     <ClCompile Include="Character\Player.cpp" />
     <ClCompile Include="External\CsvLoad.cpp" />
     <ClCompile Include="Item\ItemBase.cpp" />
+    <ClCompile Include="Item\Weapon.cpp" />
     <ClCompile Include="Library\Collidable.cpp" />
     <ClCompile Include="Library\CollidableData.cpp" />
     <ClCompile Include="Library\CollidableDataCapsule.cpp" />
@@ -156,6 +157,7 @@
     <ClCompile Include="Manager\EffectManager.cpp" />
     <ClCompile Include="Manager\GameManager.cpp" />
     <ClCompile Include="Manager\HandleManager.cpp" />
+    <ClCompile Include="Manager\ItemManager.cpp" />
     <ClCompile Include="Manager\SelectManager.cpp" />
     <ClCompile Include="Manager\SEManager.cpp" />
     <ClCompile Include="Map\Map.cpp" />
@@ -179,6 +181,7 @@
     <ClInclude Include="External\CsvLoad.h" />
     <ClInclude Include="Icon\Icon.h" />
     <ClInclude Include="Item\ItemBase.h" />
+    <ClInclude Include="Item\Weapon.h" />
     <ClInclude Include="Library\Collidable.h" />
     <ClInclude Include="Library\CollidableData.h" />
     <ClInclude Include="Library\CollidableDataCapsule.h" />
@@ -195,6 +198,7 @@
     <ClInclude Include="Manager\EffectManager.h" />
     <ClInclude Include="Manager\GameManager.h" />
     <ClInclude Include="Manager\HandleManager.h" />
+    <ClInclude Include="Manager\ItemManager.h" />
     <ClInclude Include="Manager\SelectManager.h" />
     <ClInclude Include="Manager\SEManager.h" />
     <ClInclude Include="Map\Map.h" />

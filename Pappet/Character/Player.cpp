@@ -7,23 +7,28 @@ namespace
 {
 	//モデルサイズ
 	constexpr float cModelSizeScale = 0.4f;
-
 	//アニメーションの切り替えにかかるフレーム数
 	constexpr float cAnimChangeFrame = 5.0f;
 	constexpr float cAnimChangeSpeed = 1.0f / cAnimChangeFrame;
-
 	//アニメーションブレンド率の最大
 	constexpr float cAnimBlendRateMax = 1.0f;
-
 	//歩きにより代入される速度
 	constexpr float cWalkSpeed = 2.0f;
 	//ダッシュにより代入される速度
 	constexpr float cDashSpeed = 4.0f;
-	//Aボタンが押されているかの確認用変数
+	//ボタンが押されているかの確認用変数
 	int cAbutton = 0;
+	int cRbutton = 0;
 
 	//回避での移動距離
 	float cAvoidanceMove = 0.0f;
+
+	//攻撃での追加攻撃時間
+	int cAddAttackTime = 0;
+	//現在のアタックのナンバーを入れる
+	int cNowAttackNumber = 0;
+	//攻撃の終了判定
+	int cIsEndAttack = 0;
 
 	//ポジション設定
 	VECTOR m_pos;
@@ -36,6 +41,7 @@ namespace
 Player::Player() :
 	CharacterBase(Collidable::Priority::High, ObjectTag::Player),
 	m_xpad(),
+	m_attackNumber(0),
 	m_moveAnimFrameIndex(0),
 	m_moveAnimFrameRight(0),
 	m_moveAnimShieldFrameIndex(0),
@@ -81,8 +87,7 @@ Player::Player() :
 	effect.EffectLoad("Imapct", "Data/Effect/HitEffect.efkefc", 30, 7.0f);
 
 	//モデル読み込み
-	//m_modelHandle = handle.GetModelHandle("Data/Player/PlayerModel.mv1");
-	m_modelHandle = handle.GetModelHandle("Data/Player/PlayerModelPuppet.mv1");
+	m_modelHandle = handle.GetModelHandle("Data/Player/PlayerModel.mv1");
 
 	//モデルのサイズ設定
 	MV1SetScale(m_modelHandle, VGet(cModelSizeScale, cModelSizeScale, cModelSizeScale));
@@ -193,7 +198,7 @@ void Player::Update()
 	float SetAngleX = 0.0f;
 	float SetAngleY = 0.0f;
 
-	if (!m_anim.s_isDead && !m_animChange.sa_avoidance)
+	if (!m_anim.s_isDead && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery)
 	{
 		GetJoypadAnalogInput(&analogX, &analogY, DX_INPUT_PAD1);
 	}
@@ -262,7 +267,7 @@ void Player::Update()
 	if (!m_anim.s_isDead)
 	{
 		//アクションをできなくする
-		if (!m_animChange.sa_avoidance || !m_anim.s_hit)
+		if (!m_animChange.sa_avoidance || !m_anim.s_hit || !m_animChange.sa_recovery)
 		{
 			Action();
 		}
@@ -284,7 +289,7 @@ void Player::Update()
 		{
 			m_avoidanceNow = true;
 
-			cAvoidanceMove = 2.0f;
+			cAvoidanceMove = 4.0f;
 		}
 		else if (m_nowFrame >= 20.0f && m_nowFrame <= 30.0f)
 		{
@@ -303,6 +308,94 @@ void Player::Update()
 
 		m_animChange.sa_avoidance = false;
 	}
+
+	//攻撃中
+	if (!m_isAnimationFinish && m_anim.s_attack)
+	{
+		//一段階目の攻撃
+		if (m_nowFrame <= 40.0f)
+		{
+			//現在のアタックナンバー
+			cNowAttackNumber = 1;
+
+			//攻撃判定発生フレーム
+			if (m_nowFrame >= 25.0f && m_nowFrame <= 35.0f)
+			{
+
+			}
+			//攻撃終了
+			else if (m_nowFrame >= 40.0f && m_attackNumber == 1)
+			{
+				cIsEndAttack = 1;
+			}
+
+		}
+		//二段階目の攻撃
+		else if (m_nowFrame <= 70.0f && cIsEndAttack == 1)
+		{
+			//現在のアタックナンバー
+			cNowAttackNumber = 2;
+
+			//攻撃判定発生フレーム
+			if (m_nowFrame >= 55.0f && m_nowFrame <= 65.0f)
+			{
+
+			}
+			//攻撃終了
+			else if (m_nowFrame >= 70.0f && m_attackNumber == 2)
+			{
+				cIsEndAttack = 2;
+			}
+		}
+		//三段階目の攻撃
+		else if (m_nowFrame <= 110.0f && cIsEndAttack == 2)
+		{
+			//現在のアタックナンバー
+			cNowAttackNumber = 3;
+
+			//攻撃判定発生フレーム
+			if (m_nowFrame >= 85.0f && m_nowFrame <= 95.0f)
+			{
+
+			}
+			//攻撃終了
+			else if (m_nowFrame >= 110.0f)
+			{
+				cIsEndAttack = 0;
+			}
+		}
+		else
+		{
+			m_anim.s_attack = false;
+
+			//攻撃段階を初期化する
+			m_attackNumber = 0;
+			//攻撃終了
+			cIsEndAttack = 0;
+
+		}
+	}
+	//攻撃終了
+	else if (m_isAnimationFinish && m_anim.s_attack)
+	{
+		m_anim.s_attack = false;
+
+		//攻撃段階を初期化する
+		m_attackNumber = 0;
+		//攻撃終了
+		cIsEndAttack = 0;
+	}
+
+	//回復する
+	if (!m_isAnimationFinish && m_animChange.sa_recovery)
+	{
+
+	}
+	//回復終了
+	else if (m_isAnimationFinish && m_animChange.sa_recovery)
+	{
+		m_animChange.sa_recovery = false;
+	}
 }
 
 /// <summary>
@@ -311,7 +404,7 @@ void Player::Update()
 void Player::Action()
 {
 	//Aボタンが押されたらダッシュか回避
-	if (m_xpad.Buttons[12] == 1)
+	if (m_xpad.Buttons[12] == 1 && !m_anim.s_attack)
 	{
 		//ダッシュ
 		if (cAbutton > 50)
@@ -349,8 +442,46 @@ void Player::Action()
 	//Rボタンを押すことで攻撃
 	if (m_xpad.Buttons[9] == 1)
 	{
+		cRbutton++;
 
+		//一回だけ反応するようにする
+		if (cRbutton == 1)
+		{
+			m_anim.s_attack = true;
+
+			//追加攻撃受付
+			if (cAddAttackTime <= 30 && cAddAttackTime > 0)
+			{
+				//二段階目の攻撃
+				if (cNowAttackNumber == 1)
+				{
+					m_attackNumber = 1;
+				}
+				//三段階目の攻撃
+				else if (cNowAttackNumber == 2)
+				{
+					m_attackNumber = 2;
+				}
+			}
+
+			//追加攻撃時間を初期化
+			cAddAttackTime = 40;
+		}
 	}
+	else
+	{
+		cRbutton = 0;
+	}
+	//追加攻撃受付時間を減らす
+	if (cAddAttackTime <= 40 && cAddAttackTime > 0 && --cAddAttackTime > -1);
+
+	//回復
+	//Xボタンが押されたら
+	if (m_xpad.Buttons[14] == 1 && !m_anim.s_attack)
+	{
+		m_animChange.sa_recovery = true;
+	}
+	
 }
 
 /// <summary>
@@ -394,7 +525,7 @@ void Player::AllAnimation()
 		else if (!m_anim.s_hit)
 		{
 			//動いてない時
-			if (!m_anim.s_moveflag && !m_animChange.sa_avoidance)
+			if (!m_anim.s_moveflag && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery)
 			{
 				m_nowAnimIdx = m_animIdx["Idle"];
 				ChangeAnim(m_nowAnimIdx, m_animOne[4], m_animOne);
@@ -406,10 +537,10 @@ void Player::AllAnimation()
 				ChangeAnim(m_nowAnimIdx, m_animOne[5], m_animOne);
 			}
 			//攻撃
-			else if (m_anim.s_attack)
+			else if (m_anim.s_attack && !m_animChange.sa_avoidance && !m_animChange.sa_recovery)
 			{
 				m_nowAnimIdx = m_animIdx["Attack1"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[6], m_animOne);
+				ChangeAnim(m_nowAnimIdx, m_animOne[6], m_animOne, 1.0f);
 			}
 			//回復
 			else if (m_animChange.sa_recovery)
@@ -460,8 +591,11 @@ void Player::Draw()
 	DrawFormatString(0, 700, 0xffffff, "colPosy : %f", m_collisionPos.y);
 	DrawFormatString(0, 800, 0xffffff, "colPosz : %f", m_collisionPos.z);
 	DrawFormatString(200, 100, 0xffffff, "m_blend : %f", m_animBlendRate);
-	DrawFormatString(200, 200, 0xffffff, "angle : %f", m_angle);
+	DrawFormatString(200, 200, 0xffffff, "addattacktime : %d", cAddAttackTime);
 	DrawFormatString(200, 300, 0xffffff, "avoidancemove : %f", cAvoidanceMove);
+	DrawFormatString(200, 400, 0xffffff, "attackNumber : %d", m_attackNumber);
+	DrawFormatString(200, 500, 0xffffff, "nowAttackNumber : %d", cNowAttackNumber);
+
 
 #endif
 
@@ -491,6 +625,4 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 void Player::SetModelPos()
 {
 	m_modelPos = m_collisionPos;
-	//m_collisionPos.y += 50.0f * cModelSizeScale;
-	//m_modelPos.y -= 90.0f * cModelSizeScale;
 }
