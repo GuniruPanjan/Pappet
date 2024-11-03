@@ -52,10 +52,6 @@ Player::Player() :
 	m_moveShieldFrameMatrix(),
 	m_rollMove(VGet(0.0f,0.0f,0.0f))
 {
-	for (int i = 0; i < ANIMATION_MAX; i++)
-	{
-		m_animOne[i] = false;
-	}
 
 	//カプセル型
 	auto collider = Collidable::AddCollider(MyLibrary::CollidableData::Kind::Capsule, false);
@@ -616,10 +612,102 @@ void Player::End()
 
 void Player::OnCollideEnter(const std::shared_ptr<Collidable>& collidable)
 {
+#if _DEBUG
+	std::string message = "プレイヤーが";
+#endif
+	auto tag = collidable->GetTag();
+	switch (tag)
+	{
+	case ObjectTag::Enemy:
+#if _DEBUG
+		message += "敵";
+#endif
+		break;
+	case ObjectTag::Attack:
+#if _DEBUG
+		message += "攻撃";
+#endif
+		break;
+	case ObjectTag::Shield:
+#if _DEBUG
+		message += "盾";
+#endif
+		break;
+	case ObjectTag::Search:
+#if _DEBUG
+		message += "索敵";
+#endif
+		break;
+	case ObjectTag::Item:
+#if _DEBUG
+		message += "アイテム";
+#endif
+		break;
+	case ObjectTag::Rest:
+#if _DEBUG
+		message += "休息";
+#endif
+		break;
+	case ObjectTag::BossEnter:
+#if _DEBUG
+		message += "ボスの入口";
+#endif
+		break;
+	}
+#if _DEBUG
+	message += "と当たった\n";
+	printfDx(message.c_str());
+#endif
 }
 
 void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 {
+#if _DEBUG
+	std::string message = "プレイヤーが";
+#endif
+	auto tag = collidable->GetTag();
+	switch (tag)
+	{
+	case ObjectTag::Enemy:
+#if _DEBUG
+		message += "敵";
+#endif
+		break;
+	case ObjectTag::Attack:
+#if _DEBUG
+		message += "攻撃";
+#endif
+		break;
+	case ObjectTag::Shield:
+#if _DEBUG
+		message += "盾";
+#endif
+		break;
+	case ObjectTag::Search:
+#if _DEBUG
+		message += "索敵";
+#endif
+		break;
+	case ObjectTag::Item:
+#if _DEBUG
+		message += "アイテム";
+#endif
+		break;
+	case ObjectTag::Rest:
+#if _DEBUG
+		message += "休息";
+#endif
+		break;
+	case ObjectTag::BossEnter:
+#if _DEBUG
+		message += "ボスの入口";
+#endif
+		break;
+	}
+#if _DEBUG
+	message += "と当たった\n";
+	printfDx(message.c_str());
+#endif
 }
 
 void Player::SetModelPos()

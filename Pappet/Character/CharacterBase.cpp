@@ -23,8 +23,14 @@ CharacterBase::CharacterBase(Priority priority, ObjectTag tag) :
 	m_animTime(0.5f),
 	m_isAnimationFinish(false),
 	m_angle(0.0f),
-	m_animSpeed(0.0f)
+	m_animSpeed(0.0f),
+	m_attackRadius(0.0f),
+	m_searchRadius(0.0f)
 {
+	for (int i = 0; i < ANIMATION_MAX; i++)
+	{
+		m_animOne[i] = false;
+	}
 }
 
 CharacterBase::~CharacterBase()

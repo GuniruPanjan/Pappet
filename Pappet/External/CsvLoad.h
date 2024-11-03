@@ -1,5 +1,6 @@
 #pragma once
 #include "Character/CharacterBase.h"
+#include "Manager/EnemyManager.h"
 #include <string>
 #include <memory>
 
@@ -74,7 +75,7 @@ public:
 	void StatusLoad(CharacterBase::Status& data, const char* charaName);
 
 	//敵生成情報ロード
-	//void EnemyDataLoad(const char* stageName, std::list<>)
+	void EnemyDataLoad(const char* stageName, std::list<std::shared_ptr<EnemyManager::EnemyGenerateInfo>>& pGenerateInfo);
 
 	//アニメーション情報ロード
 	void AnimDataLoad(std::string charaName, std::map<std::string, int>& anim);

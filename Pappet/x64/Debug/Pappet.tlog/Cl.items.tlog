@@ -1,8 +1,12 @@
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Camera\Camera.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\Camera.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Character\CharacterBase.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\CharacterBase.obj
+C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Character\EnemyBase.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\EnemyBase.obj
+C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Character\Immortal.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\Immortal.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Character\Player.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\Player.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\External\CsvLoad.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\CsvLoad.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Item\ItemBase.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\ItemBase.obj
+C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Item\Shield.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\Shield.obj
+C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Item\Weapon.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\Weapon.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Library\Collidable.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\Collidable.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Library\CollidableData.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\CollidableData.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Library\CollidableDataCapsule.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\CollidableDataCapsule.obj
@@ -13,8 +17,10 @@ C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Library\Physics
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Library\Rigidbody.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\Rigidbody.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Manager\BgmManager.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\BgmManager.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Manager\EffectManager.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\EffectManager.obj
+C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Manager\EnemyManager.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\EnemyManager.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Manager\GameManager.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\GameManager.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Manager\HandleManager.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\HandleManager.obj
+C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Manager\ItemManager.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\ItemManager.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Manager\SelectManager.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\SelectManager.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Manager\SEManager.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\SEManager.obj
 C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Map\Map.cpp;C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\Map.obj

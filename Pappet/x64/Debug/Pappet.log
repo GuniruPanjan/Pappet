@@ -1,8 +1,14 @@
-﻿  ItemBase.cpp
-C:\Users\fko2347045\Documents\GitHub\Pappet\Pappet\プロジェクトに追加すべきファイル_VC用\DxLib.h(3344,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
-  Weapon.cpp
-C:\Users\fko2347045\Documents\GitHub\Pappet\Pappet\プロジェクトに追加すべきファイル_VC用\DxLib.h(3344,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
-  ItemManager.cpp
+﻿  EnemyBase.cpp
+C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\プロジェクトに追加すべきファイル_VC用\DxLib.h(3344,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Character\EnemyBase.h(42,43): warning C4244: 'return': 'const float' から 'const int' への変換です。データが失われる可能性があります。
+  Immortal.cpp
+C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\プロジェクトに追加すべきファイル_VC用\DxLib.h(3344,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Character\EnemyBase.h(42,43): warning C4244: 'return': 'const float' から 'const int' への変換です。データが失われる可能性があります。
+  Player.cpp
+C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\プロジェクトに追加すべきファイル_VC用\DxLib.h(3344,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Character\Player.cpp(472,74): warning C4390: ';': 制御が空の文が見つかりました。意図した記述でしょうか?
+  GameManager.cpp
+C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\プロジェクトに追加すべきファイル_VC用\DxLib.h(3344,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
   コードを生成中...
 EffekseerForDXLib_vs2019_x64_d.lib(EffekseerForDXLib.obj) : warning LNK4099: PDB '' が 'EffekseerForDXLib_vs2019_x64_d.lib(EffekseerForDXLib.obj)' で、または '' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
 Effekseer_vs2019_x64_d.lib(Effekseer.Vector3D.obj) : warning LNK4099: PDB '' が 'Effekseer_vs2019_x64_d.lib(Effekseer.Vector3D.obj)' で、または '' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
@@ -84,4 +90,4 @@ EffekseerRendererDX11_vs2019_x64_d.lib(EffekseerMaterialCompilerDX11.obj) : warn
 Effekseer_vs2019_x64_d.lib(ModelLoader.obj) : warning LNK4099: PDB '' が 'Effekseer_vs2019_x64_d.lib(ModelLoader.obj)' で、または '' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
 Effekseer_vs2019_x64_d.lib(Effekseer.MaterialFile.obj) : warning LNK4099: PDB '' が 'Effekseer_vs2019_x64_d.lib(Effekseer.MaterialFile.obj)' で、または '' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
 Effekseer_vs2019_x64_d.lib(Effekseer.CompiledMaterial.obj) : warning LNK4099: PDB '' が 'Effekseer_vs2019_x64_d.lib(Effekseer.CompiledMaterial.obj)' で、または '' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
-  Pappet.vcxproj -> C:\Users\fko2347045\Documents\GitHub\Pappet\Pappet\x64\Debug\Pappet.exe
+  Pappet.vcxproj -> C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\Pappet.exe

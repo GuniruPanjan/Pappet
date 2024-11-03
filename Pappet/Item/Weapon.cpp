@@ -23,6 +23,11 @@ Weapon::Weapon()
 /// </summary>
 Weapon::~Weapon()
 {
+	//ƒƒ‚ƒŠ‰ğ•ú
+	MV1DeleteModel(m_itemHandle);
+
+	//ƒƒ‚ƒŠ‰ğ•ú
+	handle.Clear();
 }
 
 /// <summary>
@@ -52,6 +57,10 @@ void Weapon::Update(MATRIX mat)
 
 	m_transMatrix = MMult(m_transMatrix, MGetRotY(cWeaponMatrixY));
 	m_transMatrix = MMult(m_transMatrix, MGetRotZ(cWeaponMatrixZ));
+
+	m_mixMatrix = MMult(m_transMatrix, mat);
+
+	MV1SetMatrix(m_itemHandle, m_mixMatrix);
 }
 
 /// <summary>
@@ -69,4 +78,9 @@ void Weapon::Draw(MATRIX mat)
 /// </summary>
 void Weapon::End()
 {
+	//ƒƒ‚ƒŠ‰ğ•ú
+	MV1DeleteModel(m_itemHandle);
+
+	//ƒƒ‚ƒŠ‰ğ•ú
+	handle.Clear();
 }

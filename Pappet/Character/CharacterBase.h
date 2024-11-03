@@ -1,5 +1,7 @@
 #pragma once
 #include "Library/MyLibrary.h"
+#include "Object/AttackObject.h"
+#include "Object/SearchObject.h"
 #include <map>
 #include <string>
 #define ANIMATION_MAX   30
@@ -65,7 +67,7 @@ protected:
 	int m_nowAnimNo;          //現在のアニメーション
 	int m_prevAnimNo;         //変更前のアニメーション
 	float m_animBlendRate;    //アニメーションの合成割合
-
+	bool m_animOne[ANIMATION_MAX];      //アニメーション関係をリセットするための判定
 	float m_nowFrame;         //アニメーションを進める時間
 	float m_animTime;         //アニメーション再生速度
 	bool m_isAnimationFinish; //アニメーションが終わったかどうか
@@ -73,6 +75,8 @@ protected:
 	VECTOR m_nowPos;        //現在のフレームの座標を取得する
 
 	//使う変数
-	float m_angle;        //キャラのアングル
+	float m_angle;            //キャラのアングル
+	float m_attackRadius;     //攻撃の当たり判定
+	float m_searchRadius;     //索敵の当たり判定
 };
 
