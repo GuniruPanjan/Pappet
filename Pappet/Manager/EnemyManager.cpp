@@ -89,7 +89,9 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 	for (auto& enemy : m_pEnemys)
 	{
 		//XV
-		//enemy->Update(gameManager->GetPlayerPos(), isPlayerChase);
+		enemy->Update(gameManager->GetPlayerPos(), isPlayerChase);
+
+		m_enemyPos.emplace_back(enemy->GetPos());
 	}
 }
 

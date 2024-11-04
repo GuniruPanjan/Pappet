@@ -25,6 +25,7 @@ Immortal::Immortal() :
 {
 	//当たり判定の設定
 	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
+
 	//モデルの読み込み
 	LoadModel(cModelPath);
 	//アニメーションやステータスを取得
@@ -86,7 +87,13 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 	//アニメーションの更新
 	m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
 
+	//rigidbodyのポジションがいかれてる
+	//SetPosがいかれてる
+	//m_modelPosは無事
+	//m_collisionPosも無事
+
 	//判定の更新
+	rigidbody.SetPos(m_modelPos);
 	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
 	m_pSearch->Update(centerPos);
 }
@@ -100,4 +107,5 @@ void Immortal::Draw()
 	//SetDrawModelPos(1.0f * cModelSize);
 	//モデルの描画
 	MV1DrawModel(m_modelHandle);
+	//DrawFormatString(300, 0, 0xffffff, "x : %f, y : %f, z : %f", m_collisionPos.x, m_collisionPos.y, m_collisionPos.z);
 }

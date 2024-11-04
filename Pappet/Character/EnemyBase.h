@@ -25,6 +25,8 @@ public:
 	void OnCollideEnter(const std::shared_ptr<Collidable>& collidable) override;
 	void OnCollideStay(const std::shared_ptr<Collidable>& collidable) override;
 
+	//座標を返す
+	virtual MyLibrary::LibVec3 GetPos() const { return m_collisionPos; }
 	//ダメージを食らったかどうか
 	bool GetIsHit();
 	//死亡時に落とすコア取得

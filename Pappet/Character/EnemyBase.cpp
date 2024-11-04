@@ -165,9 +165,9 @@ void EnemyBase::InitCollision(MyLibrary::LibVec3 vec, float len, float radius)
 {
 	auto collider = Collidable::AddCollider(MyLibrary::CollidableData::Kind::Capsule, false);
 	auto capsuleCol = dynamic_cast<MyLibrary::CollidableDataCapsule*>(collider.get());
-	capsuleCol->m_vec = vec;
 	capsuleCol->m_len = len;
 	capsuleCol->m_radius = radius;
+	capsuleCol->m_vec = MyLibrary::LibVec3(vec.x, capsuleCol->m_vec.y + vec.y, vec.z);
 }
 
 /// <summary>
