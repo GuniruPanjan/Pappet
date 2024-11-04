@@ -2,6 +2,7 @@
 #include "Character/Player.h"
 #include "Camera/Camera.h"
 #include "Map/Map.h"
+#include "Manager/EnemyManager.h"
 
 //カメラの初期化で描画バグが発生する
 //カメラのせいでマップとモデルの描画がバグる
@@ -14,7 +15,8 @@ namespace
 /// <summary>
 /// コンストラクタ
 /// </summary>
-GameManager::GameManager()
+GameManager::GameManager() :
+	m_nowMap(eMapName::FirstMap)
 {
 }
 
@@ -30,15 +32,15 @@ GameManager::~GameManager()
 /// </summary>
 void GameManager::Init()
 {
-	pMap->Init();
+	m_pMap->Init();
 
-	pPhysics = std::make_shared<MyLibrary::Physics>(pMap->GetCollisionMap());
+	m_pPhysics = std::make_shared<MyLibrary::Physics>(m_pMap->GetCollisionMap());
 
 	//pCamera->Init();
 
-	pPlayer->Init(pPhysics);
-
-	
+	m_pPlayer->Init(m_pPhysics);
+	m_pEnemy = std::make_shared<EnemyManager>();
+	m_pEnemy->Init("stage1");
 }
 
 /// <summary>
@@ -46,18 +48,18 @@ void GameManager::Init()
 /// </summary>
 void GameManager::Update()
 {
-	pMap->Update();
+	m_pMap->Update();
 
-	pPlayer->SetCameraAngle(pCamera->GetAngle().y);
+	m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
-	pPlayer->Update();
+	m_pPlayer->Update();
 
-	pCamera->Update(*pPlayer);
+	m_pCamera->Update(*m_pPlayer);
 
-	
+	m_pEnemy->Update(m_pPhysics, this, m_pPlayer->GetPos(), m_pCamera->GetDirection(), !m_pPlayer->IsGetPlayerDead());
 
 	//物理更新
-	pPhysics->Update();
+	m_pPhysics->Update();
 }
 
 /// <summary>
@@ -65,9 +67,10 @@ void GameManager::Update()
 /// </summary>
 void GameManager::Draw()
 {
-	pMap->Draw();
-	pCamera->Draw();
-	pPlayer->Draw();
+	m_pMap->Draw();
+	m_pCamera->Draw();
+	m_pPlayer->Draw();
+	m_pEnemy->Draw();
 }
 
 /// <summary>
@@ -75,7 +78,12 @@ void GameManager::Draw()
 /// </summary>
 void GameManager::End()
 {
-	pPlayer->End();
-	pCamera->End();
-	pMap->End();
+	m_pPlayer->End();
+	m_pCamera->End();
+	m_pMap->End();
+}
+
+const MyLibrary::LibVec3 GameManager::GetPlayerPos() const
+{
+	return MyLibrary::LibVec3();
 }

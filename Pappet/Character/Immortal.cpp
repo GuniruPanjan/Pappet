@@ -56,7 +56,7 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 	Collidable::Init(m_pPhysics);
 
 	//物理クラスの初期化
-	InitRigidbody(posX, posY, posZ, false);
+	InitRigidbody(posX, posY, posZ);
 
 	//中心座標の設定
 	CalculationCenterPos(1.0f, cModelSize);
@@ -83,7 +83,12 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 /// <param name="isChase">プレイヤーと戦えるかどうか</param>
 void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 {
+	//アニメーションの更新
+	m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
 
+	//判定の更新
+	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
+	m_pSearch->Update(centerPos);
 }
 
 /// <summary>
@@ -92,7 +97,7 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 void Immortal::Draw()
 {
 	//当たり判定座標を取得してモデルの描画座標を設定する
-	SetDrawModelPos(1.0f * cModelSize);
+	//SetDrawModelPos(1.0f * cModelSize);
 	//モデルの描画
 	MV1DrawModel(m_modelHandle);
 }

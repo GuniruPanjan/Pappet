@@ -21,7 +21,7 @@ namespace
 		return result;
 	}
 
-	const std::string cFrontPathName = "Data/Csv";
+	const std::string cFrontPathName = "Data/Csv/";
 	const std::string cBackPathName = ".csv";
 }
 

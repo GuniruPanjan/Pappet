@@ -126,3 +126,13 @@ void Camera::Draw()
 void Camera::End()
 {
 }
+
+/// <summary>
+/// カメラが向いてる方向ベクトルを取得
+/// </summary>
+/// <returns>カメラが向いてる方向</returns>
+const MyLibrary::LibVec3 Camera::GetDirection() const
+{
+	return (MyLibrary::LibVec3(m_cameraTarget.x, m_cameraTarget.y, m_cameraTarget.z)
+		- MyLibrary::LibVec3(m_cameraPos.x, m_cameraPos.y, m_cameraPos.z)).Normalize();
+}

@@ -1,5 +1,6 @@
 #pragma once
 #include "DxLib.h"
+#include "Library/MyLibrary.h"
 #include <cmath>
 
 class Player;
@@ -28,6 +29,8 @@ public:
 	void Draw();
 	//終了処理
 	void End();
+	//カメラが向いてる方向ベクトルを取得
+	const MyLibrary::LibVec3 GetDirection() const;
 
 	VECTOR GetAngle() { return m_cameraAngle; }         //カメラのアングル所得
 

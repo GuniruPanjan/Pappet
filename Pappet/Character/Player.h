@@ -42,6 +42,9 @@ public:
 	void OnCollideEnter(const std::shared_ptr<Collidable>& collidable) override;
 	void OnTriggerEnter(const std::shared_ptr<Collidable>& collidable) override;
 
+	//ƒvƒŒƒCƒ„[‚ª¶‚«‚Ä‚¢‚é‚©‚ğæ“¾
+	const bool IsGetPlayerDead() const { return m_anim.s_isDead; }
+
 	void SetCameraAngle(float angle) { m_cameraAngle = angle; }
 
 	const MyLibrary::LibVec3 GetPos() const { return rigidbody.GetPos(); }
