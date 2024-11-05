@@ -4,6 +4,7 @@
 #include<memory>
 
 class Player;
+class CollidableNpc;
 class Map;
 class Camera;
 class EnemyManager;
@@ -46,6 +47,7 @@ private:
 	std::shared_ptr<Player> m_pPlayer = std::make_shared<Player>();
 	std::shared_ptr<Map> m_pMap = std::make_shared<Map>();
 	std::shared_ptr<Camera> m_pCamera = std::make_shared<Camera>();
+	std::shared_ptr<CollidableNpc> m_pNpc = std::make_shared<CollidableNpc>();
 	std::shared_ptr<EnemyManager> m_pEnemy;
 
 	//Œ»İ‚Ìƒ}ƒbƒv

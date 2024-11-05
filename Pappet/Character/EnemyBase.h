@@ -43,6 +43,8 @@ public:
 	//現在のHPを取得
 	const int GetHp() const { return m_status.s_hp; }
 
+	int SetI(int &set) { return m_I = set; }
+
 protected:
 	//ほかのオブジェクトと押し出し判定をする当たり判定を作成
 	void InitCollision(MyLibrary::LibVec3 vec, float len, float radius);
@@ -55,15 +57,15 @@ protected:
 	//モデルの中心座標を計算
 	void CalculationCenterPos(float modeldefaultSize, float modelSize);
 	//モデル座標を設定
-	void SetModelPos(float offset);
+	void SetModelPos();
 	//索敵判定をする当たり判定を作成
-	void InitSearch(float radius);
+	void InitSearch(float radius, float y);
 	//死亡した時
 	void Death();
 	//アニメーションブレンドの更新
 	void UpdateAnimationBlend();
 	//モデルの座標設定
-	void SetDrawModelPos(float offset);
+	void SetDrawModelPos();
 protected:
 	std::shared_ptr<AttackObject> m_pAttack;    //攻撃判定
 	std::shared_ptr<SearchObject> m_pSearch;    //索敵判定
@@ -77,6 +79,8 @@ protected:
 	bool m_isDiscovery;  //プレイヤーを見つけたかどうか
 
 	MyLibrary::LibVec3 m_centerPos;     //中心座標
+
+	int m_I;
 
 };
 

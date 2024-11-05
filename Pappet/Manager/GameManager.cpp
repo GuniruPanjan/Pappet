@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include "Character/Player.h"
+#include "Character/CollidableNpc.h"
 #include "Camera/Camera.h"
 #include "Map/Map.h"
 #include "Manager/EnemyManager.h"
@@ -41,6 +42,7 @@ void GameManager::Init()
 	m_pPlayer->Init(m_pPhysics);
 	m_pEnemy = std::make_shared<EnemyManager>();
 	m_pEnemy->Init("stage1");
+	m_pNpc->Init(m_pPhysics);
 }
 
 /// <summary>
@@ -71,6 +73,7 @@ void GameManager::Draw()
 	m_pCamera->Draw();
 	m_pPlayer->Draw();
 	m_pEnemy->Draw();
+	m_pNpc->Draw();
 }
 
 /// <summary>

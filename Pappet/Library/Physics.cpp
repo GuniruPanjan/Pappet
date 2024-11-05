@@ -253,7 +253,7 @@ void MyLibrary::Physics::CheckCollide()
 				{
 					for (const auto& colB : objB->m_colliders)
 					{
-						if (!IsCollide(objA->rigidbody, objB->rigidbody, colA.get(), colB.get())) continue;
+						if (IsCollide(objA->rigidbody, objB->rigidbody, colA.get(), colB.get())) continue;
 
 						bool isTrigger = colA->IsTrigger() || colB->IsTrigger();
 

@@ -30,16 +30,13 @@ namespace
 	//攻撃の終了判定
 	int cIsEndAttack = 0;
 
-	//ポジション設定
-	VECTOR m_pos;
-
 	//シングルトン
 	auto& handle = HandleManager::GetInstance();
 	auto& effect = EffectManager::GetInstance();
 }
 
 Player::Player() :
-	CharacterBase(Collidable::Priority::High, ObjectTag::Player),
+	CharacterBase(Collidable::Priority::Low, ObjectTag::Player),
 	m_xpad(),
 	m_attackNumber(0),
 	m_moveAnimFrameIndex(0),
@@ -107,15 +104,13 @@ Player::~Player()
 /// <param name="physics">物理クラスのポインタ</param>
 void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
 {
-	m_pos = VGet(0.0f, 0.0f, 0.0f);
-
 	m_pPhysics = physics;
 
 	//当たり判定の追加
 	Collidable::Init(m_pPhysics);
 
 	//プレイヤーの初期位置設定
-	rigidbody.Init(false);
+	rigidbody.Init(true);
 	rigidbody.SetPos(MyLibrary::LibVec3(485.0f, 12.0f, -800.0f));
 	rigidbody.SetNextPos(rigidbody.GetPos());
 	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
@@ -183,9 +178,6 @@ void Player::Update()
 			Finalize();
 		}
 	}
-
-	//座標を取得する
-	m_collisionPos = rigidbody.GetPos();
 
 	//アナログスティックを使って移動
 	int analogX = 0;
@@ -577,7 +569,7 @@ void Player::Draw()
 	
 	MV1SetPosition(m_modelHandle, VSub(m_modelPos.ConversionToVECTOR(), VGet(0.0f, 12.0f, 0.0f)));
 
-#if _DEBUG
+#if false
 	DrawFormatString(0, 100, 0xffffff, "posx : %f", m_modelPos.x);
 	DrawFormatString(0, 200, 0xffffff, "posy : %f", m_modelPos.y);
 	DrawFormatString(0, 300, 0xffffff, "posz : %f", m_modelPos.z);

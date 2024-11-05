@@ -49,6 +49,7 @@ Immortal::~Immortal()
 /// <param name="physics">物理クラスのポインタ</param>
 void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics)
 {
+
 	//代入
 	m_pPhysics = physics;
 
@@ -57,17 +58,17 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 	Collidable::Init(m_pPhysics);
 
 	//物理クラスの初期化
-	InitRigidbody(posX, posY, posZ);
+	InitRigidbody(posX, posY + 12.0f, posZ);
 
 	//中心座標の設定
 	CalculationCenterPos(1.0f, cModelSize);
 
 	//モデルの座標を設定
-	SetModelPos(cModelSize);
+	SetModelPos();
 	MV1SetPosition(m_modelHandle, m_modelPos.ConversionToVECTOR());
 
 	//索敵判定をする当たり判定を作成
-	InitSearch(cSearchRadius);
+	InitSearch(cSearchRadius, 0.0f);
 
 	//モデルのサイズ設定
 	MV1SetScale(m_modelHandle, VGet(cModelSize, cModelSize, cModelSize));
@@ -88,12 +89,11 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 	m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
 
 	//rigidbodyのポジションがいかれてる
-	//SetPosがいかれてる
+	// そもそも最初に当たるのがおかしい
 	//m_modelPosは無事
 	//m_collisionPosも無事
 
 	//判定の更新
-	rigidbody.SetPos(m_modelPos);
 	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
 	m_pSearch->Update(centerPos);
 }
@@ -104,8 +104,7 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 void Immortal::Draw()
 {
 	//当たり判定座標を取得してモデルの描画座標を設定する
-	//SetDrawModelPos(1.0f * cModelSize);
+	SetDrawModelPos();
 	//モデルの描画
 	MV1DrawModel(m_modelHandle);
-	//DrawFormatString(300, 0, 0xffffff, "x : %f, y : %f, z : %f", m_collisionPos.x, m_collisionPos.y, m_collisionPos.z);
 }

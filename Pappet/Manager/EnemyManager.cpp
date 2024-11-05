@@ -1,7 +1,13 @@
 #include "EnemyManager.h"
 #include "Character/Immortal.h"
+#include "Character/Bear.h"
 #include "External/CsvLoad.h"
 #include "GameManager.h"
+
+namespace
+{
+	int cI = 0;
+}
 
 /// <summary>
 /// コンストラクタ
@@ -105,6 +111,8 @@ void EnemyManager::Draw()
 	{
 		enemy->Draw();
 	}
+
+	
 }
 
 /// <summary>
@@ -120,6 +128,12 @@ void EnemyManager::CreateEnemy(float posX, float posY, float posZ, std::string n
 	if (name == "Immortal")
 	{
 		std::shared_ptr<Immortal> add = std::make_shared<Immortal>();
+		add->Init(posX, posY, posZ, physics);
+		m_pEnemys.emplace_back(add);
+	}
+	if (name == "bear")
+	{
+		std::shared_ptr<Bear> add = std::make_shared<Bear>();
 		add->Init(posX, posY, posZ, physics);
 		m_pEnemys.emplace_back(add);
 	}

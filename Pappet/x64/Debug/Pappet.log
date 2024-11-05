@@ -1,4 +1,0 @@
-﻿  EnemyBase.cpp
-C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\プロジェクトに追加すべきファイル_VC用\DxLib.h(3344,1): warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
-C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\Character\EnemyBase.h(44,43): warning C4244: 'return': 'const float' から 'const int' への変換です。データが失われる可能性があります。
-  Pappet.vcxproj -> C:\Users\グニルパンジャン\Documents\GitHub\Pappet\Pappet\x64\Debug\Pappet.exe

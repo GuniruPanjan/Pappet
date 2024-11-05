@@ -27,7 +27,8 @@ EnemyBase::EnemyBase(Priority priority) :
 	m_isExist(false),
 	m_isDroped(false),
 	m_isDiscovery(false),
-	m_centerPos()
+	m_centerPos(),
+	m_I(0)
 {
 }
 
@@ -52,82 +53,82 @@ void EnemyBase::Finalize(std::shared_ptr<MyLibrary::Physics> physics)
 
 void EnemyBase::OnCollideEnter(const std::shared_ptr<Collidable>& collidable)
 {
-#if _DEBUG
-	std::string message = "“G‚ª";
-#endif
-	auto tag = collidable->GetTag();
-	switch (tag)
-	{
-	case ObjectTag::Player:
-#if _DEBUG
-		message += "ƒvƒŒƒCƒ„[";
-#endif
-		break;
-	case ObjectTag::Enemy:
-#if _DEBUG
-		message += "“G";
-#endif
-		break;
-	case ObjectTag::Attack:
-#if _DEBUG
-		message += "UŒ‚";
-#endif
-		break;
-	case ObjectTag::Search:
-#if _DEBUG
-		message += "õ“G”ÍˆÍ";
-#endif
-		break;
-	case ObjectTag::BossEnter:
-#if _DEBUG
-		message += "ƒ{ƒX•”‰®“üŒû";
-#endif
-		break;
-	}
-#if _DEBUG
-	message += "‚Æ“–‚½‚Á‚½\n";
-	printfDx(message.c_str());
-#endif
+//#if _DEBUG
+//	std::string message = "“G‚ª";
+//#endif
+//	auto tag = collidable->GetTag();
+//	switch (tag)
+//	{
+//	case ObjectTag::Player:
+//#if _DEBUG
+//		message += "ƒvƒŒƒCƒ„[";
+//#endif
+//		break;
+//	case ObjectTag::Enemy:
+//#if _DEBUG
+//		message += "“G";
+//#endif
+//		break;
+//	case ObjectTag::Attack:
+//#if _DEBUG
+//		message += "UŒ‚";
+//#endif
+//		break;
+//	case ObjectTag::Search:
+//#if _DEBUG
+//		message += "õ“G”ÍˆÍ";
+//#endif
+//		break;
+//	case ObjectTag::BossEnter:
+//#if _DEBUG
+//		message += "ƒ{ƒX•”‰®“üŒû";
+//#endif
+//		break;
+//	}
+//#if _DEBUG
+//	message += "‚Æ“–‚½‚Á‚½\n";
+//	printfDx(message.c_str());
+//#endif
 }
 
 void EnemyBase::OnCollideStay(const std::shared_ptr<Collidable>& collidable)
 {
-#if _DEBUG
-	std::string message = "“G‚ª";
-#endif
-	auto tag = collidable->GetTag();
-	switch (tag)
-	{
-	case ObjectTag::Player:
-#if _DEBUG
-		message += "ƒvƒŒƒCƒ„[";
-#endif
-		break;
-	case ObjectTag::Enemy:
-#if _DEBUG
-		message += "“G";
-#endif
-		break;
-	case ObjectTag::Attack:
-#if _DEBUG
-		message += "UŒ‚";
-#endif
-		break;
-	case ObjectTag::Search:
-#if _DEBUG
-		message += "õ“G”ÍˆÍ";
-#endif
-		break;
-	case ObjectTag::BossEnter:
-#if _DEBUG
-		message += "ƒ{ƒX•”‰®“üŒû";
-#endif
-		break;
-	}
-#if _DEBUG
-	message += "‚Æ“–‚½‚Á‚½\n";
-	printfDx(message.c_str());
-#endif
+//#if _DEBUG
+//	std::string message = "“G‚ª";
+//#endif
+//	auto tag = collidable->GetTag();
+//	switch (tag)
+//	{
+//	case ObjectTag::Player:
+//#if _DEBUG
+//		message += "ƒvƒŒƒCƒ„[";
+//#endif
+//		break;
+//	case ObjectTag::Enemy:
+//#if _DEBUG
+//		message += "“G";
+//#endif
+//		break;
+//	case ObjectTag::Attack:
+//#if _DEBUG
+//		message += "UŒ‚";
+//#endif
+//		break;
+//	case ObjectTag::Search:
+//#if _DEBUG
+//		message += "õ“G”ÍˆÍ";
+//#endif
+//		break;
+//	case ObjectTag::BossEnter:
+//#if _DEBUG
+//		message += "ƒ{ƒX•”‰®“üŒû";
+//#endif
+//		break;
+//	}
+//#if _DEBUG
+//	message += "‚Æ“–‚½‚Á‚½\n";
+//	printfDx(message.c_str());
+//#endif
 }
 
 bool EnemyBase::GetIsHit()
@@ -213,27 +214,25 @@ void EnemyBase::InitRigidbody(float posX, float posY, float posZ, bool isUseGrav
 void EnemyBase::CalculationCenterPos(float modeldefaultSize, float modelSize)
 {
 	m_centerPos = rigidbody.GetPos();
-	m_centerPos.y += (modeldefaultSize * modelSize) / 2;
+	m_centerPos.y -= (modeldefaultSize * modelSize) / 2;
 }
 
 /// <summary>
 /// ƒ‚ƒfƒ‹À•W‚ğİ’è
 /// </summary>
-/// <param name="offset">·•ª</param>
-void EnemyBase::SetModelPos(float offset)
+void EnemyBase::SetModelPos()
 {
 	m_modelPos = m_collisionPos;
-	m_modelPos.y -= offset;
 }
 
 /// <summary>
 /// õ“G”»’è‚ğ‚·‚é“–‚½‚è”»’è‚ğì¬
 /// </summary>
 /// <param name="radius">”¼Œa</param>
-void EnemyBase::InitSearch(float radius)
+void EnemyBase::InitSearch(float radius, float y)
 {
 	m_pSearch = std::make_shared<SearchObject>(radius);
-	m_pSearch->Init(m_pPhysics, m_modelPos, true);
+	m_pSearch->Init(m_pPhysics, MyLibrary::LibVec3(m_modelPos.x, m_modelPos.y + y, m_modelPos.z), true);
 
 	m_hpRadius = radius;
 }
@@ -279,10 +278,10 @@ void EnemyBase::UpdateAnimationBlend()
 /// ƒ‚ƒfƒ‹‚ÌÀ•Wİ’è
 /// </summary>
 /// <param name="offset"></param>
-void EnemyBase::SetDrawModelPos(float offset)
+void EnemyBase::SetDrawModelPos()
 {
 	rigidbody.SetPos(rigidbody.GetNextPos());
 	m_collisionPos = rigidbody.GetPos();
-	SetModelPos(offset);
-	MV1SetPosition(m_modelHandle, m_modelPos.ConversionToVECTOR());
+	SetModelPos();
+	MV1SetPosition(m_modelHandle, VSub(m_modelPos.ConversionToVECTOR(), VGet(0.0f, 12.0f, 0.0f)));
 }
