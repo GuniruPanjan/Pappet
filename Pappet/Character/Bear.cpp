@@ -109,5 +109,5 @@ void Bear::Draw()
 	//ƒ‚ƒfƒ‹‚Ì•`‰æ
 	MV1DrawModel(m_modelHandle);
 
-	DrawFormatString(500, 100, 0xffffff, "x : %f, y : %f, z : %f", rigidbody.GetPos().x, rigidbody.GetPos().y, rigidbody.GetPos().z);
+	//DrawFormatString(500, 100, 0xffffff, "x : %f, y : %f, z : %f", rigidbody.GetPos().x, rigidbody.GetPos().y, rigidbody.GetPos().z);
 }
