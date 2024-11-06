@@ -130,7 +130,6 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	m_attackRadius = cFistAttackRadius;
 
 	m_pAttack = std::make_shared<AttackObject>(m_attackRadius);
-	m_pAttack->Init(m_pPhysics, MyLibrary::LibVec3(rigidbody.GetPos().x, rigidbody.GetPos().y, rigidbody.GetPos().z));
 
 	m_pSearch = std::make_shared<SearchObject>(cSearchRadius);
 	m_pSearch->Init(m_pPhysics, rigidbody.GetPos(), false, false, false, true);
@@ -332,9 +331,14 @@ void Player::Update()
 			cNowAttackNumber = 1;
 
 			//攻撃判定発生フレーム
-			if (m_nowFrame >= 25.0f && m_nowFrame <= 35.0f)
+			if (m_nowFrame == 25.0f)
 			{
-
+				m_pAttack->Init(m_pPhysics);
+			}
+			else if (m_nowFrame >= 35.0f && m_nowFrame < 40.0f)
+			{
+				//判定をリセット
+				m_pAttack->CollisionEnd();
 			}
 			//攻撃終了
 			else if (m_nowFrame >= 40.0f && m_attackNumber == 1)
@@ -350,9 +354,14 @@ void Player::Update()
 			cNowAttackNumber = 2;
 
 			//攻撃判定発生フレーム
-			if (m_nowFrame >= 55.0f && m_nowFrame <= 65.0f)
+			if (m_nowFrame == 55.0f)
 			{
-
+				m_pAttack->Init(m_pPhysics);
+			}
+			else if (m_nowFrame >= 65.0f && m_nowFrame < 70.0f)
+			{
+				//攻撃判定リセット
+				m_pAttack->CollisionEnd();
 			}
 			//攻撃終了
 			else if (m_nowFrame >= 70.0f && m_attackNumber == 2)
@@ -367,9 +376,14 @@ void Player::Update()
 			cNowAttackNumber = 3;
 
 			//攻撃判定発生フレーム
-			if (m_nowFrame >= 85.0f && m_nowFrame <= 95.0f)
+			if (m_nowFrame == 85.0f)
 			{
-
+				m_pAttack->Init(m_pPhysics);
+			}
+			else if (m_nowFrame >= 95.0f && m_nowFrame < 110.0f)
+			{
+				//攻撃判定リセット
+				m_pAttack->CollisionEnd();
 			}
 			//攻撃終了
 			else if (m_nowFrame >= 110.0f)
@@ -385,7 +399,8 @@ void Player::Update()
 			m_attackNumber = 0;
 			//攻撃終了
 			cIsEndAttack = 0;
-
+			//攻撃判定リセット
+			m_pAttack->CollisionEnd();
 		}
 	}
 	//攻撃終了
@@ -445,7 +460,7 @@ void Player::Action()
 		}
 	}
 	//ターゲットを無理やり外す
-	else if (m_pSearch->GetIsExit() == true)
+	else if (!m_pSearch->GetIsStay())
 	{
 		m_lockonTarget = false;
 		cRstickButton = false;
@@ -652,7 +667,7 @@ void Player::Draw()
 #endif
 
 	DrawFormatString(200, 100, 0xffffff, "m_lockOnTarget : %d", m_lockonTarget);
-
+	DrawFormatString(200, 150, 0xffffff, "m_attack : %d", m_pAttack->GetIsTrigger());
 
 	//モデルの回転地
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));

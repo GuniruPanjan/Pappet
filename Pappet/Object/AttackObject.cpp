@@ -15,15 +15,16 @@ AttackObject::~AttackObject()
 {
 }
 
-void AttackObject::Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnemy)
+void AttackObject::Init(std::shared_ptr<MyLibrary::Physics> physics, bool isEnemy)
 {
+	m_isCollisionOn = true;
+
 	m_pPhysics = physics;
 	m_isEnemy = isEnemy;
 
 	Collidable::Init(m_pPhysics);
 
 	rigidbody.Init();
-	rigidbody.SetPos(pos);
 }
 
 void AttackObject::Update(MyLibrary::LibVec3 pos)
@@ -53,8 +54,8 @@ void AttackObject::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 		auto tag = collidable->GetTag();
 		if (tag == ObjectTag::Player)
 		{
-			m_isCollisionOn = true;
 			CollisionEnd();
+			m_isCollisionOn = false;
 		}
 	}
 	//アタッチしたオブジェクトが敵じゃないなら
@@ -63,8 +64,8 @@ void AttackObject::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 		auto tag = collidable->GetTag();
 		if (tag == ObjectTag::Enemy)
 		{
-			m_isCollisionOn = true;
 			CollisionEnd();
+			m_isCollisionOn = false;
 		}
 	}
 }
@@ -72,5 +73,10 @@ void AttackObject::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 bool AttackObject::GetIsTrigger()
 {
 	return m_isCollisionOn;
+}
+
+void AttackObject::IsTriggerReset()
+{
+	m_isCollisionOn = false;
 }
 

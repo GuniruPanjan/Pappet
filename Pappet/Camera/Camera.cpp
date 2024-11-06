@@ -121,7 +121,10 @@ void Camera::Update(Player& player)
 /// <param name="enemy">エネミーを呼び出す</param>
 void Camera::LockUpdate(Player& player, EnemyManager& enemy)
 {
-	
+	for (auto& enemyPos : enemy.GetEnemyPos())
+	{
+
+	}
 }
 
 /// <summary>

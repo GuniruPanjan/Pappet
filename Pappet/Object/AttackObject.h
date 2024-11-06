@@ -6,20 +6,23 @@ public:
 	AttackObject(float radius);
 	~AttackObject();
 
-	void Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnemy = false);
+	void Init(std::shared_ptr<MyLibrary::Physics> physics, bool isEnemy = false);
 	void Update(MyLibrary::LibVec3 pos);
 
 	void OnCollideEnter(const std::shared_ptr<Collidable>& collidable) {};
 
+	//当たり判定を削除
 	void Finalize(std::shared_ptr<MyLibrary::Physics> physics) override;
 
 	void CollisionEnd();
 
 	void OnTriggerEnter(const std::shared_ptr<Collidable>& collidable) override;
-
+	//他のオブジェクトに当たったかどうか
 	bool GetIsTrigger();
-
+	//攻撃力を取得
 	const int GetAttack() const { return m_attack; }
+	//判定をリセット
+	void IsTriggerReset();
 
 private:
 	std::shared_ptr<MyLibrary::Physics> m_pPhysics;
