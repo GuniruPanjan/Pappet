@@ -19,12 +19,15 @@ namespace
 	//ボタンが押されているかの確認用変数
 	int cAbutton = 0;
 	int cRbutton = 0;
-
+	bool cRstickButton = false;
+	//索敵範囲
+	constexpr float cSearchRadius = 200.0f;
 	//回避での移動距離
 	float cAvoidanceMove = 0.0f;
-
 	//攻撃での追加攻撃時間
 	int cAddAttackTime = 0;
+	//拳の攻撃範囲
+	constexpr float cFistAttackRadius = 18.0f;
 	//現在のアタックのナンバーを入れる
 	int cNowAttackNumber = 0;
 	//攻撃の終了判定
@@ -39,6 +42,8 @@ Player::Player() :
 	CharacterBase(Collidable::Priority::Low, ObjectTag::Player),
 	m_xpad(),
 	m_attackNumber(0),
+	m_menuOpen(false),
+	m_lockonTarget(false),
 	m_moveAnimFrameIndex(0),
 	m_moveAnimFrameRight(0),
 	m_moveAnimShieldFrameIndex(0),
@@ -110,13 +115,25 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	Collidable::Init(m_pPhysics);
 
 	//プレイヤーの初期位置設定
-	rigidbody.Init(true);
+	rigidbody.Init(false);
 	rigidbody.SetPos(MyLibrary::LibVec3(485.0f, 12.0f, -800.0f));
 	rigidbody.SetNextPos(rigidbody.GetPos());
 	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
 	m_collisionPos = rigidbody.GetPos();
 	SetModelPos();
 	MV1SetPosition(m_modelHandle, m_modelPos.ConversionToVECTOR());
+
+	//メニューを閉じる
+	m_menuOpen = false;
+
+	//拳だった場合
+	m_attackRadius = cFistAttackRadius;
+
+	m_pAttack = std::make_shared<AttackObject>(m_attackRadius);
+	m_pAttack->Init(m_pPhysics, MyLibrary::LibVec3(rigidbody.GetPos().x, rigidbody.GetPos().y, rigidbody.GetPos().z));
+
+	m_pSearch = std::make_shared<SearchObject>(cSearchRadius);
+	m_pSearch->Init(m_pPhysics, rigidbody.GetPos(), false, false, false, true);
 
 	//待機アニメーション設定
 	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
@@ -254,20 +271,28 @@ void Player::Update()
 	//プレイヤーが生きている時だけ
 	if (!m_anim.s_isDead)
 	{
-		//アクションをできなくする
-		if (!m_animChange.sa_avoidance || !m_anim.s_hit || !m_animChange.sa_recovery)
+		//メニューを開いている間はアクションできない
+		if (!m_menuOpen)
 		{
-			Action();
+			//アクションをできなくする
+			if (!m_animChange.sa_avoidance || !m_anim.s_hit || !m_animChange.sa_recovery)
+			{
+				Action();
+			}
 		}
-		
 
 		NotWeaponAnimation();
 		AllAnimation();
 	}
 
 	//プレイヤーのポジションを入れる
-	//回避してない時に座標を入れる
 	SetModelPos();
+
+	//判定の更新
+	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
+	MyLibrary::LibVec3 attackPos = MyLibrary::LibVec3(rigidbody.GetPos().x + sinf(m_angle) * -25.0f, rigidbody.GetPos().y + 15.0f, rigidbody.GetPos().z - cosf(m_angle) * 25.0f);
+	m_pSearch->Update(centerPos);
+	m_pAttack->Update(attackPos);
 
 	//回避行動中
 	if (!m_isAnimationFinish && m_animChange.sa_avoidance)
@@ -391,6 +416,41 @@ void Player::Update()
 /// </summary>
 void Player::Action()
 {
+	//ターゲットできる時
+	if (!m_lockonTarget && m_pSearch->GetIsStay())
+	{
+		//一回だけ押す
+		if (m_xpad.Buttons[7] == 1 && !cRstickButton)
+		{
+			m_lockonTarget = true;
+			cRstickButton = true;
+		}
+		else if(m_xpad.Buttons[7] == 0)
+		{
+			cRstickButton = false;
+		}
+	}
+	//ターゲットを外す
+	else if (m_lockonTarget == true && m_pSearch->GetIsStay())
+	{
+		//一回だけ押す
+		if (m_xpad.Buttons[7] == 1 && !cRstickButton)
+		{
+			m_lockonTarget = false;
+			cRstickButton = true;
+		}
+		else if (m_xpad.Buttons[7] == 0)
+		{
+			cRstickButton = false;
+		}
+	}
+	//ターゲットを無理やり外す
+	else if (m_pSearch->GetIsExit() == true)
+	{
+		m_lockonTarget = false;
+		cRstickButton = false;
+	}
+
 	//Aボタンが押されたらダッシュか回避
 	if (m_xpad.Buttons[12] == 1 && !m_anim.s_attack)
 	{
@@ -470,6 +530,11 @@ void Player::Action()
 		m_animChange.sa_recovery = true;
 	}
 	
+	//メニューを開く
+	if (m_xpad.Buttons[4] == 1)
+	{
+		m_menuOpen = true;
+	}
 }
 
 /// <summary>
@@ -481,7 +546,7 @@ void Player::NotWeaponAnimation()
 	if (!m_anim.s_hit)
 	{
 		//走り
-		if (m_animChange.sa_dashMove)
+		if (m_animChange.sa_dashMove && m_anim.s_moveflag)
 		{
 			m_nowAnimIdx = m_animIdx["Run"];
 			ChangeAnim(m_nowAnimIdx, m_animOne[1], m_animOne);
@@ -584,8 +649,10 @@ void Player::Draw()
 	DrawFormatString(200, 400, 0xffffff, "attackNumber : %d", m_attackNumber);
 	DrawFormatString(200, 500, 0xffffff, "nowAttackNumber : %d", cNowAttackNumber);
 
-
 #endif
+
+	DrawFormatString(200, 100, 0xffffff, "m_lockOnTarget : %d", m_lockonTarget);
+
 
 	//モデルの回転地
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
@@ -615,34 +682,24 @@ void Player::OnCollideEnter(const std::shared_ptr<Collidable>& collidable)
 		message += "敵";
 #endif
 		break;
-	case ObjectTag::Attack:
+	}
 #if _DEBUG
-		message += "攻撃";
+	message += "と当たった\n";
+	printfDx(message.c_str());
 #endif
-		break;
-	case ObjectTag::Shield:
+}
+
+void Player::OnCollideStay(const std::shared_ptr<Collidable>& collidable)
+{
 #if _DEBUG
-		message += "盾";
+	std::string message = "プレイヤーが";
 #endif
-		break;
-	case ObjectTag::Search:
+	auto tag = collidable->GetTag();
+	switch (tag)
+	{
+	case ObjectTag::Enemy:
 #if _DEBUG
-		message += "索敵";
-#endif
-		break;
-	case ObjectTag::Item:
-#if _DEBUG
-		message += "アイテム";
-#endif
-		break;
-	case ObjectTag::Rest:
-#if _DEBUG
-		message += "休息";
-#endif
-		break;
-	case ObjectTag::BossEnter:
-#if _DEBUG
-		message += "ボスの入口";
+		message += "敵";
 #endif
 		break;
 	}
@@ -660,11 +717,6 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 	auto tag = collidable->GetTag();
 	switch (tag)
 	{
-	case ObjectTag::Enemy:
-#if _DEBUG
-		message += "敵";
-#endif
-		break;
 	case ObjectTag::Attack:
 #if _DEBUG
 		message += "攻撃";

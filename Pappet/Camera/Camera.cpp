@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "Character/Player.h"
+#include "Manager/EnemyManager.h"
 //度をラジアンに変換
 #define D2R(deg) ((deg)*DX_PI_F/180.0f)
 
@@ -111,6 +112,16 @@ void Camera::Update(Player& player)
 	m_cameraTarget = VAdd(cPlayerPos, VGet(0.0f, 50.0f, 0.0f));
 
 	SetCameraPositionAndTarget_UpVecY(m_cameraPos, m_cameraTarget);
+}
+
+/// <summary>
+/// ロックオン処理
+/// </summary>
+/// <param name="player">プレイヤーを呼び出す</param>
+/// <param name="enemy">エネミーを呼び出す</param>
+void Camera::LockUpdate(Player& player, EnemyManager& enemy)
+{
+	
 }
 
 /// <summary>

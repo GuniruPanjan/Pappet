@@ -1,4 +1,9 @@
 #pragma once
+#include <memory>
+#include <map>
+#include <string>
+#include <List>
+#include "Library/MyLibrary.h"
 
 /// <summary>
 /// アイテムを管理するクラス
@@ -14,6 +19,19 @@ private:
 		int Rubbish = 0;         //ゴミ
 		int BlackSword = 0;      //黒い剣
 		int Distorted = 0;       //歪んだ盾
+	};
+
+	//アイテム生成情報
+	struct ItemGenerateInfo
+	{
+		std::string itemName;      //アイテムの名前
+		int mapNumber;             //マップの番号
+		int posX;                  //アイテムのX座標
+		int posY;                  //アイテムのY座標
+		int posZ;                  //アイテムのZ座標
+
+		bool isCreated = false;    //生成済みかどうか
+		bool isTaking = false;     //取られたかどうか
 	};
 
 public:

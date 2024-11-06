@@ -4,6 +4,7 @@
 #include "Camera/Camera.h"
 #include "Map/Map.h"
 #include "Manager/EnemyManager.h"
+#include "Ui/Setting.h"
 
 //カメラの初期化で描画バグが発生する
 //カメラのせいでマップとモデルの描画がバグる
@@ -17,7 +18,8 @@ namespace
 /// コンストラクタ
 /// </summary>
 GameManager::GameManager() :
-	m_nowMap(eMapName::FirstMap)
+	m_nowMap(eMapName::FirstMap),
+	m_title(false)
 {
 }
 
@@ -43,6 +45,7 @@ void GameManager::Init()
 	m_pEnemy = std::make_shared<EnemyManager>();
 	m_pEnemy->Init("stage1");
 	m_pNpc->Init(m_pPhysics);
+	m_pSetting->Init();
 }
 
 /// <summary>
@@ -56,9 +59,32 @@ void GameManager::Update()
 
 	m_pPlayer->Update();
 
-	m_pCamera->Update(*m_pPlayer);
+	if (!m_pPlayer->GetLock())
+	{
+		m_pCamera->Update(*m_pPlayer);
+	}
+	else if (m_pPlayer->GetLock())
+	{
+		m_pCamera->LockUpdate(*m_pPlayer, *m_pEnemy);
+	}
+	
 
 	m_pEnemy->Update(m_pPhysics, this, m_pPlayer->GetPos(), m_pCamera->GetDirection(), !m_pPlayer->IsGetPlayerDead());
+
+	//メニューを開く
+	if (m_pPlayer->GetMenu())
+	{
+		m_pSetting->MenuUpdate();
+
+		m_title = m_pSetting->GetTitle();
+
+		m_pPlayer->SetMenu(m_pSetting->GetReturn());
+	}
+	//メニューを開けるようにする
+	else
+	{
+		m_pSetting->SetReturn(true);
+	}
 
 	//物理更新
 	m_pPhysics->Update();
@@ -74,6 +100,11 @@ void GameManager::Draw()
 	m_pPlayer->Draw();
 	m_pEnemy->Draw();
 	m_pNpc->Draw();
+
+	if (m_pPlayer->GetMenu())
+	{
+		m_pSetting->MenuDraw();
+	}
 }
 
 /// <summary>
@@ -84,6 +115,7 @@ void GameManager::End()
 	m_pPlayer->End();
 	m_pCamera->End();
 	m_pMap->End();
+	m_pSetting->End();
 }
 
 const MyLibrary::LibVec3 GameManager::GetPlayerPos() const

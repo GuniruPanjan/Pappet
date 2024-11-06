@@ -40,20 +40,32 @@ public:
 
 	//衝突したとき
 	void OnCollideEnter(const std::shared_ptr<Collidable>& collidable) override;
+	void OnCollideStay(const std::shared_ptr<Collidable>& collidable) override;
 	void OnTriggerEnter(const std::shared_ptr<Collidable>& collidable) override;
 
 	//プレイヤーが生きているかを取得
 	const bool IsGetPlayerDead() const { return m_anim.s_isDead; }
 
+	//カメラ関係
 	void SetCameraAngle(float angle) { m_cameraAngle = angle; }
+	bool GetLock() { return m_lockonTarget; }
+
+	//メニュー関係
+	bool GetMenu() { return m_menuOpen; }
+	bool SetMenu(bool set) { return m_menuOpen = set; }
 
 	const MyLibrary::LibVec3 GetPos() const { return rigidbody.GetPos(); }
 
 private:
 	void SetModelPos();
 private:
+	std::shared_ptr<AttackObject> m_pAttack;   //攻撃判定
+	std::shared_ptr<SearchObject> m_pSearch;   //索敵判定
+
 	XINPUT_STATE m_xpad;                //パッド入力
 	float m_cameraAngle;                //カメラ情報
+	bool m_menuOpen;                    //メニューを開く判定
+	bool m_lockonTarget;                //ターゲット判定
 
 	//アニメーション用変数
 	int m_attackNumber;                 //現在の攻撃段階の代入

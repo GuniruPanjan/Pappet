@@ -247,83 +247,30 @@ void Setting::MenuUpdate()
 		m_one = false;
 	}
 
-	//上選択
-	if (m_menuSelect[0] == 1 && m_button > 0 && m_one == false)
-	{
-		m_menuSelect[2] = 1;
-		m_menuSelect[0] = 0;
+	
 
-		PlaySoundMem(pse->GetSelectSE(), DX_PLAYTYPE_BACK, true);
+	pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Eight);
 
-		m_one = true;
-	}
-	if (m_menuSelect[1] == 1 && m_button > 0 && m_one == false)
-	{
-		m_menuSelect[0] = 1;
-		m_menuSelect[1] = 0;
-
-		PlaySoundMem(pse->GetSelectSE(), DX_PLAYTYPE_BACK, true);
-
-		m_one = true;
-	}
-	if (m_menuSelect[2] == 1 && m_button > 0 && m_one == false)
-	{
-		m_menuSelect[1] = 1;
-		m_menuSelect[2] = 0;
-
-		PlaySoundMem(pse->GetSelectSE(), DX_PLAYTYPE_BACK, true);
-
-		m_one = true;
-	}
-	//下選択
-	if (m_menuSelect[0] == 1 && m_button < 0 && m_one == false)
-	{
-		m_menuSelect[1] = 1;
-		m_menuSelect[0] = 0;
-
-		PlaySoundMem(pse->GetSelectSE(), DX_PLAYTYPE_BACK, true);
-
-		m_one = true;
-	}
-	if (m_menuSelect[1] == 1 && m_button < 0 && m_one == false)
-	{
-		m_menuSelect[2] = 1;
-		m_menuSelect[1] = 0;
-
-		PlaySoundMem(pse->GetSelectSE(), DX_PLAYTYPE_BACK, true);
-
-		m_one = true;
-	}
-	if (m_menuSelect[2] == 1 && m_button < 0 && m_one == false)
-	{
-		m_menuSelect[0] = 1;
-		m_menuSelect[2] = 0;
-
-		PlaySoundMem(pse->GetSelectSE(), DX_PLAYTYPE_BACK, true);
-
-		m_one = true;
-	}
-	//Aボタン押したら
-	//装備メニュー
-	if (m_xpad.Buttons[12] == 1 && m_menuSelect[0] == 1)
+	//Aボタンが押されたら
+	if (m_xpad.Buttons[12] == 1)
 	{
 		PlaySoundMem(pse->GetButtonSE(), DX_PLAYTYPE_BACK, true);
 
-		m_equipmentMenu = true;
-	}
-	//戻る
-	if (m_xpad.Buttons[12] == 1 && m_menuSelect[1] == 1)
-	{
-		PlaySoundMem(pse->GetButtonSE(), DX_PLAYTYPE_BACK, true);
-
-		m_returnMenu = false;
-	}
-	//タイトルに戻る
-	if (m_xpad.Buttons[12] == 1 && m_menuSelect[2] == 1)
-	{
-		PlaySoundMem(pse->GetButtonSE(), DX_PLAYTYPE_BACK, true);
-
-		m_titleMenu = true;
+		//装備選択
+		if (selectDecision == 8)
+		{
+			m_equipmentMenu = true;
+		}
+		//元の画面に戻る
+		if (selectDecision == 9)
+		{
+			m_returnMenu = false;
+		}
+		//タイトルに戻る
+		if (selectDecision == 10)
+		{
+			m_titleMenu = true;
+		}
 	}
 
 }
@@ -532,19 +479,19 @@ void Setting::MenuDraw()
 	DrawGraph(0, 0, m_back, false);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	if (m_menuSelect[0] == 1)
+	if (pselect->NowSelect == pselect->Eight)
 	{
 		m_menuColor[0] = 0xffff00;
 		m_menuColor[1] = 0xffffff;
 		m_menuColor[2] = 0xffffff;
 	}
-	if (m_menuSelect[1] == 1)
+	if (pselect->NowSelect == pselect->Nine)
 	{
 		m_menuColor[0] = 0xffffff;
 		m_menuColor[1] = 0xffff00;
 		m_menuColor[2] = 0xffffff;
 	}
-	if (m_menuSelect[2] == 1)
+	if (pselect->NowSelect == pselect->Ten)
 	{
 		m_menuColor[0] = 0xffffff;
 		m_menuColor[1] = 0xffffff;

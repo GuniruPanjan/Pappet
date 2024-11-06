@@ -35,6 +35,11 @@ std::shared_ptr<SceneBase> SceneGame::Update()
 
 	game->Update();
 
+	if (game->GetTitle())
+	{
+		return std::make_shared<SceneTitle>();
+	}
+
 	return shared_from_this();  //自身のポインタを返す
 }
 

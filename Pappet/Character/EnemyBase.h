@@ -24,6 +24,7 @@ public:
 	//衝突したとき
 	void OnCollideEnter(const std::shared_ptr<Collidable>& collidable) override;
 	void OnCollideStay(const std::shared_ptr<Collidable>& collidable) override;
+	void OnTriggerEnter(const std::shared_ptr<Collidable>& collidable) override;
 
 	//座標を返す
 	virtual MyLibrary::LibVec3 GetPos() const { return m_collisionPos; }
@@ -65,7 +66,7 @@ protected:
 	//アニメーションブレンドの更新
 	void UpdateAnimationBlend();
 	//モデルの座標設定
-	void SetDrawModelPos();
+	void SetDrawModelPos(float posY);
 protected:
 	std::shared_ptr<AttackObject> m_pAttack;    //攻撃判定
 	std::shared_ptr<SearchObject> m_pSearch;    //索敵判定

@@ -8,6 +8,7 @@ class CollidableNpc;
 class Map;
 class Camera;
 class EnemyManager;
+class Setting;
 
 /// <summary>
 /// ゲームの内容を管理するクラス
@@ -41,6 +42,9 @@ public:
 	//プレイヤー座標を取得
 	const MyLibrary::LibVec3 GetPlayerPos() const;
 
+	//タイトルに戻るかの判定を取得
+	bool GetTitle() { return m_title; }
+
 private:
 	//スマートポインタ管理
 	std::shared_ptr<MyLibrary::Physics> m_pPhysics;
@@ -49,10 +53,14 @@ private:
 	std::shared_ptr<Camera> m_pCamera = std::make_shared<Camera>();
 	std::shared_ptr<CollidableNpc> m_pNpc = std::make_shared<CollidableNpc>();
 	std::shared_ptr<EnemyManager> m_pEnemy;
+	std::shared_ptr<Setting> m_pSetting = std::make_shared<Setting>();
 
 	//現在のマップ
 	eMapName m_nowMap;
 	//ステージ名
 	//std::string m_stageName;
+
+	//タイトルに戻る
+	bool m_title;
 };
 

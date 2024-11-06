@@ -5,8 +5,10 @@ SearchObject::SearchObject(float radius) :
 	m_isEnemy(false),
 	m_isRest(false),
 	m_isItem(false),
+	m_isPlayer(false),
 	m_isTriggerEnter(false),
 	m_isTriggerStay(false),
+	m_isTriggerExit(false),
 	m_pPhysics()
 {
 	//当たり判定の設定
@@ -19,12 +21,13 @@ SearchObject::~SearchObject()
 {
 }
 
-void SearchObject::Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnemy, bool isRest, bool isItem)
+void SearchObject::Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnemy, bool isRest, bool isItem, bool isPlayer)
 {
 	m_pPhysics = physics;
 	m_isEnemy = isEnemy;
 	m_isRest = isRest;
 	m_isItem = isItem;
+	m_isPlayer = isPlayer;
 
 	Collidable::Init(m_pPhysics);
 
@@ -73,7 +76,7 @@ void SearchObject::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 		}
 	}
 	//アタッチしたオブジェクトがどれにも当てはまらなかったら
-	else
+	else if(m_isPlayer)
 	{
 		auto tag = collidable->GetTag();
 		if (tag == ObjectTag::Enemy)
@@ -113,12 +116,52 @@ void SearchObject::OnTriggerStay(const std::shared_ptr<Collidable>& collidable)
 		}
 	}
 	//アタッチしたオブジェクトがどれにも当てはまらなかったら
-	else
+	else if(m_isPlayer)
 	{
 		auto tag = collidable->GetTag();
 		if (tag == ObjectTag::Enemy)
 		{
-			m_isTriggerEnter = true;
+			m_isTriggerStay = true;
+		}
+	}
+}
+
+void SearchObject::OnTriggerExit(const std::shared_ptr<Collidable>& collidable)
+{
+	//アタッチしたオブジェクトが敵なら
+	if (m_isEnemy)
+	{
+		auto tag = collidable->GetTag();
+		if (tag == ObjectTag::Player)
+		{
+			m_isTriggerExit = true;
+		}
+	}
+	//アタッチしたオブジェクトが休息ポイントなら
+	else if (m_isRest)
+	{
+		auto tag = collidable->GetTag();
+		if (tag == ObjectTag::Player)
+		{
+			m_isTriggerExit = true;
+		}
+	}
+	//アタッチしたオブジェクトがアイテムなら
+	else if (m_isItem)
+	{
+		auto tag = collidable->GetTag();
+		if (tag == ObjectTag::Player)
+		{
+			m_isTriggerExit = true;
+		}
+	}
+	//アタッチしたオブジェクトがどれにも当てはまらなかったら
+	else if (m_isPlayer)
+	{
+		auto tag = collidable->GetTag();
+		if (tag == ObjectTag::Enemy)
+		{
+			m_isTriggerExit = true;
 		}
 	}
 }
@@ -131,6 +174,11 @@ bool SearchObject::GetIsTrigger()
 bool SearchObject::GetIsStay() const
 {
 	return m_isTriggerStay;
+}
+
+bool SearchObject::GetIsExit()
+{
+	return m_isTriggerExit;
 }
 
 void SearchObject::IsTriggerReset()

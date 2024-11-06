@@ -52,9 +52,9 @@ protected:
 	bool m_end;   //ゲーム終了変数
 
 	//スマートポインタ
-	std::shared_ptr<Setting> psetting = std::make_shared<Setting>();
-	std::shared_ptr<BgmManager> pbgm = std::make_shared<BgmManager>();
-	std::shared_ptr<UI> pui = std::make_shared<UI>();
+	std::shared_ptr<Setting> m_pSetting = std::make_shared<Setting>();
+	std::shared_ptr<BgmManager> m_pBgm = std::make_shared<BgmManager>();
+	std::shared_ptr<UI> m_pUi = std::make_shared<UI>();
 
 };
 

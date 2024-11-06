@@ -12,6 +12,9 @@ namespace
 	constexpr float cCapsuleLen = 40.0f;
 	//モデルの半径
 	constexpr float cCapsuleRadius = 14.0f;
+	//モデルの座標を合わせる
+	constexpr float cModelPosY = 12.0f;
+
 	//索敵範囲
 	constexpr float cSearchRadius = 120.0f;
 
@@ -58,7 +61,7 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 	Collidable::Init(m_pPhysics);
 
 	//物理クラスの初期化
-	InitRigidbody(posX, posY + 12.0f, posZ);
+	InitRigidbody(posX, posY + 14.0f, posZ);
 
 	//中心座標の設定
 	CalculationCenterPos(1.0f, cModelSize);
@@ -96,6 +99,12 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 	//判定の更新
 	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
 	m_pSearch->Update(centerPos);
+
+	//死んだとき
+	if (m_status.s_hp <= 0.0f)
+	{
+		Death();
+	}
 }
 
 /// <summary>
@@ -104,7 +113,7 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 void Immortal::Draw()
 {
 	//当たり判定座標を取得してモデルの描画座標を設定する
-	SetDrawModelPos();
+	SetDrawModelPos(cModelPosY);
 	//モデルの描画
 	MV1DrawModel(m_modelHandle);
 }

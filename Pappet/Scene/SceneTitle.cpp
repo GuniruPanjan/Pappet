@@ -57,8 +57,8 @@ SceneTitle::~SceneTitle()
 	DeleteGraph(m_end);
 	MV1DeleteModel(m_playerHandle);
 	MV1DeleteModel(m_anim);
-	psetting->End();
-	pbgm->End();
+	m_pSetting->End();
+	m_pBgm->End();
 	pse->End();
 
 	handle.Clear();
@@ -70,10 +70,10 @@ SceneTitle::~SceneTitle()
 void SceneTitle::Init()
 {
 	//メモリ読み込み
-	m_backScene = pui->MyLoadGraph("Data/SceneBack/PuppetNuclearTitleMini.png", 1, 1);     //144 KB (147,793 バイト)
-	m_start = pui->MyLoadGraph("Data/UI/STARTButtonMini.png", 1, 1);                       //27.1 KB (27,851 バイト)
-	m_setting = pui->MyLoadGraph("Data/UI/SettingButtonMini.png", 1, 1);                   //29.4 KB (30,170 バイト)
-	m_end = pui->MyLoadGraph("Data/UI/EndButtonMini.png", 1, 1);                           //22.5 KB (23,109 バイト)
+	m_backScene = m_pUi->MyLoadGraph("Data/SceneBack/PuppetNuclearTitleMini.png", 1, 1);     //144 KB (147,793 バイト)
+	m_start = m_pUi->MyLoadGraph("Data/UI/STARTButtonMini.png", 1, 1);                       //27.1 KB (27,851 バイト)
+	m_setting = m_pUi->MyLoadGraph("Data/UI/SettingButtonMini.png", 1, 1);                   //29.4 KB (30,170 バイト)
+	m_end = m_pUi->MyLoadGraph("Data/UI/EndButtonMini.png", 1, 1);                           //22.5 KB (23,109 バイト)
 
 	m_playerHandle = handle.GetModelHandle("Data/Player/PuppetPlayerModel.mv1");
 	m_anim = handle.GetModelHandle("Data/PlayerAnimation/JumpingDown.mv1");
@@ -105,9 +105,9 @@ void SceneTitle::Init()
 	m_cameraTarget = VGet(cCameraTargetx, cCameraTargety, cCameraTargetz);
 
 	//設定関係
-	psetting->Init();
-	pbgm->TitleInit();
-	pbgm->TitleBGM();
+	m_pSetting->Init();
+	m_pBgm->TitleInit();
+	m_pBgm->TitleBGM();
 	pse->SceneInit();
 
 	m_one = false;
@@ -120,7 +120,7 @@ void SceneTitle::Init()
 /// <returns>シーンを返す</returns>
 std::shared_ptr<SceneBase> SceneTitle::Update()
 {
-	if (psetting->GetSettingScene() == false)
+	if (m_pSetting->GetSettingScene() == false)
 	{
 		//パッド入力所得
 		GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
@@ -158,7 +158,7 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 		m_playTime += 0.5f;
 
 		//選択する
-		if (psetting->GetSettingScene() == false)
+		if (m_pSetting->GetSettingScene() == false)
 		{
 			pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Eight);
 		}
@@ -184,7 +184,7 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 
 					m_waitTime = 0;
 
-					psetting->SetSettingScene(m_setButton);
+					m_pSetting->SetSettingScene(m_setButton);
 				}
 				//終了
 				if (selectDecision == 10)
@@ -193,7 +193,7 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 				}
 			}
 		}
-		else if (psetting->GetSettingScene() == false)
+		else if (m_pSetting->GetSettingScene() == false)
 		{
 			m_waitTime++;
 		}
@@ -205,9 +205,9 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 
 	}
 	//設定を開く
-	if (psetting->GetSettingScene() == true)
+	if (m_pSetting->GetSettingScene() == true)
 	{
-		psetting->Update();
+		m_pSetting->Update();
 	}
 
 	if (m_playTime >= m_totalAnimationTime && m_animation != -1)
@@ -219,8 +219,8 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 		MV1SetAttachAnimTime(m_playerHandle, m_animation, m_playTime);
 	}
 
-	pbgm->Update(psetting->GetVolume());
-	pse->Update(psetting->GetVolume());
+	m_pBgm->Update(m_pSetting->GetVolume());
+	pse->Update(m_pSetting->GetVolume());
 
 	SetCameraPositionAndTarget_UpVecY(m_cameraPos, m_cameraTarget);
 
@@ -294,14 +294,14 @@ void SceneTitle::Draw()
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	//設定画面を描画
-	if (psetting->GetSettingScene() == true)
+	if (m_pSetting->GetSettingScene() == true)
 	{
-		psetting->Draw();
+		m_pSetting->Draw();
 	}
 
-	psetting->SettingDraw(psetting->GetVolume());
+	m_pSetting->SettingDraw(m_pSetting->GetVolume());
 
-	if (psetting->GetSettingScene() == false)
+	if (m_pSetting->GetSettingScene() == false)
 	{
 		pselect->Draw();
 	}
@@ -319,8 +319,8 @@ void SceneTitle::End()
 	DeleteGraph(m_end);
 	MV1DeleteModel(m_playerHandle);
 	MV1DeleteModel(m_anim);
-	psetting->End();
-	pbgm->End();
+	m_pSetting->End();
+	m_pBgm->End();
 	pse->End();
 
 	handle.Clear();

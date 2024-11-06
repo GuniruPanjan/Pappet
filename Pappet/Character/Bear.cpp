@@ -11,7 +11,9 @@ namespace
 	//モデルの長さ
 	constexpr float cCapsuleLen = 40.0f;
 	//モデルの半径
-	constexpr float cCapsuleRadius = 35.0f;
+	constexpr float cCapsuleRadius = 25.0f;
+	//モデルの座標を合わせる
+	constexpr float cModelPosY = 24.0f;
 	//索敵範囲
 	constexpr float cSearchRadius = 120.0f;
 }
@@ -58,7 +60,7 @@ void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::P
 	Collidable::Init(m_pPhysics);
 
 	//物理クラスの初期化
-	InitRigidbody(posX, posY, posZ);
+	InitRigidbody(posX, posY + cCapsuleRadius, posZ);
 
 	//中心座標の設定
 	CalculationCenterPos(1.0f, cModelSize);
@@ -94,8 +96,7 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 	//m_collisionPosも無事
 
 	//判定の更新
-	m_collisionPos = rigidbody.GetPos();
-	MyLibrary::LibVec3 centerPos = MyLibrary::LibVec3(rigidbody.GetPos().x, rigidbody.GetPos().y + 35.0f, rigidbody.GetPos().z);
+	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
 	m_pSearch->Update(centerPos);
 }
 
@@ -105,9 +106,7 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 void Bear::Draw()
 {
 	//当たり判定座標を取得してモデルの描画座標を設定する
-	//SetDrawModelPos();
+	SetDrawModelPos(cModelPosY);
 	//モデルの描画
 	MV1DrawModel(m_modelHandle);
-
-	//DrawFormatString(500, 100, 0xffffff, "x : %f, y : %f, z : %f", rigidbody.GetPos().x, rigidbody.GetPos().y, rigidbody.GetPos().z);
 }

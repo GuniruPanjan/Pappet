@@ -17,7 +17,6 @@ AttackObject::~AttackObject()
 
 void AttackObject::Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnemy)
 {
-	m_isCollisionOn = true;
 	m_pPhysics = physics;
 	m_isEnemy = isEnemy;
 
@@ -48,24 +47,24 @@ void AttackObject::CollisionEnd()
 
 void AttackObject::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 {
-	//アタッチしたオブジェクトが敵じゃないなら
-	if (!m_isEnemy)
-	{
-		auto tag = collidable->GetTag();
-		if (tag == ObjectTag::Enemy)
-		{
-			CollisionEnd();
-			m_isCollisionOn = false;
-		}
-	}
 	//アタッチしたオブジェクトが敵なら
-	else
+	if (m_isEnemy)
 	{
 		auto tag = collidable->GetTag();
 		if (tag == ObjectTag::Player)
 		{
+			m_isCollisionOn = true;
 			CollisionEnd();
-			m_isCollisionOn = false;
+		}
+	}
+	//アタッチしたオブジェクトが敵じゃないなら
+	else
+	{
+		auto tag = collidable->GetTag();
+		if (tag == ObjectTag::Enemy)
+		{
+			m_isCollisionOn = true;
+			CollisionEnd();
 		}
 	}
 }

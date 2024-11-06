@@ -3,6 +3,7 @@
 #include "Library/MyLibrary.h"
 #include <cmath>
 
+class EnemyManager;
 class Player;
 class Map;
 
@@ -21,10 +22,8 @@ public:
 	void Init();
 	//更新処理
 	void Update(Player& player);
-	////ロックオン処理
-	//void LockUpdate(Player& player, int max);
-	////雑魚敵のロックオン処理
-	//void WeakLockUpdate(Player& player, int weak);
+	//ロックオン処理
+	void LockUpdate(Player& player, EnemyManager& enemy);
 	//描画処理
 	void Draw();
 	//終了処理

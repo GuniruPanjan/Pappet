@@ -53,82 +53,82 @@ void EnemyBase::Finalize(std::shared_ptr<MyLibrary::Physics> physics)
 
 void EnemyBase::OnCollideEnter(const std::shared_ptr<Collidable>& collidable)
 {
-//#if _DEBUG
-//	std::string message = "“G‚ª";
-//#endif
-//	auto tag = collidable->GetTag();
-//	switch (tag)
-//	{
-//	case ObjectTag::Player:
-//#if _DEBUG
-//		message += "ƒvƒŒƒCƒ„[";
-//#endif
-//		break;
-//	case ObjectTag::Enemy:
-//#if _DEBUG
-//		message += "“G";
-//#endif
-//		break;
-//	case ObjectTag::Attack:
-//#if _DEBUG
-//		message += "UŒ‚";
-//#endif
-//		break;
-//	case ObjectTag::Search:
-//#if _DEBUG
-//		message += "õ“G”ÍˆÍ";
-//#endif
-//		break;
-//	case ObjectTag::BossEnter:
-//#if _DEBUG
-//		message += "ƒ{ƒX•”‰®“üŒû";
-//#endif
-//		break;
-//	}
-//#if _DEBUG
-//	message += "‚Æ“–‚½‚Á‚½\n";
-//	printfDx(message.c_str());
-//#endif
+#if _DEBUG
+	std::string message = "“G‚ª";
+#endif
+	auto tag = collidable->GetTag();
+	switch (tag)
+	{
+	case ObjectTag::Player:
+#if _DEBUG
+		message += "ƒvƒŒƒCƒ„[";
+#endif
+		break;
+	case ObjectTag::Enemy:
+#if _DEBUG
+		message += "“G";
+#endif
+		break;
+	}
+#if _DEBUG
+	message += "‚Æ“–‚½‚Á‚½\n";
+	printfDx(message.c_str());
+#endif
 }
 
 void EnemyBase::OnCollideStay(const std::shared_ptr<Collidable>& collidable)
 {
-//#if _DEBUG
-//	std::string message = "“G‚ª";
-//#endif
-//	auto tag = collidable->GetTag();
-//	switch (tag)
-//	{
-//	case ObjectTag::Player:
-//#if _DEBUG
-//		message += "ƒvƒŒƒCƒ„[";
-//#endif
-//		break;
-//	case ObjectTag::Enemy:
-//#if _DEBUG
-//		message += "“G";
-//#endif
-//		break;
-//	case ObjectTag::Attack:
-//#if _DEBUG
-//		message += "UŒ‚";
-//#endif
-//		break;
-//	case ObjectTag::Search:
-//#if _DEBUG
-//		message += "õ“G”ÍˆÍ";
-//#endif
-//		break;
-//	case ObjectTag::BossEnter:
-//#if _DEBUG
-//		message += "ƒ{ƒX•”‰®“üŒû";
-//#endif
-//		break;
-//	}
-//#if _DEBUG
-//	message += "‚Æ“–‚½‚Á‚½\n";
-//	printfDx(message.c_str());
-//#endif
+#if _DEBUG
+	std::string message = "“G‚ª";
+#endif
+	auto tag = collidable->GetTag();
+	switch (tag)
+	{
+	case ObjectTag::Player:
+#if _DEBUG
+		message += "ƒvƒŒƒCƒ„[";
+#endif
+		break;
+	case ObjectTag::Enemy:
+#if _DEBUG
+		message += "“G";
+#endif
+		break;
+	}
+#if _DEBUG
+	message += "‚Æ“–‚½‚Á‚½\n";
+	printfDx(message.c_str());
+#endif
+}
+
+void EnemyBase::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
+{
+#if _DEBUG
+	std::string message = "“G‚ª";
+#endif
+	auto tag = collidable->GetTag();
+	switch (tag)
+	{
+	case ObjectTag::Attack:
+#if _DEBUG
+		message += "UŒ‚";
+#endif
+		break;
+	case ObjectTag::Search:
+#if _DEBUG
+		message += "õ“G”ÍˆÍ";
+#endif
+		break;
+	case ObjectTag::BossEnter:
+#if _DEBUG
+		message += "ƒ{ƒX•”‰®“üŒû";
+#endif
+		break;
+	}
+#if _DEBUG
+	message += "‚Æ“–‚½‚Á‚½\n";
+	printfDx(message.c_str());
+#endif
 }
 
 bool EnemyBase::GetIsHit()
@@ -278,10 +278,10 @@ void EnemyBase::UpdateAnimationBlend()
 /// ƒ‚ƒfƒ‹‚ÌÀ•Wİ’è
 /// </summary>
 /// <param name="offset"></param>
-void EnemyBase::SetDrawModelPos()
+void EnemyBase::SetDrawModelPos(float posY)
 {
 	rigidbody.SetPos(rigidbody.GetNextPos());
 	m_collisionPos = rigidbody.GetPos();
 	SetModelPos();
-	MV1SetPosition(m_modelHandle, VSub(m_modelPos.ConversionToVECTOR(), VGet(0.0f, 12.0f, 0.0f)));
+	MV1SetPosition(m_modelHandle, VSub(m_modelPos.ConversionToVECTOR(), VGet(0.0f, posY, 0.0f)));
 }

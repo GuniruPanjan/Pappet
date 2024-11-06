@@ -253,7 +253,7 @@ void MyLibrary::Physics::CheckCollide()
 				{
 					for (const auto& colB : objB->m_colliders)
 					{
-						if (IsCollide(objA->rigidbody, objB->rigidbody, colA.get(), colB.get())) continue;
+						if (!IsCollide(objA->rigidbody, objB->rigidbody, colA.get(), colB.get())) continue;
 
 						bool isTrigger = colA->IsTrigger() || colB->IsTrigger();
 
@@ -388,7 +388,7 @@ bool MyLibrary::Physics::IsCollide(const Rigidbody& rigidA, const Rigidbody& rig
 
 		ar = ar * ar;
 
-		isCollide = sqLen > ar;
+		isCollide = sqLen < ar;
 	}
 	//ƒJƒvƒZƒ‹‚Æ‹…‘Ì‚Ì“–‚½‚è”»’è
 	else if(kindA == MyLibrary::CollidableData::Kind::Capsule && kindB == MyLibrary::CollidableData::Kind::Sphere)
