@@ -21,15 +21,28 @@ public:
 	//描画
 	virtual void Draw() {};
 
+	void TriggerUpdate();
+
 	//衝突したとき
 	void OnCollideEnter(const std::shared_ptr<Collidable>& collidable) override;
 	void OnCollideStay(const std::shared_ptr<Collidable>& collidable) override;
 	void OnTriggerEnter(const std::shared_ptr<Collidable>& collidable) override;
+	void OnTriggerStay(const std::shared_ptr<Collidable>& collidable) override;
+	void OnTriggerExit(const std::shared_ptr<Collidable>& collidable) override;
+
+	//ターゲットに当たっていることを返す
+	bool GetStay() const;
+	//ターゲットから外れたことを返す
+	bool GetExit();
 
 	//座標を返す
 	virtual MyLibrary::LibVec3 GetPos() const { return m_collisionPos; }
+	//ターゲットの有無を返す
+	const bool GetTarget() const { return m_isTarget; }
 	//ダメージを食らったかどうか
 	bool GetIsHit();
+	//ターゲットが外れたかどうか
+	void TargetNow();
 	//死亡時に落とすコア取得
 	int GetDropCore();
 	//死亡しているかどうかを取得
@@ -78,6 +91,9 @@ protected:
 	bool m_isDroped;     //コアをドロップしたかどうか
 	bool m_isExist;      //存在するかどうか
 	bool m_isDiscovery;  //プレイヤーを見つけたかどうか
+	bool m_isTarget;     //プレイヤーにターゲットされるかどうか
+	bool m_isStayTarget = false;  //プレイヤーの索敵に当たってるかどうか
+	bool m_isExitTarget = false;  //プレイヤーの索敵から外れたかどうか
 
 	MyLibrary::LibVec3 m_centerPos;     //中心座標
 

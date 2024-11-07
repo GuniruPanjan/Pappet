@@ -45,6 +45,9 @@ private:
 	//カメラのアングル
 	VECTOR m_cameraAngle = VGet(0.0f, 0.0f, 0.0f);
 
+	//エネミーのポジション代入
+	VECTOR m_enemyPos = VGet(0.0f, 0.0f, 0.0f);
+
 	float m_x, m_z;
 	float m_radius;
 

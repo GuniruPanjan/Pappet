@@ -46,6 +46,8 @@ public:
 	const int GetFrontEnemyMaxHp() const { return m_frontEnemyMaxHp; }
 	//“G‚ÌÀ•W‚ğ•Ô‚·
 	const std::list<MyLibrary::LibVec3> GetEnemyPos() const { return m_enemyPos; }
+	//“G‚Ìƒ^[ƒQƒbƒg‚ğ•Ô‚·
+	const std::list<bool> GetEnemyTarget() const { return m_enemyTarget; }
 private:
 	//“G‚Ì¶¬
 	void CreateEnemy(float posX, float posY, float posZ, std::string name, std::shared_ptr<MyLibrary::Physics> physics);
@@ -68,5 +70,7 @@ private:
 
 	//“G‚ÌÀ•W
 	std::list<MyLibrary::LibVec3> m_enemyPos;
+	//“G‚Ìƒ^[ƒQƒbƒg”»’è
+	std::list<bool> m_enemyTarget;
 };
 

@@ -2,8 +2,8 @@
 
 AttackObject::AttackObject(float radius) :
 	ObjectBase(Priority::Middle, ObjectTag::Attack),
-	m_isEnemy(false),
-	m_isCollisionOn(false)
+	m_isCollisionOn(false),
+	m_attack(0)
 {
 	//当たり判定の設定
 	auto collider = Collidable::AddCollider(MyLibrary::CollidableData::Kind::Sphere, true);
@@ -15,12 +15,11 @@ AttackObject::~AttackObject()
 {
 }
 
-void AttackObject::Init(std::shared_ptr<MyLibrary::Physics> physics, bool isEnemy)
+void AttackObject::Init(std::shared_ptr<MyLibrary::Physics> physics)
 {
 	m_isCollisionOn = true;
 
 	m_pPhysics = physics;
-	m_isEnemy = isEnemy;
 
 	Collidable::Init(m_pPhysics);
 
@@ -48,25 +47,11 @@ void AttackObject::CollisionEnd()
 
 void AttackObject::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 {
-	//アタッチしたオブジェクトが敵なら
-	if (m_isEnemy)
+	auto tag = collidable->GetTag();
+	if (tag == ObjectTag::Enemy)
 	{
-		auto tag = collidable->GetTag();
-		if (tag == ObjectTag::Player)
-		{
-			CollisionEnd();
-			m_isCollisionOn = false;
-		}
-	}
-	//アタッチしたオブジェクトが敵じゃないなら
-	else
-	{
-		auto tag = collidable->GetTag();
-		if (tag == ObjectTag::Enemy)
-		{
-			CollisionEnd();
-			m_isCollisionOn = false;
-		}
+		CollisionEnd();
+		m_isCollisionOn = false;
 	}
 }
 

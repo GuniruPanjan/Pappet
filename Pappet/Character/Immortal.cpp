@@ -91,10 +91,17 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 	//アニメーションの更新
 	m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
 
-	//rigidbodyのポジションがいかれてる
-	// そもそも最初に当たるのがおかしい
-	//m_modelPosは無事
-	//m_collisionPosも無事
+	//ターゲット状態
+	if (GetStay())
+	{
+		m_isTarget = true;
+	}
+	else if (GetExit())
+	{
+		m_isTarget = false;
+	}
+
+	TriggerUpdate();
 
 	//判定の更新
 	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();

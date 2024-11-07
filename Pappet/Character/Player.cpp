@@ -16,14 +16,21 @@ namespace
 	constexpr float cWalkSpeed = 2.0f;
 	//ダッシュにより代入される速度
 	constexpr float cDashSpeed = 4.0f;
+	//歩くモーションのプレイタイム
+	float cAnimWalkTime = 0.0f;
 	//ボタンが押されているかの確認用変数
 	int cAbutton = 0;
 	int cRbutton = 0;
 	bool cRstickButton = false;
+	//スティックの入力を得る
+	int cAnX = 0;
+	int cAnY = 0;
 	//索敵範囲
 	constexpr float cSearchRadius = 200.0f;
 	//回避での移動距離
 	float cAvoidanceMove = 0.0f;
+	//回避の方向を一回入れる
+	bool cOneAvoidance = false;
 	//攻撃での追加攻撃時間
 	int cAddAttackTime = 0;
 	//拳の攻撃範囲
@@ -49,6 +56,7 @@ Player::Player() :
 	m_moveAnimShieldFrameIndex(0),
 	m_moveAnimShieldFrameHandIndex(0),
 	m_cameraAngle(0.0f),
+	m_lockAngle(0.0f),
 	m_avoidanceNow(false),
 	m_moveWeaponFrameMatrix(),
 	m_moveShieldFrameMatrix(),
@@ -131,8 +139,8 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
 
 	m_pAttack = std::make_shared<AttackObject>(m_attackRadius);
 
-	m_pSearch = std::make_shared<SearchObject>(cSearchRadius);
-	m_pSearch->Init(m_pPhysics, rigidbody.GetPos(), false, false, false, true);
+	m_pSearch = std::make_shared<PlayerSearchObject>(cSearchRadius);
+	m_pSearch->Init(m_pPhysics, rigidbody.GetPos());
 
 	//待機アニメーション設定
 	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
@@ -205,7 +213,20 @@ void Player::Update()
 	if (!m_anim.s_isDead && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery)
 	{
 		GetJoypadAnalogInput(&analogX, &analogY, DX_INPUT_PAD1);
+
+		cOneAvoidance = false;
 	}
+
+	if (m_animChange.sa_avoidance && !cOneAvoidance)
+	{
+		GetJoypadAnalogInput(&analogX, &analogY, DX_INPUT_PAD1);
+
+		cOneAvoidance = true;
+	}
+
+	//アナログスティックの入力を格納
+	cAnX = analogX;
+	cAnY = analogY;
 
 	//移動方向を設定する
 	auto moveVec = VGet(static_cast<float>(-analogX), 0.0f, static_cast<float>(analogY));    //ベクトルの長さ
@@ -237,7 +258,24 @@ void Player::Update()
 	//移動していない場合(ゼロベクトル)の場合は変更しない
 	if (VSquareSize(moveVec) > 0.0f)
 	{
-		m_angle = atan2f(-moveVec.z, moveVec.x) - DX_PI_F / 2;
+		//ロックオンしてない時と走ったときのアングル
+		if (!m_lockonTarget || m_animChange.sa_dashMove && !m_animChange.sa_avoidance)
+		{
+			//アングルを決定
+			m_angle = atan2f(-moveVec.z, moveVec.x) - DX_PI_F / 2;
+		}
+		//ロックオンした時のアングル
+		else if (m_lockonTarget && !m_animChange.sa_avoidance)
+		{
+			//アングルを決定
+			m_angle = m_lockAngle;
+		}
+		//回避するとき
+		else if (m_animChange.sa_avoidance)
+		{
+			//アングルを決定
+			m_angle = atan2f(-moveVec.z, moveVec.x) - DX_PI_F / 2;
+		}
 
 		//プレイヤーが動いたら
 		m_anim.s_moveflag = true;
@@ -265,6 +303,17 @@ void Player::Update()
 		MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
 		MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(-m_rollMove.x, prevVelocity.y, -m_rollMove.z);
 		rigidbody.SetVelocity(newVelocity);
+	}
+
+	//後ろ歩き
+	if (m_lockonTarget && !m_animChange.sa_dashMove && cAnY > 0 && cAnX < 500 && cAnX > -500)
+	{
+		//再生時間を進める
+		cAnimWalkTime = -0.5f;
+	}
+	else
+	{
+		cAnimWalkTime = 0.5f;
 	}
 
 	//プレイヤーが生きている時だけ
@@ -460,7 +509,7 @@ void Player::Action()
 		}
 	}
 	//ターゲットを無理やり外す
-	else if (!m_pSearch->GetIsStay())
+	else if (m_pSearch->GetIsExit())
 	{
 		m_lockonTarget = false;
 		cRstickButton = false;
@@ -569,8 +618,35 @@ void Player::NotWeaponAnimation()
 		//歩き
 		else if (m_anim.s_moveflag)
 		{
-			m_nowAnimIdx = m_animIdx["Walk"];
-			ChangeAnim(m_nowAnimIdx, m_animOne[2], m_animOne);
+			//ターゲットしているとき
+			if (!m_lockonTarget)
+			{
+				m_nowAnimIdx = m_animIdx["Walk"];
+				ChangeAnim(m_nowAnimIdx, m_animOne[2], m_animOne);
+			}
+			//ターゲットしているとき
+			else if (m_lockonTarget)
+			{
+				//左歩き
+				if (cAnX < -500)
+				{
+					m_nowAnimIdx = m_animIdx["LeftWalk"];
+					ChangeAnim(m_nowAnimIdx, m_animOne[3], m_animOne);
+				}
+				//右歩き
+				else if (cAnX > 500)
+				{
+					m_nowAnimIdx = m_animIdx["RightWalk"];
+					ChangeAnim(m_nowAnimIdx, m_animOne[4], m_animOne);
+				}
+				//後ろ歩きor歩き
+				if (cAnX < 500 && cAnX > -500)
+				{
+					m_nowAnimIdx = m_animIdx["Walk"];
+					ChangeAnim(m_nowAnimIdx, m_animOne[2], m_animOne, cAnimWalkTime);
+				}
+			}
+			
 		}
 	}
 }
@@ -587,7 +663,7 @@ void Player::AllAnimation()
 		if (m_anim.s_hit)
 		{
 			m_nowAnimIdx = m_animIdx["Hit"];
-			ChangeAnim(m_nowAnimIdx, m_animOne[3], m_animOne);
+			ChangeAnim(m_nowAnimIdx, m_animOne[5], m_animOne);
 		}
 		//攻撃が当たってないとき
 		else if (!m_anim.s_hit)
@@ -596,37 +672,37 @@ void Player::AllAnimation()
 			if (!m_anim.s_moveflag && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery)
 			{
 				m_nowAnimIdx = m_animIdx["Idle"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[4], m_animOne);
+				ChangeAnim(m_nowAnimIdx, m_animOne[6], m_animOne);
 			}
 			//回避
 			else if (m_animChange.sa_avoidance)
 			{
 				m_nowAnimIdx = m_animIdx["Roll"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[5], m_animOne);
+				ChangeAnim(m_nowAnimIdx, m_animOne[7], m_animOne);
 			}
 			//攻撃
 			else if (m_anim.s_attack && !m_animChange.sa_avoidance && !m_animChange.sa_recovery)
 			{
 				m_nowAnimIdx = m_animIdx["Attack1"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[6], m_animOne, 1.0f);
+				ChangeAnim(m_nowAnimIdx, m_animOne[8], m_animOne, 1.0f);
 			}
 			//回復
 			else if (m_animChange.sa_recovery)
 			{
 				m_nowAnimIdx = m_animIdx["Recovery"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[7], m_animOne);
+				ChangeAnim(m_nowAnimIdx, m_animOne[9], m_animOne);
 			}
 			//アイテムを取得するとき
 			else if (m_animChange.sa_taking)
 			{
 				m_nowAnimIdx = m_animIdx["Taking"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[8], m_animOne);
+				ChangeAnim(m_nowAnimIdx, m_animOne[10], m_animOne);
 			}
 			//ギミックを作動させるとき
 			else if (m_animChange.sa_touch)
 			{
 				m_nowAnimIdx = m_animIdx["Touch"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[9], m_animOne);
+				ChangeAnim(m_nowAnimIdx, m_animOne[11], m_animOne);
 			}
 		}
 	}
@@ -650,9 +726,11 @@ void Player::Draw()
 	MV1SetPosition(m_modelHandle, VSub(m_modelPos.ConversionToVECTOR(), VGet(0.0f, 12.0f, 0.0f)));
 
 #if false
-	DrawFormatString(0, 100, 0xffffff, "posx : %f", m_modelPos.x);
-	DrawFormatString(0, 200, 0xffffff, "posy : %f", m_modelPos.y);
-	DrawFormatString(0, 300, 0xffffff, "posz : %f", m_modelPos.z);
+	DrawFormatString(200, 100, 0xffffff, "posx : %f", m_modelPos.x);
+	DrawFormatString(200, 200, 0xffffff, "posy : %f", m_modelPos.y);
+	DrawFormatString(200, 300, 0xffffff, "posz : %f", m_modelPos.z);
+#endif
+#if false
 	DrawFormatString(0, 400, 0xffffff, "m_nowAnim : %d", m_nowAnimIdx);
 	DrawFormatString(0, 500, 0xffffff, "m_nowSpeed : %f", m_nowFrame);
 	DrawFormatString(0, 600, 0xffffff, "colPosx : %f", m_collisionPos.x);
@@ -665,10 +743,9 @@ void Player::Draw()
 	DrawFormatString(200, 500, 0xffffff, "nowAttackNumber : %d", cNowAttackNumber);
 
 #endif
-
-	DrawFormatString(200, 100, 0xffffff, "m_lockOnTarget : %d", m_lockonTarget);
-	DrawFormatString(200, 150, 0xffffff, "m_attack : %d", m_pAttack->GetIsTrigger());
-
+#if true
+	DrawFormatString(200, 100, 0xffffff, "animtime : %f", cAnimWalkTime);
+#endif
 	//モデルの回転地
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
 
@@ -732,7 +809,7 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 	auto tag = collidable->GetTag();
 	switch (tag)
 	{
-	case ObjectTag::Attack:
+	case ObjectTag::EnemyAttack:
 #if _DEBUG
 		message += "攻撃";
 #endif
@@ -742,7 +819,7 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 		message += "盾";
 #endif
 		break;
-	case ObjectTag::Search:
+	case ObjectTag::EnemySearch:
 #if _DEBUG
 		message += "索敵";
 #endif

@@ -48,6 +48,7 @@ public:
 
 	//カメラ関係
 	void SetCameraAngle(float angle) { m_cameraAngle = angle; }
+	float SetAngle(float angle) { return m_lockAngle = angle; }
 	bool GetLock() { return m_lockonTarget; }
 
 	//メニュー関係
@@ -60,10 +61,11 @@ private:
 	void SetModelPos();
 private:
 	std::shared_ptr<AttackObject> m_pAttack;   //攻撃判定
-	std::shared_ptr<SearchObject> m_pSearch;   //索敵判定
+	std::shared_ptr<PlayerSearchObject> m_pSearch;   //索敵判定
 
 	XINPUT_STATE m_xpad;                //パッド入力
 	float m_cameraAngle;                //カメラ情報
+	float m_lockAngle;                  //ロックオンしたときのアングル
 	bool m_menuOpen;                    //メニューを開く判定
 	bool m_lockonTarget;                //ターゲット判定
 

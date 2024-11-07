@@ -6,7 +6,7 @@ public:
 	AttackObject(float radius);
 	~AttackObject();
 
-	void Init(std::shared_ptr<MyLibrary::Physics> physics, bool isEnemy = false);
+	void Init(std::shared_ptr<MyLibrary::Physics> physics);
 	void Update(MyLibrary::LibVec3 pos);
 
 	void OnCollideEnter(const std::shared_ptr<Collidable>& collidable) {};
@@ -26,8 +26,6 @@ public:
 
 private:
 	std::shared_ptr<MyLibrary::Physics> m_pPhysics;
-
-	bool m_isEnemy = false;
 
 	//“–‚½‚è”»’è‚ÌØ‚è‘Ö‚¦
 	bool m_isCollisionOn = false;

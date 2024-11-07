@@ -27,6 +27,9 @@ EnemyBase::EnemyBase(Priority priority) :
 	m_isExist(false),
 	m_isDroped(false),
 	m_isDiscovery(false),
+	m_isTarget(false),
+	m_isStayTarget(false),
+	m_isExitTarget(false),
 	m_centerPos(),
 	m_I(0)
 {
@@ -49,6 +52,11 @@ void EnemyBase::Finalize(std::shared_ptr<MyLibrary::Physics> physics)
 	{
 		m_pSearch->Finalize(m_pPhysics);
 	}
+}
+
+void EnemyBase::TriggerUpdate()
+{
+	m_isStayTarget = false;
 }
 
 void EnemyBase::OnCollideEnter(const std::shared_ptr<Collidable>& collidable)
@@ -118,17 +126,99 @@ void EnemyBase::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 #if _DEBUG
 		message += "õ“G”ÍˆÍ";
 #endif
+		m_isStayTarget = true;
 		break;
 	case ObjectTag::BossEnter:
 #if _DEBUG
 		message += "ƒ{ƒX•”‰®“üŒû";
 #endif
 		break;
+	default:
+		break;
 	}
+
 #if _DEBUG
 	message += "‚Æ“–‚½‚Á‚½\n";
 	printfDx(message.c_str());
 #endif
+}
+
+void EnemyBase::OnTriggerStay(const std::shared_ptr<Collidable>& collidable)
+{
+#if _DEBUG
+	std::string message = "“G‚ª";
+#endif
+	auto tag = collidable->GetTag();
+	switch (tag)
+	{
+	case ObjectTag::Attack:
+#if _DEBUG
+		message += "UŒ‚";
+#endif
+		break;
+	case ObjectTag::Search:
+#if _DEBUG
+		message += "õ“G”ÍˆÍ";
+#endif
+		m_isStayTarget = true;
+		break;
+	case ObjectTag::BossEnter:
+#if _DEBUG
+		message += "ƒ{ƒX•”‰®“üŒû";
+#endif
+		break;
+	default:
+		break;
+	}
+
+#if _DEBUG
+	message += "‚Æ“–‚½‚Á‚½\n";
+	printfDx(message.c_str());
+#endif
+}
+
+void EnemyBase::OnTriggerExit(const std::shared_ptr<Collidable>& collidable)
+{
+#if _DEBUG
+	std::string message = "“G‚ª";
+#endif
+	auto tag = collidable->GetTag();
+	switch (tag)
+	{
+	case ObjectTag::Attack:
+#if _DEBUG
+		message += "UŒ‚";
+#endif
+		break;
+	case ObjectTag::Search:
+#if _DEBUG
+		message += "õ“G”ÍˆÍ";
+#endif
+		m_isExitTarget = true;
+		break;
+	case ObjectTag::BossEnter:
+#if _DEBUG
+		message += "ƒ{ƒX•”‰®“üŒû";
+#endif
+		break;
+	default:
+		break;
+	}
+
+#if _DEBUG
+	message += "‚ªŠO‚ê‚½\n";
+	printfDx(message.c_str());
+#endif
+}
+
+bool EnemyBase::GetStay() const
+{
+	return m_isStayTarget;
+}
+
+bool EnemyBase::GetExit()
+{
+	return m_isExitTarget;
 }
 
 bool EnemyBase::GetIsHit()
@@ -136,6 +226,20 @@ bool EnemyBase::GetIsHit()
 	bool log = m_anim.s_hit;
 	m_anim.s_hit = false;
 	return log;
+}
+
+void EnemyBase::TargetNow()
+{
+	//ƒ^[ƒQƒbƒg‚Å‚«‚é
+	if (GetStay())
+	{
+		m_isTarget = true;
+	}
+	//ƒ^[ƒQƒbƒg‚Å‚«‚È‚¢
+	else if (GetExit())
+	{
+		m_isTarget = false;
+	}
 }
 
 int EnemyBase::GetDropCore()

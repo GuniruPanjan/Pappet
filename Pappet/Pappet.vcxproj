@@ -168,7 +168,9 @@
     <ClCompile Include="Manager\SEManager.cpp" />
     <ClCompile Include="Map\Map.cpp" />
     <ClCompile Include="Object\AttackObject.cpp" />
+    <ClCompile Include="Object\EnemyAttackObject.cpp" />
     <ClCompile Include="Object\ObjectBase.cpp" />
+    <ClCompile Include="Object\PlayerSearchObject.cpp" />
     <ClCompile Include="Object\RectObject.cpp" />
     <ClCompile Include="Object\SearchObject.cpp" />
     <ClCompile Include="Scene\MenuScene.cpp" />
@@ -216,7 +218,9 @@
     <ClInclude Include="Manager\SEManager.h" />
     <ClInclude Include="Map\Map.h" />
     <ClInclude Include="Object\AttackObject.h" />
+    <ClInclude Include="Object\EnemyAttackObject.h" />
     <ClInclude Include="Object\ObjectBase.h" />
+    <ClInclude Include="Object\PlayerSearchObject.h" />
     <ClInclude Include="Object\RectObject.h" />
     <ClInclude Include="Object\SearchObject.h" />
     <ClInclude Include="Scene\MenuScene.h" />

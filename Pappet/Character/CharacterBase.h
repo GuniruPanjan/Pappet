@@ -2,6 +2,7 @@
 #include "Library/MyLibrary.h"
 #include "Object/AttackObject.h"
 #include "Object/SearchObject.h"
+#include "Object/PlayerSearchObject.h"
 #include <map>
 #include <string>
 #define ANIMATION_MAX   30
@@ -78,5 +79,6 @@ protected:
 	float m_angle;            //ƒLƒƒƒ‰‚ÌƒAƒ“ƒOƒ‹
 	float m_attackRadius;     //UŒ‚‚Ì“–‚½‚è”»’è
 	float m_searchRadius;     //õ“G‚Ì“–‚½‚è”»’è
+	
 };
 

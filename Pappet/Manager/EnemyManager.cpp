@@ -28,6 +28,7 @@ EnemyManager::~EnemyManager()
 	m_pEnemys.clear();
 	m_pGenerateInfo.clear();
 	m_enemyPos.clear();
+	m_enemyTarget.clear();
 }
 
 /// <summary>
@@ -66,6 +67,7 @@ void EnemyManager::Init(const char* stageName)
 void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, bool isPlayerChase)
 {
 	m_enemyPos.clear();
+	m_enemyTarget.clear();
 
 	//ここがおかしい
 	//今のマップがどのマップか取得する
@@ -94,10 +96,12 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 	//敵の更新する
 	for (auto& enemy : m_pEnemys)
 	{
+		
 		//更新
 		enemy->Update(gameManager->GetPlayerPos(), isPlayerChase);
 
 		m_enemyPos.emplace_back(enemy->GetPos());
+		m_enemyTarget.emplace_back(enemy->GetTarget());
 	}
 }
 
@@ -111,8 +115,6 @@ void EnemyManager::Draw()
 	{
 		enemy->Draw();
 	}
-
-	
 }
 
 /// <summary>

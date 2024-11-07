@@ -1,11 +1,10 @@
 #include "SearchObject.h"
 
 SearchObject::SearchObject(float radius) :
-	ObjectBase(Priority::Low, ObjectTag::Search),
+	ObjectBase(Priority::Low, ObjectTag::EnemySearch),
 	m_isEnemy(false),
 	m_isRest(false),
 	m_isItem(false),
-	m_isPlayer(false),
 	m_isTriggerEnter(false),
 	m_isTriggerStay(false),
 	m_isTriggerExit(false),
@@ -21,13 +20,12 @@ SearchObject::~SearchObject()
 {
 }
 
-void SearchObject::Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnemy, bool isRest, bool isItem, bool isPlayer)
+void SearchObject::Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnemy, bool isRest, bool isItem)
 {
 	m_pPhysics = physics;
 	m_isEnemy = isEnemy;
 	m_isRest = isRest;
 	m_isItem = isItem;
-	m_isPlayer = isPlayer;
 
 	Collidable::Init(m_pPhysics);
 
@@ -75,15 +73,7 @@ void SearchObject::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 			m_isTriggerEnter = true;
 		}
 	}
-	//アタッチしたオブジェクトがどれにも当てはまらなかったら
-	else if(m_isPlayer)
-	{
-		auto tag = collidable->GetTag();
-		if (tag == ObjectTag::Enemy)
-		{
-			m_isTriggerEnter = true;
-		}
-	}
+	
 }
 
 void SearchObject::OnTriggerStay(const std::shared_ptr<Collidable>& collidable)
@@ -111,15 +101,6 @@ void SearchObject::OnTriggerStay(const std::shared_ptr<Collidable>& collidable)
 	{
 		auto tag = collidable->GetTag();
 		if (tag == ObjectTag::Player)
-		{
-			m_isTriggerStay = true;
-		}
-	}
-	//アタッチしたオブジェクトがどれにも当てはまらなかったら
-	else if(m_isPlayer)
-	{
-		auto tag = collidable->GetTag();
-		if (tag == ObjectTag::Enemy)
 		{
 			m_isTriggerStay = true;
 		}
@@ -155,15 +136,7 @@ void SearchObject::OnTriggerExit(const std::shared_ptr<Collidable>& collidable)
 			m_isTriggerExit = true;
 		}
 	}
-	//アタッチしたオブジェクトがどれにも当てはまらなかったら
-	else if (m_isPlayer)
-	{
-		auto tag = collidable->GetTag();
-		if (tag == ObjectTag::Enemy)
-		{
-			m_isTriggerExit = true;
-		}
-	}
+
 }
 
 bool SearchObject::GetIsTrigger()

@@ -201,6 +201,12 @@
     <ClCompile Include="Scene\MenuScene.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Object\PlayerSearchObject.cpp">
+      <Filter>ソース ファイル\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\EnemyAttackObject.cpp">
+      <Filter>ソース ファイル\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Icon\Icon.h">
@@ -337,6 +343,12 @@
     </ClInclude>
     <ClInclude Include="Scene\MenuScene.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\PlayerSearchObject.h">
+      <Filter>ヘッダー ファイル\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\EnemyAttackObject.h">
+      <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

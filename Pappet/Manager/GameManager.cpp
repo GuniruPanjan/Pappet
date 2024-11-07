@@ -58,11 +58,12 @@ void GameManager::Update()
 	m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
 	m_pPlayer->Update();
-
+	//ロックオンしてない時
 	if (!m_pPlayer->GetLock())
 	{
 		m_pCamera->Update(*m_pPlayer);
 	}
+	//ロックオンしてる時
 	else if (m_pPlayer->GetLock())
 	{
 		m_pCamera->LockUpdate(*m_pPlayer, *m_pEnemy);
@@ -96,7 +97,6 @@ void GameManager::Update()
 void GameManager::Draw()
 {
 	m_pMap->Draw();
-	m_pCamera->Draw();
 	m_pPlayer->Draw();
 	m_pEnemy->Draw();
 	m_pNpc->Draw();
@@ -105,6 +105,9 @@ void GameManager::Draw()
 	{
 		m_pSetting->MenuDraw();
 	}
+
+	m_pCamera->Draw();
+
 }
 
 /// <summary>
