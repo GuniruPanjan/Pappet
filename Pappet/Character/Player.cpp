@@ -379,6 +379,8 @@ void Player::Update()
 			//現在のアタックナンバー
 			cNowAttackNumber = 1;
 
+			m_pAttack->SetAttack(m_status.s_attack);
+
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 25.0f)
 			{
@@ -402,6 +404,8 @@ void Player::Update()
 			//現在のアタックナンバー
 			cNowAttackNumber = 2;
 
+			m_pAttack->SetAttack(m_status.s_attack * 1.1);
+
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 55.0f)
 			{
@@ -423,6 +427,8 @@ void Player::Update()
 		{
 			//現在のアタックナンバー
 			cNowAttackNumber = 3;
+
+			m_pAttack->SetAttack(m_status.s_attack * 1.2);
 
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 85.0f)

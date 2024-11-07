@@ -92,16 +92,12 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 	m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
 
 	//ターゲット状態
-	if (GetStay())
-	{
-		m_isTarget = true;
-	}
-	else if (GetExit())
-	{
-		m_isTarget = false;
-	}
+	TargetNow();
+	//攻撃を受けた時
+	HitNow();
 
 	TriggerUpdate();
+	HitTriggerUpdate();
 
 	//判定の更新
 	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();

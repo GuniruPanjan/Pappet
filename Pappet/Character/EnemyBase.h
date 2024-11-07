@@ -21,8 +21,6 @@ public:
 	//描画
 	virtual void Draw() {};
 
-	void TriggerUpdate();
-
 	//衝突したとき
 	void OnCollideEnter(const std::shared_ptr<Collidable>& collidable) override;
 	void OnCollideStay(const std::shared_ptr<Collidable>& collidable) override;
@@ -41,8 +39,6 @@ public:
 	const bool GetTarget() const { return m_isTarget; }
 	//ダメージを食らったかどうか
 	bool GetIsHit();
-	//ターゲットが外れたかどうか
-	void TargetNow();
 	//死亡時に落とすコア取得
 	int GetDropCore();
 	//死亡しているかどうかを取得
@@ -74,6 +70,16 @@ protected:
 	void SetModelPos();
 	//索敵判定をする当たり判定を作成
 	void InitSearch(float radius, float y);
+	//索敵の更新処理
+	void TriggerUpdate();
+	//ターゲットが外れたかどうか
+	void TargetNow();
+	//ヒットの更新処理
+	void HitTriggerUpdate();
+	//攻撃を受けたかどうか
+	void HitNow();
+	//ダメージを受けたとき
+	void OnDamage();
 	//死亡した時
 	void Death();
 	//アニメーションブレンドの更新
@@ -83,6 +89,8 @@ protected:
 protected:
 	std::shared_ptr<AttackObject> m_pAttack;    //攻撃判定
 	std::shared_ptr<SearchObject> m_pSearch;    //索敵判定
+
+	AttackObject* m_col;
 
 	int m_dropCore;      //死亡時にドロップするコア
 
@@ -94,6 +102,8 @@ protected:
 	bool m_isTarget;     //プレイヤーにターゲットされるかどうか
 	bool m_isStayTarget = false;  //プレイヤーの索敵に当たってるかどうか
 	bool m_isExitTarget = false;  //プレイヤーの索敵から外れたかどうか
+	bool m_isEnterHit = false;    //プレイヤーの攻撃が当たっているかどうか
+	bool m_isExitHit = false;     //プレイヤーの攻撃が外れたかどうか
 
 	MyLibrary::LibVec3 m_centerPos;     //中心座標
 

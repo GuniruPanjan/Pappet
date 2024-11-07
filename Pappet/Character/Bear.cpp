@@ -93,14 +93,7 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 	
 
 	//ターゲット状態
-	if (GetStay())
-	{
-		m_isTarget = true;
-	}
-	else if (GetExit())
-	{
-		m_isTarget = false;
-	}
+	TargetNow();
 
 	TriggerUpdate();
 

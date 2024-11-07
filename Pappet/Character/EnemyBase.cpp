@@ -30,6 +30,8 @@ EnemyBase::EnemyBase(Priority priority) :
 	m_isTarget(false),
 	m_isStayTarget(false),
 	m_isExitTarget(false),
+	m_isEnterHit(false),
+	m_isExitHit(false),
 	m_centerPos(),
 	m_I(0)
 {
@@ -52,11 +54,6 @@ void EnemyBase::Finalize(std::shared_ptr<MyLibrary::Physics> physics)
 	{
 		m_pSearch->Finalize(m_pPhysics);
 	}
-}
-
-void EnemyBase::TriggerUpdate()
-{
-	m_isStayTarget = false;
 }
 
 void EnemyBase::OnCollideEnter(const std::shared_ptr<Collidable>& collidable)
@@ -121,6 +118,8 @@ void EnemyBase::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 #if _DEBUG
 		message += "攻撃";
 #endif
+		m_col = dynamic_cast<AttackObject*>(collidable.get());
+		m_isEnterHit = true;
 		break;
 	case ObjectTag::Search:
 #if _DEBUG
@@ -189,6 +188,7 @@ void EnemyBase::OnTriggerExit(const std::shared_ptr<Collidable>& collidable)
 #if _DEBUG
 		message += "攻撃";
 #endif
+		m_isExitHit = true;
 		break;
 	case ObjectTag::Search:
 #if _DEBUG
@@ -226,20 +226,6 @@ bool EnemyBase::GetIsHit()
 	bool log = m_anim.s_hit;
 	m_anim.s_hit = false;
 	return log;
-}
-
-void EnemyBase::TargetNow()
-{
-	//ターゲットできる時
-	if (GetStay())
-	{
-		m_isTarget = true;
-	}
-	//ターゲットできない時
-	else if (GetExit())
-	{
-		m_isTarget = false;
-	}
 }
 
 int EnemyBase::GetDropCore()
@@ -339,6 +325,48 @@ void EnemyBase::InitSearch(float radius, float y)
 	m_pSearch->Init(m_pPhysics, MyLibrary::LibVec3(m_modelPos.x, m_modelPos.y + y, m_modelPos.z), true);
 
 	m_hpRadius = radius;
+}
+
+void EnemyBase::TriggerUpdate()
+{
+	m_isStayTarget = false;
+}
+
+void EnemyBase::TargetNow()
+{
+	//ターゲットできる時
+	if (GetStay())
+	{
+		m_isTarget = true;
+	}
+	//ターゲットできない時
+	else if (GetExit())
+	{
+		m_isTarget = false;
+	}
+}
+
+void EnemyBase::HitTriggerUpdate()
+{
+	m_isEnterHit = false;
+}
+
+void EnemyBase::HitNow()
+{
+	//攻撃が当たっているとき
+	if (m_isEnterHit)
+	{
+		OnDamage();
+	}
+}
+
+/// <summary>
+/// ダメージを受けたとき
+/// </summary>
+/// <param name="player"></param>
+void EnemyBase::OnDamage()
+{
+	m_status.s_hp -= m_col->GetAttack() - m_status.s_defense;
 }
 
 /// <summary>

@@ -19,6 +19,8 @@ public:
 	void OnTriggerEnter(const std::shared_ptr<Collidable>& collidable) override;
 	//他のオブジェクトに当たったかどうか
 	bool GetIsTrigger();
+	//攻撃力を設定
+	int SetAttack(int attack) { return m_attack = attack; }
 	//攻撃力を取得
 	const int GetAttack() const { return m_attack; }
 	//判定をリセット
