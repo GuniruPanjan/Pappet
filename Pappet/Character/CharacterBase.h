@@ -44,6 +44,9 @@ protected:
 	bool UpdateAnim(int attachNo, int max, float startTime = 0.0f);
 	//アニメーションの変更
 	void ChangeAnim(int animIndex, bool& one, bool (&all)[30], float animSpeed = 0.5f);
+	//アニメーションの未初期化
+	void NotInitAnim(bool init = false);
+
 
 protected:
 	//物理クラスのポインタ
@@ -73,6 +76,7 @@ protected:
 	float m_animTime;         //アニメーション再生速度
 	bool m_isAnimationFinish; //アニメーションが終わったかどうか
 	float m_animSpeed;        //アニメーションの進んだタイムを入れる
+	bool m_animInit;          //アニメーションを初期化するかどうか
 	VECTOR m_nowPos;        //現在のフレームの座標を取得する
 
 	//使う変数

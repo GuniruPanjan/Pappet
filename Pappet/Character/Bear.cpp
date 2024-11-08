@@ -14,6 +14,10 @@ namespace
 	constexpr float cCapsuleRadius = 25.0f;
 	//モデルの座標を合わせる
 	constexpr float cModelPosY = 24.0f;
+	//死亡終了
+	bool cDead = false;
+	//死亡したときのアニメーション
+	constexpr float cDeadFrame = 137.0f;
 	//索敵範囲
 	constexpr float cSearchRadius = 120.0f;
 }
@@ -78,6 +82,9 @@ void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::P
 	//アニメーション設定
 	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
 	m_nowAnimIdx = m_animIdx["Idle"];
+
+	m_anim.s_isDead = false;
+	cDead = false;
 }
 
 /// <summary>
@@ -88,18 +95,39 @@ void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::P
 void Bear::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 {
 	//アニメーションの更新
-	m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
+	if (!cDead)
+	{
+		m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
+	}
+	else if (cDead && m_nowFrame <= cDeadFrame)
+	{
+		m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
+	}
 
-	
+	UpdateAnimationBlend();
 
 	//ターゲット状態
 	TargetNow();
+	//攻撃を受けた時
+	if (m_isEnterHit)
+	{
+		m_status.s_hp -= m_col->GetAttack() - m_status.s_defense;
+	}
 
 	TriggerUpdate();
+	HitTriggerUpdate();
 
 	//判定の更新
 	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
 	m_pSearch->Update(centerPos);
+
+	//死んだ時
+	if (m_status.s_hp <= 0.0f)
+	{
+		Death();
+		cDead = true;
+	}
+
 }
 
 /// <summary>

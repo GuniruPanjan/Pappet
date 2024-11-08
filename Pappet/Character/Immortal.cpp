@@ -14,7 +14,10 @@ namespace
 	constexpr float cCapsuleRadius = 14.0f;
 	//モデルの座標を合わせる
 	constexpr float cModelPosY = 12.0f;
-
+	//死亡終了
+	bool cDead = false;
+	//死亡したときのアニメーション
+	constexpr float cDeadFrame = 116.0f;
 	//索敵範囲
 	constexpr float cSearchRadius = 120.0f;
 
@@ -79,6 +82,10 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 	//アニメーション設定
 	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
 	m_nowAnimIdx = m_animIdx["Idle"];
+
+	//死をfalseにする
+	m_anim.s_isDead = false;
+	cDead = false;
 }
 
 /// <summary>
@@ -89,12 +96,21 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 {
 	//アニメーションの更新
-	m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
+	if (!cDead && m_nowFrame <= cDeadFrame)
+	{
+		m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
+	}
+
+	UpdateAnimationBlend();
 
 	//ターゲット状態
 	TargetNow();
 	//攻撃を受けた時
-	HitNow();
+	//攻撃が当たっているとき
+	if (m_isEnterHit)
+	{
+		m_status.s_hp -= m_col->GetAttack() - m_status.s_defense;
+	}
 
 	TriggerUpdate();
 	HitTriggerUpdate();
@@ -107,6 +123,11 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 	if (m_status.s_hp <= 0.0f)
 	{
 		Death();
+	}
+	//死亡が終了した瞬間
+	if (m_anim.s_isDead && m_isAnimationFinish)
+	{
+		cDead = true;
 	}
 }
 

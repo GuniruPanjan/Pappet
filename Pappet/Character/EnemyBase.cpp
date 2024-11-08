@@ -49,11 +49,9 @@ EnemyBase::~EnemyBase()
 void EnemyBase::Finalize(std::shared_ptr<MyLibrary::Physics> physics)
 {
 	Collidable::Finalize(physics);
-	m_pAttack->Finalize(m_pPhysics);
-	if (m_isDiscovery)
-	{
-		m_pSearch->Finalize(m_pPhysics);
-	}
+
+	//m_pAttack->Finalize(physics);
+	m_pSearch->Finalize(physics);
 }
 
 void EnemyBase::OnCollideEnter(const std::shared_ptr<Collidable>& collidable)
@@ -351,24 +349,6 @@ void EnemyBase::HitTriggerUpdate()
 	m_isEnterHit = false;
 }
 
-void EnemyBase::HitNow()
-{
-	//UŒ‚‚ª“–‚½‚Á‚Ä‚¢‚é‚Æ‚«
-	if (m_isEnterHit)
-	{
-		OnDamage();
-	}
-}
-
-/// <summary>
-/// ƒ_ƒ[ƒW‚ğó‚¯‚½‚Æ‚«
-/// </summary>
-/// <param name="player"></param>
-void EnemyBase::OnDamage()
-{
-	m_status.s_hp -= m_col->GetAttack() - m_status.s_defense;
-}
-
 /// <summary>
 /// €–S‚µ‚½
 /// </summary>
@@ -380,8 +360,7 @@ void EnemyBase::Death()
 		EnemyBase::Finalize(m_pPhysics);
 
 		m_nowAnimIdx = m_animIdx["Death"];
-
-		ChangeAnim(m_nowAnimIdx, m_animOne[0], m_animOne);
+		ChangeAnim(m_nowAnimIdx, m_animOne[1], m_animOne);
 	}
 }
 

@@ -170,9 +170,6 @@ void Player::Update()
 	//パッド入力取得
 	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
 
-	//アニメーションの更新
-	m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
-
 	//アニメーションの切り替え
 	if (m_prevAnimNo != -1)
 	{
@@ -333,6 +330,9 @@ void Player::Update()
 		AllAnimation();
 	}
 
+	//アニメーションの更新
+	m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
+
 	//プレイヤーのポジションを入れる
 	SetModelPos();
 
@@ -366,7 +366,6 @@ void Player::Update()
 	//回避終了
 	else if (m_isAnimationFinish && m_animChange.sa_avoidance)
 	{
-
 		m_animChange.sa_avoidance = false;
 	}
 
@@ -620,6 +619,8 @@ void Player::NotWeaponAnimation()
 		{
 			m_nowAnimIdx = m_animIdx["Run"];
 			ChangeAnim(m_nowAnimIdx, m_animOne[1], m_animOne);
+			NotInitAnim(false);
+
 		}
 		//歩き
 		else if (m_anim.s_moveflag)
@@ -629,6 +630,8 @@ void Player::NotWeaponAnimation()
 			{
 				m_nowAnimIdx = m_animIdx["Walk"];
 				ChangeAnim(m_nowAnimIdx, m_animOne[2], m_animOne);
+				NotInitAnim(false);
+
 			}
 			//ターゲットしているとき
 			else if (m_lockonTarget)
@@ -638,18 +641,24 @@ void Player::NotWeaponAnimation()
 				{
 					m_nowAnimIdx = m_animIdx["LeftWalk"];
 					ChangeAnim(m_nowAnimIdx, m_animOne[3], m_animOne);
+					NotInitAnim(false);
+
 				}
 				//右歩き
 				else if (cAnX > 500)
 				{
 					m_nowAnimIdx = m_animIdx["RightWalk"];
 					ChangeAnim(m_nowAnimIdx, m_animOne[4], m_animOne);
+					NotInitAnim(false);
+
 				}
 				//後ろ歩きor歩き
 				if (cAnX < 500 && cAnX > -500)
 				{
 					m_nowAnimIdx = m_animIdx["Walk"];
 					ChangeAnim(m_nowAnimIdx, m_animOne[2], m_animOne, cAnimWalkTime);
+					NotInitAnim(false);
+
 				}
 			}
 			
@@ -670,6 +679,8 @@ void Player::AllAnimation()
 		{
 			m_nowAnimIdx = m_animIdx["Hit"];
 			ChangeAnim(m_nowAnimIdx, m_animOne[5], m_animOne);
+			NotInitAnim(false);
+
 		}
 		//攻撃が当たってないとき
 		else if (!m_anim.s_hit)
@@ -679,36 +690,46 @@ void Player::AllAnimation()
 			{
 				m_nowAnimIdx = m_animIdx["Idle"];
 				ChangeAnim(m_nowAnimIdx, m_animOne[6], m_animOne);
+				NotInitAnim(false);
+
 			}
 			//回避
 			else if (m_animChange.sa_avoidance)
 			{
 				m_nowAnimIdx = m_animIdx["Roll"];
 				ChangeAnim(m_nowAnimIdx, m_animOne[7], m_animOne);
+				NotInitAnim(true);
 			}
 			//攻撃
 			else if (m_anim.s_attack && !m_animChange.sa_avoidance && !m_animChange.sa_recovery)
 			{
 				m_nowAnimIdx = m_animIdx["Attack1"];
 				ChangeAnim(m_nowAnimIdx, m_animOne[8], m_animOne, 1.0f);
+				NotInitAnim(false);
 			}
 			//回復
 			else if (m_animChange.sa_recovery)
 			{
 				m_nowAnimIdx = m_animIdx["Recovery"];
 				ChangeAnim(m_nowAnimIdx, m_animOne[9], m_animOne);
+				NotInitAnim(false);
+
 			}
 			//アイテムを取得するとき
 			else if (m_animChange.sa_taking)
 			{
 				m_nowAnimIdx = m_animIdx["Taking"];
 				ChangeAnim(m_nowAnimIdx, m_animOne[10], m_animOne);
+				NotInitAnim(false);
+
 			}
 			//ギミックを作動させるとき
 			else if (m_animChange.sa_touch)
 			{
 				m_nowAnimIdx = m_animIdx["Touch"];
 				ChangeAnim(m_nowAnimIdx, m_animOne[11], m_animOne);
+				NotInitAnim(false);
+
 			}
 		}
 	}

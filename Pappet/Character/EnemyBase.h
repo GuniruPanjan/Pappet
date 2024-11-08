@@ -76,8 +76,6 @@ protected:
 	void TargetNow();
 	//ヒットの更新処理
 	void HitTriggerUpdate();
-	//攻撃を受けたかどうか
-	void HitNow();
 	//ダメージを受けたとき
 	void OnDamage();
 	//死亡した時
