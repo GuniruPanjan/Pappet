@@ -85,6 +85,8 @@ void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::P
 
 	m_anim.s_isDead = false;
 	cDead = false;
+
+	m_status.s_hp = 1.0f;
 }
 
 /// <summary>
@@ -99,6 +101,7 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 	{
 		m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
 	}
+	//死亡したときのアニメーション更新
 	else if (cDead && m_nowFrame <= cDeadFrame)
 	{
 		m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);

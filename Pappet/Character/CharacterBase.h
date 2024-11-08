@@ -43,7 +43,7 @@ protected:
 	//アニメーションの更新
 	bool UpdateAnim(int attachNo, int max, float startTime = 0.0f);
 	//アニメーションの変更
-	void ChangeAnim(int animIndex, bool& one, bool (&all)[30], float animSpeed = 0.5f);
+	void ChangeAnim(int animIndex, bool& one, bool(&all)[30], float animSpeed = 0.5f, bool reverse = false, float resetTime = 0.0f);
 	//アニメーションの未初期化
 	void NotInitAnim(bool init = false);
 
@@ -77,6 +77,7 @@ protected:
 	bool m_isAnimationFinish; //アニメーションが終わったかどうか
 	float m_animSpeed;        //アニメーションの進んだタイムを入れる
 	bool m_animInit;          //アニメーションを初期化するかどうか
+	bool m_animReverse;       //アニメーションを逆再生させるかどうか
 	VECTOR m_nowPos;        //現在のフレームの座標を取得する
 
 	//使う変数

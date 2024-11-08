@@ -23,6 +23,7 @@ CharacterBase::CharacterBase(Priority priority, ObjectTag tag) :
 	m_animTime(0.5f),
 	m_isAnimationFinish(false),
 	m_animInit(false),
+	m_animReverse(false),
 	m_angle(0.0f),
 	m_animSpeed(0.0f),
 	m_attackRadius(0.0f),
@@ -51,23 +52,44 @@ bool CharacterBase::UpdateAnim(int attachNo, int max, float startTime)
 	//アニメーションが設定されていなかったら早期リターン
 	if (attachNo == -1) return false;
 
-	//アニメーションを進行させる
-	m_nowFrame += m_animTime;
-
 	//現在再生中のアニメーションの総カウントを取得する
 	float totalAnimFrame = MV1GetAttachAnimTotalTime(m_modelHandle, attachNo);
 	bool isLoop = false;
 
-	while (totalAnimFrame <= m_nowFrame)
+	//アニメーションを進行させる
+	if (!m_animReverse)
 	{
-		m_nowFrame -= totalAnimFrame;
-		m_nowFrame += startTime;
-		isLoop = true;
+		m_nowFrame += m_animTime;
+	}
+	//アニメーションを逆進行させる
+	else if (m_animReverse)
+	{
+		m_nowFrame -= m_animTime;
+	}
+
+	//アニメーションを再生させる時
+	if (!m_animReverse)
+	{
+		while (totalAnimFrame <= m_nowFrame)
+		{
+			m_nowFrame -= totalAnimFrame;
+			m_nowFrame += startTime;
+			isLoop = true;
+		}
+	}
+	//アニメーションを逆再生させる時
+	else if (m_animReverse)
+	{
+		while (m_nowFrame <= 0.0f)
+		{
+			m_nowFrame += totalAnimFrame;
+			m_nowFrame -= startTime;
+			isLoop = true;
+		}
 	}
 
 	if (!m_animInit)
 	{
-		//こいつが原因の可能性大
 		//進めた時間に設定
 		MV1SetAttachAnimTime(m_modelHandle, attachNo, m_nowFrame);
 	}
@@ -86,7 +108,7 @@ bool CharacterBase::UpdateAnim(int attachNo, int max, float startTime)
 /// </summary>
 /// <param name="animIndex">変更後のアニメーション番号</param>
 /// <param name="animSpeed">アニメーションタイム</param>
-void CharacterBase::ChangeAnim(int animIndex, bool& one, bool (&all)[30], float animSpeed)
+void CharacterBase::ChangeAnim(int animIndex, bool& one, bool (&all)[30], float animSpeed, bool reverse, float resetTime)
 {
 	//一回だけ実行
 	if (one == false)
@@ -106,7 +128,10 @@ void CharacterBase::ChangeAnim(int animIndex, bool& one, bool (&all)[30], float 
 		//切り替えの瞬間は変更前のアニメーションが再生される状態にする
 		m_animBlendRate = 0.0f;
 	
-		m_nowFrame = 0.0f;
+		m_nowFrame = resetTime;
+
+		//アニメーションを逆再生させるかどうか
+		m_animReverse = reverse;
 
 		m_animTime = animSpeed;
 

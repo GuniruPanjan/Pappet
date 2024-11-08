@@ -72,6 +72,7 @@ private:
 	//アニメーション用変数
 	int m_attackNumber;                 //現在の攻撃段階の代入
 	bool m_avoidanceNow;                //フレーム回避中の判断
+	bool m_animReverse;                 //アニメーションを逆再生させるための判定
 
 	//フレーム用変数
 	int m_moveAnimFrameIndex;           //アニメーションで移動しているフレームの番号を検索する変数

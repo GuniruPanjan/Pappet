@@ -96,7 +96,13 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 {
 	//アニメーションの更新
-	if (!cDead && m_nowFrame <= cDeadFrame)
+	if (!cDead)
+	{
+		m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
+
+	}
+	//死亡した時のアニメーション更新
+	else if (cDead && m_nowFrame <= cDeadFrame)
 	{
 		m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
 	}
@@ -123,10 +129,6 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 	if (m_status.s_hp <= 0.0f)
 	{
 		Death();
-	}
-	//死亡が終了した瞬間
-	if (m_anim.s_isDead && m_isAnimationFinish)
-	{
 		cDead = true;
 	}
 }

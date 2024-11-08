@@ -17,7 +17,9 @@ namespace
 	//ダッシュにより代入される速度
 	constexpr float cDashSpeed = 4.0f;
 	//歩くモーションのプレイタイム
-	float cAnimWalkTime = 0.0f;
+	constexpr float cAnimWalkTime = 0.5f;
+	//歩きアニメーションのトータルタイム
+	constexpr float cAnimWalkReverseTimeInit = 35.0f;
 	//ボタンが押されているかの確認用変数
 	int cAbutton = 0;
 	int cRbutton = 0;
@@ -58,6 +60,7 @@ Player::Player() :
 	m_cameraAngle(0.0f),
 	m_lockAngle(0.0f),
 	m_avoidanceNow(false),
+	m_animReverse(false),
 	m_moveWeaponFrameMatrix(),
 	m_moveShieldFrameMatrix(),
 	m_rollMove(VGet(0.0f,0.0f,0.0f))
@@ -306,11 +309,11 @@ void Player::Update()
 	if (m_lockonTarget && !m_animChange.sa_dashMove && cAnY > 0 && cAnX < 500 && cAnX > -500)
 	{
 		//再生時間を進める
-		cAnimWalkTime = -0.5f;
+		m_animReverse = true;
 	}
 	else
 	{
-		cAnimWalkTime = 0.5f;
+		m_animReverse = false;
 	}
 
 	//プレイヤーが生きている時だけ
@@ -656,7 +659,7 @@ void Player::NotWeaponAnimation()
 				if (cAnX < 500 && cAnX > -500)
 				{
 					m_nowAnimIdx = m_animIdx["Walk"];
-					ChangeAnim(m_nowAnimIdx, m_animOne[2], m_animOne, cAnimWalkTime);
+					ChangeAnim(m_nowAnimIdx, m_animOne[2], m_animOne, cAnimWalkTime, m_animReverse, cAnimWalkReverseTimeInit);
 					NotInitAnim(false);
 
 				}
