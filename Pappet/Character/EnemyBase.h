@@ -70,8 +70,18 @@ protected:
 	void SetModelPos();
 	//索敵判定をする当たり判定を作成
 	void InitSearch(float radius, float y);
+	//攻撃判定をする当たり判定を作成
+	void InitAttack(float radius, float attack);
 	//索敵の更新処理
 	void TriggerUpdate();
+	//プレイヤーとの距離を測る処理と盾との距離を測る処理
+	void DistanceUpdate(MyLibrary::LibVec3 playerPos);
+	//方向を向く処理
+	void AngleUpdate(MyLibrary::LibVec3 playerPos);
+	//移動をする処理
+	void MoveUpdate();
+	//アイドル状態にする
+	void IdleUpdate();
 	//ターゲットが外れたかどうか
 	void TargetNow();
 	//ヒットの更新処理
@@ -85,25 +95,31 @@ protected:
 	//モデルの座標設定
 	void SetDrawModelPos(float posY);
 protected:
-	std::shared_ptr<AttackObject> m_pAttack;    //攻撃判定
+	std::shared_ptr<EnemyAttackObject> m_pAttack;    //攻撃判定
 	std::shared_ptr<SearchObject> m_pSearch;    //索敵判定
 
 	AttackObject* m_col;
 
-	int m_dropCore;      //死亡時にドロップするコア
+	int m_randomAction;       //ランダムに行動するための変数
+	int m_dropCore;              //死亡時にドロップするコア
 
-	float m_hpRadius;    //HPバーを表示する当たり判定の半径
+	float m_hpRadius;            //HPバーを表示する当たり判定の半径
+	float m_moveTurning;         //時計周りに旋回する法線ベクトル
+	float m_moveReverseTurning;  //反時計周りに旋回する法線ベクトル
+	float m_difPSize;            //プレイヤーとの距離のサイズを入れる
 
-	bool m_isDroped;     //コアをドロップしたかどうか
-	bool m_isExist;      //存在するかどうか
-	bool m_isDiscovery;  //プレイヤーを見つけたかどうか
-	bool m_isTarget;     //プレイヤーにターゲットされるかどうか
-	bool m_isStayTarget = false;  //プレイヤーの索敵に当たってるかどうか
-	bool m_isExitTarget = false;  //プレイヤーの索敵から外れたかどうか
-	bool m_isEnterHit = false;    //プレイヤーの攻撃が当たっているかどうか
-	bool m_isExitHit = false;     //プレイヤーの攻撃が外れたかどうか
+	bool m_isDroped;             //コアをドロップしたかどうか
+	bool m_isExist;              //存在するかどうか
+	bool m_isDiscovery;          //プレイヤーを見つけたかどうか
+	bool m_isTarget;             //プレイヤーにターゲットされるかどうか
+	bool m_isStayTarget = false; //プレイヤーの索敵に当たってるかどうか
+	bool m_isExitTarget = false; //プレイヤーの索敵から外れたかどうか
+	bool m_isEnterHit = false;   //プレイヤーの攻撃が当たっているかどうか
+	bool m_isExitHit = false;    //プレイヤーの攻撃が外れたかどうか
 
 	MyLibrary::LibVec3 m_centerPos;     //中心座標
+	VECTOR m_move;
+	VECTOR m_difPlayer;          //プレイヤーとの距離
 
 	int m_I;
 

@@ -22,8 +22,14 @@ namespace
 /// <param name="priority">優先度</param>
 EnemyBase::EnemyBase(Priority priority) :
 	CharacterBase(priority, ObjectTag::Enemy),
+	m_randomAction(0),
 	m_dropCore(0),
 	m_hpRadius(0.0f),
+	m_moveTurning(0.0f),
+	m_moveReverseTurning(0.0f),
+	m_difPSize(0.0f),
+	m_move(VGet(0.0f,0.0f,0.0f)),
+	m_difPlayer(VGet(0.0f,0.0f,0.0f)),
 	m_isExist(false),
 	m_isDroped(false),
 	m_isDiscovery(false),
@@ -50,7 +56,7 @@ void EnemyBase::Finalize(std::shared_ptr<MyLibrary::Physics> physics)
 {
 	Collidable::Finalize(physics);
 
-	//m_pAttack->Finalize(physics);
+	m_pAttack->Finalize(physics);
 	m_pSearch->Finalize(physics);
 }
 
@@ -325,9 +331,76 @@ void EnemyBase::InitSearch(float radius, float y)
 	m_hpRadius = radius;
 }
 
+/// <summary>
+/// 攻撃判定をする当たり判定を作成
+/// </summary>
+/// <param name="radius">半径</param>
+/// <param name="attack">攻撃力</param>
+void EnemyBase::InitAttack(float radius, float attack)
+{
+	m_pAttack = std::make_shared<EnemyAttackObject>(radius);
+	m_pAttack->SetAttack(attack);
+	m_pAttack->Init(m_pPhysics);
+}
+
 void EnemyBase::TriggerUpdate()
 {
 	m_isStayTarget = false;
+}
+
+/// <summary>
+/// 距離を測る処理
+/// </summary>
+/// <param name="playerPos">プレイヤーのポジション</param>
+void EnemyBase::DistanceUpdate(MyLibrary::LibVec3 playerPos)
+{
+	//プレイヤーとの距離
+	m_difPlayer = VSub(playerPos.ConversionToVECTOR(), m_modelPos.ConversionToVECTOR());
+
+	//プレイヤーとの距離のサイズ
+	m_difPSize = VSize(m_difPlayer);
+}
+
+/// <summary>
+/// 索敵で発見した処理
+/// </summary>
+/// <param name="playerPos">プレイヤーのポジション</param>
+void EnemyBase::AngleUpdate(MyLibrary::LibVec3 playerPos)
+{
+	float X = m_modelPos.x - playerPos.ConversionToVECTOR().x;
+	float Z = m_modelPos.z - playerPos.ConversionToVECTOR().z;
+
+	//プレイヤーの方を向く
+	m_angle = atan2f(X, Z);
+
+	//法線ベクトル
+	m_moveTurning = atan2f(-X, Z);
+	m_moveReverseTurning = atan2f(X, -Z);
+}
+
+/// <summary>
+/// 移動をする処理
+/// </summary>
+void EnemyBase::MoveUpdate()
+{
+	if (m_anim.s_moveflag)
+	{
+		m_nowAnimIdx = m_animIdx["Walk"];
+		ChangeAnim(m_nowAnimIdx, m_animOne[2], m_animOne);
+	}
+
+	MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
+	MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(m_moveVec.x, prevVelocity.y, m_moveVec.z);
+	rigidbody.SetVelocity(newVelocity);
+}
+
+/// <summary>
+/// アイドル状態に遷移する
+/// </summary>
+void EnemyBase::IdleUpdate()
+{
+	m_nowAnimIdx = m_animIdx["Idle"];
+	ChangeAnim(m_nowAnimIdx, m_animOne[0], m_animOne);
 }
 
 void EnemyBase::TargetNow()

@@ -700,7 +700,7 @@ void Player::AllAnimation()
 			else if (m_animChange.sa_avoidance)
 			{
 				m_nowAnimIdx = m_animIdx["Roll"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[7], m_animOne);
+				ChangeAnim(m_nowAnimIdx, m_animOne[7], m_animOne, 0.8f);
 				NotInitAnim(true);
 			}
 			//çUåÇ

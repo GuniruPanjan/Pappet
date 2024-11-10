@@ -3,9 +3,11 @@
 #include "Object/AttackObject.h"
 #include "Object/SearchObject.h"
 #include "Object/PlayerSearchObject.h"
+#include "Object/EnemyAttackObject.h"
 #include <map>
 #include <string>
 #define ANIMATION_MAX   30
+#define D2R(deg) ((deg)*DX_PI_F/180.0f)
 
 class CharacterBase : public MyLibrary::Collidable
 {

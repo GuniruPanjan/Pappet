@@ -20,6 +20,8 @@ namespace
 	constexpr float cDeadFrame = 116.0f;
 	//索敵範囲
 	constexpr float cSearchRadius = 120.0f;
+	//近距離の行動に移る距離
+	constexpr float cNear = 50.0f;
 
 }
 
@@ -38,6 +40,10 @@ Immortal::Immortal() :
 	LoadData(cCharacterName);
 	//索敵範囲の設定
 	m_searchRadius = cSearchRadius;
+
+	//アニメーションの判定初期化
+	m_anim.s_attack = false;
+	m_anim.s_moveflag = false;
 }
 
 /// <summary>
@@ -109,6 +115,101 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 
 	UpdateAnimationBlend();
 
+	DistanceUpdate(playerPos);
+
+	//プレイヤーを見つけた時
+	if (m_pSearch->GetIsStay())
+	{
+		//方向を決める
+		AngleUpdate(playerPos);
+
+		//角度を出しプレイヤーの周りを旋回運動させる
+		MATRIX mtx = MGetRotY(D2R(m_moveTurning) + DX_PI_F / 2);
+		MATRIX mtxR = MGetRotY(D2R(m_moveReverseTurning) - DX_PI_F / 2);
+
+		//近くじゃないときの行動
+		if (m_difPSize > cNear)
+		{
+			//攻撃してないときの処理
+			if (!m_anim.s_attack)
+			{
+				//歩くアニメーション
+				m_anim.s_moveflag = true;
+
+				m_status.s_speed = 0.01f;
+
+				m_move = VScale(m_difPlayer, m_status.s_speed);
+			}
+		}
+		//近くに行った時の行動
+		else if (m_difPSize <= cNear)
+		{
+			m_status.s_speed = 0.3f;
+
+			m_move = VNorm(m_difPlayer);
+
+			m_move = VScale(m_move, m_status.s_speed);
+
+			//ランダム行動で0が出た場合
+			//左周り
+			if (m_randomAction == 0)
+			{
+				m_move = VTransform(m_move, mtxR);
+
+				if (m_anim.s_moveflag)
+				{
+					m_nowAnimIdx = m_animIdx["LeftWalk"];
+					ChangeAnim(m_nowAnimIdx, m_animOne[3], m_animOne);
+				}
+			}
+			//ランダム行動で1が出た場合
+			//右周り
+			else if (m_randomAction == 1)
+			{
+				m_move = VTransform(m_move, mtx);
+
+				if (m_anim.s_moveflag)
+				{
+					m_nowAnimIdx = m_animIdx["RightWalk"];
+					ChangeAnim(m_nowAnimIdx, m_animOne[4], m_animOne);
+				}
+			}
+			//ランダム行動で2が出た場合
+			else if (m_randomAction == 2)
+			{
+				m_move = VTransform(m_move, mtxR);
+				
+				if (m_anim.s_moveflag)
+				{
+					m_nowAnimIdx = m_animIdx["LeftWalk"];
+					ChangeAnim(m_nowAnimIdx, m_animOne[3], m_animOne);
+				}
+			}
+		}
+
+		//アニメーションが終わる度にランダムな行動を行う
+		if (m_isAnimationFinish)
+		{
+			m_randomAction = GetRand(2);
+		}
+
+		//移動方向
+		m_moveVec = MyLibrary::LibVec3(m_move.x, m_move.y, m_move.z);
+	}
+	//プレイヤーを見失った時
+	else if (m_pSearch->GetIsExit())
+	{
+		//アイドル状態にする
+		IdleUpdate();
+		//歩かないようにする
+		m_anim.s_moveflag = false;
+
+		m_moveVec = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
+	}
+
+	//移動処理
+	MoveUpdate();
+
 	//ターゲット状態
 	TargetNow();
 	//攻撃を受けた時
@@ -120,6 +221,7 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 
 	TriggerUpdate();
 	HitTriggerUpdate();
+
 
 	//判定の更新
 	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
@@ -140,6 +242,8 @@ void Immortal::Draw()
 {
 	//当たり判定座標を取得してモデルの描画座標を設定する
 	SetDrawModelPos(cModelPosY);
+	//3Dモデルの回転地をセットする
+	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
 	//モデルの描画
 	MV1DrawModel(m_modelHandle);
 }
