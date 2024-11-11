@@ -1,1 +1,69 @@
 #include "MapBase.h"
+#include "Manager/HandleManager.h"
+
+namespace
+{
+	//シングルトン
+	auto& handle = HandleManager::GetInstance();
+}
+
+/// <summary>
+/// コンストラクタ
+/// </summary>
+MapBase::MapBase() :
+	m_handle(-1),
+	m_collisionHandle(-1)
+{
+}
+
+/// <summary>
+/// デストラクタ
+/// </summary>
+MapBase::~MapBase()
+{
+	//メモリ解放
+	MV1DeleteModel(m_handle);
+	MV1DeleteModel(m_collisionHandle);
+}
+
+void MapBase::Finalize(std::shared_ptr<MyLibrary::Physics> physics)
+{
+	m_pSearch->Finalize(physics);
+	m_pRect->Finalize(physics);
+}
+
+/// <summary>
+/// モデルを読み込む
+/// </summary>
+/// <param name="mapPath">モデルのパス</param>
+/// <param name="collisionPath">コリジョンのモデルパス</param>
+void MapBase::LoadData(std::string mapPath, std::string collisionPath)
+{
+	m_handle = handle.GetModelHandle(mapPath);
+	m_collisionHandle = handle.GetModelHandle(collisionPath);
+}
+
+/// <summary>
+/// 索敵をする当たり判定を作成
+/// </summary>
+/// <param name="radius">半径</param>
+/// <param name="posX">X座標</param>
+/// <param name="posY">Y座標</param>
+/// <param name="posZ">Z座標</param>
+void MapBase::InitSearch(float radius, MyLibrary::LibVec3 pos)
+{
+	m_pSearch = std::make_shared<SearchObject>(radius);
+	m_pSearch->Init(m_pPhysics, pos, false, true);
+}
+
+/// <summary>
+/// 矩形の当たり判定を作成
+/// </summary>
+/// <param name="width">幅</param>
+/// <param name="hight">高さ</param>
+/// <param name="depth">奥行</param>
+void MapBase::InitRect(float width, float hight, float depth, MyLibrary::LibVec3 pos)
+{
+	m_pRect = std::make_shared<RectObject>(width, hight, depth);
+	m_pRect->Init(m_pPhysics, pos, true);
+}
