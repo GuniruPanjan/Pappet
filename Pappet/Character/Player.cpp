@@ -210,7 +210,7 @@ void Player::Update()
 	float SetAngleX = 0.0f;
 	float SetAngleY = 0.0f;
 
-	if (!m_anim.s_isDead && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery)
+	if (!m_anim.s_isDead && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery && !m_anim.s_hit)
 	{
 		GetJoypadAnalogInput(&analogX, &analogY, DX_INPUT_PAD1);
 
@@ -345,6 +345,12 @@ void Player::Update()
 	m_pSearch->Update(centerPos);
 	m_pAttack->Update(attackPos);
 
+	//‹¯‚İ‚ğI‚í‚ç‚¹‚é
+	if (m_anim.s_hit && m_isAnimationFinish)
+	{
+		m_anim.s_hit = false;
+	}
+
 	//‰ñ”ğs“®’†
 	if (!m_isAnimationFinish && m_animChange.sa_avoidance)
 	{
@@ -357,6 +363,8 @@ void Player::Update()
 		}
 		else if (m_nowFrame >= 20.0f && m_nowFrame <= 30.0f)
 		{
+			m_avoidanceNow = false;
+
 			cAvoidanceMove = 1.0f;
 		}
 		else
@@ -843,6 +851,12 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 #if _DEBUG
 		message += "UŒ‚";
 #endif
+		//‰ñ”ğ’†‚¶‚á‚È‚¢‚Æ‚«
+		if (!m_avoidanceNow)
+		{
+			m_anim.s_hit = true;
+		}
+
 		break;
 	case ObjectTag::Shield:
 #if _DEBUG

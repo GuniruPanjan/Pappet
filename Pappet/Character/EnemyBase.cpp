@@ -56,7 +56,6 @@ void EnemyBase::Finalize(std::shared_ptr<MyLibrary::Physics> physics)
 {
 	Collidable::Finalize(physics);
 
-	m_pAttack->Finalize(physics);
 	m_pSearch->Finalize(physics);
 }
 
@@ -332,13 +331,20 @@ void EnemyBase::InitSearch(float radius, float y)
 }
 
 /// <summary>
-/// UŒ‚”»’è‚ğ‚·‚é“–‚½‚è”»’è‚ğì¬
+/// UŒ‚‚ğ‰Šú‰»‚·‚é
 /// </summary>
 /// <param name="radius">”¼Œa</param>
-/// <param name="attack">UŒ‚—Í</param>
-void EnemyBase::InitAttack(float radius, float attack)
+void EnemyBase::InitAttack(float radius)
 {
 	m_pAttack = std::make_shared<EnemyAttackObject>(radius);
+}
+
+/// <summary>
+/// UŒ‚”»’è‚ğ‰Šú‰»‚·‚é
+/// </summary>
+/// <param name="attack">UŒ‚—Í</param>
+void EnemyBase::InitAttackUpdate(float attack)
+{
 	m_pAttack->SetAttack(attack);
 	m_pAttack->Init(m_pPhysics);
 }
@@ -383,12 +389,6 @@ void EnemyBase::AngleUpdate(MyLibrary::LibVec3 playerPos)
 /// </summary>
 void EnemyBase::MoveUpdate()
 {
-	if (m_anim.s_moveflag)
-	{
-		m_nowAnimIdx = m_animIdx["Walk"];
-		ChangeAnim(m_nowAnimIdx, m_animOne[2], m_animOne);
-	}
-
 	MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
 	MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(m_moveVec.x, prevVelocity.y, m_moveVec.z);
 	rigidbody.SetVelocity(newVelocity);
@@ -401,6 +401,47 @@ void EnemyBase::IdleUpdate()
 {
 	m_nowAnimIdx = m_animIdx["Idle"];
 	ChangeAnim(m_nowAnimIdx, m_animOne[0], m_animOne);
+}
+
+/// <summary>
+/// •à‚¢‚Ä‚¢‚éó‘Ô‚É‘JˆÚ‚·‚é
+/// </summary>
+/// <param name="walk">ƒpƒX</param>
+/// <param name="number">”Ô†</param>
+void EnemyBase::WalkUpdate(std::string path, int number)
+{
+	if (m_anim.s_moveflag)
+	{
+		m_nowAnimIdx = m_animIdx[path];
+		ChangeAnim(m_nowAnimIdx, m_animOne[number], m_animOne);
+	}
+}
+
+/// <summary>
+/// UŒ‚ó‘Ô‚É‘JˆÚ‚·‚é
+/// </summary>
+/// <param name="path">ƒpƒX</param>
+/// <param name="number">”Ô†</param>
+void EnemyBase::AttackUpdate(std::string path, int number)
+{
+	if (m_anim.s_attack)
+	{
+		m_nowAnimIdx = m_animIdx[path];
+		ChangeAnim(m_nowAnimIdx, m_animOne[number], m_animOne);
+	}
+}
+
+/// <summary>
+/// ‹¯‚İó‘Ô‚É‘JˆÚ‚·‚é
+/// </summary>
+/// <param name="number">”Ô†</param>
+void EnemyBase::HitUpdate(int number)
+{
+	if (m_anim.s_hit)
+	{
+		m_nowAnimIdx = m_animIdx["Hit"];
+		ChangeAnim(m_nowAnimIdx, m_animOne[number], m_animOne);
+	}
 }
 
 void EnemyBase::TargetNow()

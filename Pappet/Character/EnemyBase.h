@@ -70,8 +70,10 @@ protected:
 	void SetModelPos();
 	//索敵判定をする当たり判定を作成
 	void InitSearch(float radius, float y);
+	//攻撃判定の初期化
+	void InitAttack(float radius);
 	//攻撃判定をする当たり判定を作成
-	void InitAttack(float radius, float attack);
+	void InitAttackUpdate(float attack);
 	//索敵の更新処理
 	void TriggerUpdate();
 	//プレイヤーとの距離を測る処理と盾との距離を測る処理
@@ -82,6 +84,12 @@ protected:
 	void MoveUpdate();
 	//アイドル状態にする
 	void IdleUpdate();
+	//歩く状態にする
+	void WalkUpdate(std::string path, int number);
+	//攻撃する状態にする
+	void AttackUpdate(std::string path, int number);
+	//怯み状態にする
+	void HitUpdate(int number);
 	//ターゲットが外れたかどうか
 	void TargetNow();
 	//ヒットの更新処理

@@ -19,6 +19,8 @@ public:
 	void Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics) override;
 	//XV
 	void Update(MyLibrary::LibVec3 playerPos, bool isChase);
+	//‹¯‚ñ‚Å‚È‚¢‚Æ‚«‚É‚Å‚«‚és“®
+	void Action(MyLibrary::LibVec3 playerPos, bool isChase);
 	//•`‰æ
 	void Draw();
 };

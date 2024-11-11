@@ -34,8 +34,8 @@ void EnemyAttackObject::Update(MyLibrary::LibVec3 pos)
 
 void EnemyAttackObject::Finalize(std::shared_ptr<MyLibrary::Physics> physics)
 {
+	//“o˜^‚³‚ê‚Ä‚¢‚È‚¢
 	Collidable::Finalize(physics);
-
 }
 
 void EnemyAttackObject::CollisionEnd()

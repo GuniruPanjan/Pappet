@@ -1,5 +1,7 @@
 #include "Immortal.h"
 
+//アタックのCollidableが登録されていない
+
 namespace
 {
 	//キャラクター名
@@ -22,7 +24,8 @@ namespace
 	constexpr float cSearchRadius = 120.0f;
 	//近距離の行動に移る距離
 	constexpr float cNear = 50.0f;
-
+	//攻撃判定の半径
+	constexpr float cAttackRadius = 18.0f;
 }
 
 /// <summary>
@@ -44,6 +47,7 @@ Immortal::Immortal() :
 	//アニメーションの判定初期化
 	m_anim.s_attack = false;
 	m_anim.s_moveflag = false;
+	m_anim.s_hit = false;
 }
 
 /// <summary>
@@ -61,7 +65,6 @@ Immortal::~Immortal()
 /// <param name="physics">物理クラスのポインタ</param>
 void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics)
 {
-
 	//代入
 	m_pPhysics = physics;
 
@@ -81,6 +84,7 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 
 	//索敵判定をする当たり判定を作成
 	InitSearch(cSearchRadius, 0.0f);
+	InitAttack(cAttackRadius);
 
 	//モデルのサイズ設定
 	MV1SetScale(m_modelHandle, VGet(cModelSize, cModelSize, cModelSize));
@@ -117,11 +121,93 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 
 	DistanceUpdate(playerPos);
 
+	//怯みモーション
+	HitUpdate(6);
+
+	//怯み状態を解除する
+	if (m_anim.s_hit && m_isAnimationFinish)
+	{
+		m_anim.s_hit = false;
+	}
+	//怯んでいる時
+	else if (m_anim.s_hit)
+	{
+		//動かないようにする
+		m_move = VGet(0.0f, 0.0f, 0.0f);
+		m_moveVec = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
+	}
+
+	//攻撃終了
+	if (m_anim.s_attack && m_isAnimationFinish)
+	{
+		m_anim.s_attack = false;
+	}
+	
+
+	//怯んでないとき
+	if (!m_anim.s_hit && !m_anim.s_isDead)
+	{
+		//アクション
+		Action(playerPos, isChase);
+	}
+
+	//移動処理
+	MoveUpdate();
+
+	//ターゲット状態
+	TargetNow();
+	//攻撃を受けた時
+	//攻撃が当たっているとき
+	if (m_isEnterHit)
+	{
+		m_status.s_hp -= m_col->GetAttack() - m_status.s_defense;
+
+		//HPが0になるとヒットしない
+		if (m_status.s_hp > 0.0f)
+		{
+			m_anim.s_hit = true;
+		}
+	}
+
+	TriggerUpdate();
+	HitTriggerUpdate();
+
+
+	//判定の更新
+	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
+	MyLibrary::LibVec3 attackPos = MyLibrary::LibVec3(rigidbody.GetPos().x + sinf(m_angle) * -25.0f, rigidbody.GetPos().y, rigidbody.GetPos().z - cosf(m_angle) * 25.0f);
+	m_pSearch->Update(centerPos);
+	m_pAttack->Update(attackPos);
+
+	//死んだとき
+	if (m_status.s_hp <= 0.0f)
+	{
+		//アニメーションを初期化
+		m_anim.s_attack = false;
+		m_anim.s_hit = false;
+		m_anim.s_moveflag = false;
+
+		Death();
+		cDead = true;
+	}
+}
+
+/// <summary>
+/// 怯んでないとき以外のアクション
+/// </summary>
+/// <param name="playerPos">プレイヤーのポジション</param>
+/// <param name="isChase">プレイヤーと戦えるかどうか</param>
+void Immortal::Action(MyLibrary::LibVec3 playerPos, bool isChase)
+{
 	//プレイヤーを見つけた時
 	if (m_pSearch->GetIsStay())
 	{
-		//方向を決める
-		AngleUpdate(playerPos);
+		//攻撃してない時
+		if (!m_anim.s_attack)
+		{
+			//方向を決める
+			AngleUpdate(playerPos);
+		}
 
 		//角度を出しプレイヤーの周りを旋回運動させる
 		MATRIX mtx = MGetRotY(D2R(m_moveTurning) + DX_PI_F / 2);
@@ -130,6 +216,8 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 		//近くじゃないときの行動
 		if (m_difPSize > cNear)
 		{
+			WalkUpdate("Walk", 2);
+
 			//攻撃してないときの処理
 			if (!m_anim.s_attack)
 			{
@@ -154,36 +242,47 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 			//左周り
 			if (m_randomAction == 0)
 			{
+				//歩くモーションさせる
+				m_anim.s_moveflag = true;
+
 				m_move = VTransform(m_move, mtxR);
 
-				if (m_anim.s_moveflag)
-				{
-					m_nowAnimIdx = m_animIdx["LeftWalk"];
-					ChangeAnim(m_nowAnimIdx, m_animOne[3], m_animOne);
-				}
+				WalkUpdate("LeftWalk", 3);
+
 			}
 			//ランダム行動で1が出た場合
 			//右周り
 			else if (m_randomAction == 1)
 			{
+				//歩くモーションさせる
+				m_anim.s_moveflag = true;
+
 				m_move = VTransform(m_move, mtx);
 
-				if (m_anim.s_moveflag)
-				{
-					m_nowAnimIdx = m_animIdx["RightWalk"];
-					ChangeAnim(m_nowAnimIdx, m_animOne[4], m_animOne);
-				}
+				WalkUpdate("RightWalk", 4);
 			}
 			//ランダム行動で2が出た場合
 			else if (m_randomAction == 2)
 			{
-				m_move = VTransform(m_move, mtxR);
-				
-				if (m_anim.s_moveflag)
+				//攻撃モーションさせる
+				m_anim.s_attack = true;
+
+				m_move = VGet(0.0f, 0.0f, 0.0f);
+
+				AttackUpdate("Attack1", 5);
+
+				//アニメーションフレーム中に攻撃判定を出す
+				if (m_nowFrame == 22)
 				{
-					m_nowAnimIdx = m_animIdx["LeftWalk"];
-					ChangeAnim(m_nowAnimIdx, m_animOne[3], m_animOne);
+					InitAttackUpdate(m_status.s_attack);
 				}
+				else if (m_nowFrame >= 35.0f)
+				{
+					//判定をリセット
+					m_pAttack->CollisionEnd();
+				}
+
+				m_anim.s_moveflag = false;
 			}
 		}
 
@@ -203,35 +302,12 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 		IdleUpdate();
 		//歩かないようにする
 		m_anim.s_moveflag = false;
+		//攻撃しないようにする
+		m_anim.s_attack = false;
+		//判定をリセット
+		m_pAttack->CollisionEnd();
 
 		m_moveVec = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
-	}
-
-	//移動処理
-	MoveUpdate();
-
-	//ターゲット状態
-	TargetNow();
-	//攻撃を受けた時
-	//攻撃が当たっているとき
-	if (m_isEnterHit)
-	{
-		m_status.s_hp -= m_col->GetAttack() - m_status.s_defense;
-	}
-
-	TriggerUpdate();
-	HitTriggerUpdate();
-
-
-	//判定の更新
-	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
-	m_pSearch->Update(centerPos);
-
-	//死んだとき
-	if (m_status.s_hp <= 0.0f)
-	{
-		Death();
-		cDead = true;
 	}
 }
 

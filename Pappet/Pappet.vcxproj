@@ -167,6 +167,7 @@
     <ClCompile Include="Manager\SelectManager.cpp" />
     <ClCompile Include="Manager\SEManager.cpp" />
     <ClCompile Include="Map\Map.cpp" />
+    <ClCompile Include="Map\MapBase.cpp" />
     <ClCompile Include="Object\AttackObject.cpp" />
     <ClCompile Include="Object\EnemyAttackObject.cpp" />
     <ClCompile Include="Object\ObjectBase.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="Manager\SelectManager.h" />
     <ClInclude Include="Manager\SEManager.h" />
     <ClInclude Include="Map\Map.h" />
+    <ClInclude Include="Map\MapBase.h" />
     <ClInclude Include="Object\AttackObject.h" />
     <ClInclude Include="Object\EnemyAttackObject.h" />
     <ClInclude Include="Object\ObjectBase.h" />
