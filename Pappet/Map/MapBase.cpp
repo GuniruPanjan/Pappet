@@ -11,8 +11,17 @@ namespace
 /// コンストラクタ
 /// </summary>
 MapBase::MapBase() :
+	m_light(0),
 	m_handle(-1),
-	m_collisionHandle(-1)
+	m_collisionHandle(-1),
+	m_size(0.0f),
+	m_width(0.0f),
+	m_hight(0.0f),
+	m_depth(0.0f),
+	m_mapPos(VGet(0.0f,0.0f,0.0f)),
+	m_mapCollisionPos(VGet(0.0f,0.0f,0.0f)),
+	m_mapRestPos(),
+	m_mapBossEnterPos()
 {
 }
 

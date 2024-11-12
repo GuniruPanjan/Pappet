@@ -3,6 +3,7 @@
 #include "Manager/HandleManager.h"
 #include "Manager/SelectManager.h"
 #include "Map/Map.h"
+#include "Manager/MapManager.h"
 
 namespace
 {
@@ -78,7 +79,12 @@ void SceneTitle::Init()
 	m_playerHandle = handle.GetModelHandle("Data/Player/PuppetPlayerModel.mv1");
 	m_anim = handle.GetModelHandle("Data/PlayerAnimation/JumpingDown.mv1");
 
-	pmap->Init();
+	m_pMap->DataInit();
+
+	m_pPhysics = std::make_shared<MyLibrary::Physics>(m_pMap->GetCollisionMap());
+
+	//pmap->Init();
+	m_pMap->Init(m_pPhysics);
 
 	selectDecision = 0;
 
@@ -120,6 +126,8 @@ void SceneTitle::Init()
 /// <returns>シーンを返す</returns>
 std::shared_ptr<SceneBase> SceneTitle::Update()
 {
+	m_pMap->Update(m_pPhysics);
+
 	if (m_pSetting->GetSettingScene() == false)
 	{
 		//パッド入力所得
@@ -173,9 +181,11 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 				//ゲームスタート
 				if (selectDecision == 8)
 				{
+					m_pMap->End(m_pPhysics);
+
 					return std::make_shared<SceneGame>();
 
-					pmap->End();
+					//pmap->End();
 				}
 				//設定
 				if (selectDecision == 9)
@@ -273,7 +283,8 @@ void SceneTitle::SelectBlend(int select, int now, int other1, int other2)
 /// </summary>
 void SceneTitle::Draw()
 {
-	pmap->Draw();
+	//pmap->Draw();
+	m_pMap->Draw();
 
 	MV1SetPosition(m_playerHandle, m_pos);
 

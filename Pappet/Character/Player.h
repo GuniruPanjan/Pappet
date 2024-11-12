@@ -55,6 +55,10 @@ public:
 	bool GetMenu() { return m_menuOpen; }
 	bool SetMenu(bool set) { return m_menuOpen = set; }
 
+	//休息関係
+	bool GetRest() { return m_rest; }
+	bool SetRest(bool set) { return m_restTouch = set; }
+
 	const MyLibrary::LibVec3 GetPos() const { return rigidbody.GetPos(); }
 
 private:
@@ -67,6 +71,8 @@ private:
 	float m_cameraAngle;                //カメラ情報
 	float m_lockAngle;                  //ロックオンしたときのアングル
 	bool m_menuOpen;                    //メニューを開く判定
+	bool m_restTouch;                   //休息できるかの判定
+	bool m_rest;                        //休息判定
 	bool m_lockonTarget;                //ターゲット判定
 
 	//アニメーション用変数

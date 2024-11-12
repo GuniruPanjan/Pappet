@@ -39,6 +39,8 @@ public:
 	void Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, bool isPlayerChase);
 	//•`‰æ
 	void Draw();
+	//I—¹ˆ—
+	void End();
 
 	//³–Ê‚Ì“G‚ÌŒ»İ‚ÌHP‚ğ•Ô‚·
 	const int GetFrontEnemyHp() const { return m_frontEnemyHp; }

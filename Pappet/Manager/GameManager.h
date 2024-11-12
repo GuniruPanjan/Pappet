@@ -1,6 +1,7 @@
 #pragma once
 #include "DxLib.h"
 #include "Library/MyLibrary.h"
+#include "Manager/MapManager.h"
 #include<memory>
 
 class Player;
@@ -49,7 +50,8 @@ private:
 	//スマートポインタ管理
 	std::shared_ptr<MyLibrary::Physics> m_pPhysics;
 	std::shared_ptr<Player> m_pPlayer = std::make_shared<Player>();
-	std::shared_ptr<Map> m_pMap = std::make_shared<Map>();
+	//std::shared_ptr<Map> m_pMap = std::make_shared<Map>();
+	std::shared_ptr<MapManager> m_pMap = std::make_shared<MapManager>();
 	std::shared_ptr<Camera> m_pCamera = std::make_shared<Camera>();
 	std::shared_ptr<CollidableNpc> m_pNpc = std::make_shared<CollidableNpc>();
 	std::shared_ptr<EnemyManager> m_pEnemy;

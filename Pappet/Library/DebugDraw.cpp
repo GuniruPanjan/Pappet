@@ -57,6 +57,32 @@ void MyLibrary::DebugDraw::Draw()
 	//‹éŒ`‚Ì•`‰æî•ñƒŠƒXƒg‚É‚ ‚éî•ñ•ª•`‰æ‚·‚é
 	for (auto& rect : m_rectInfo)
 	{
+		float halfW = rect.size.width * 0.5f;
+		float halfH = rect.size.height * 0.5f;
+		float halfD = rect.size.depth * 0.5f;
+
+		float right = rect.center.x + halfW;
+		float left = rect.center.x - halfW;
+		float top = rect.center.y + halfH;
+		float bottom = rect.center.y - halfH;
+		float front = rect.center.z - halfD;
+		float back = rect.center.z + halfD;
+
+		// ‰¡‚Ìü
+		DrawLine3D(VGet(left, bottom, front), VGet(right, bottom, front), rect.color);
+		DrawLine3D(VGet(left, top, front), VGet(right, top, front), rect.color);
+		DrawLine3D(VGet(left, bottom, back), VGet(right, bottom, back), rect.color);
+		DrawLine3D(VGet(left, top, back), VGet(right, top, back), rect.color);
+		// c‚Ìü
+		DrawLine3D(VGet(left, top, front), VGet(left, bottom, front), rect.color);
+		DrawLine3D(VGet(right, top, front), VGet(right, bottom, front), rect.color);
+		DrawLine3D(VGet(left, top, back), VGet(left, bottom, back), rect.color);
+		DrawLine3D(VGet(right, top, back), VGet(right, bottom, back), rect.color);
+		// ‘OŒã‚Ìü
+		DrawLine3D(VGet(left, top, front), VGet(left, top, back), rect.color);
+		DrawLine3D(VGet(left, bottom, front), VGet(left, bottom, back), rect.color);
+		DrawLine3D(VGet(right, top, front), VGet(right, top, back), rect.color);
+		DrawLine3D(VGet(right, bottom, front), VGet(right, bottom, back), rect.color);
 	}
 
 #endif

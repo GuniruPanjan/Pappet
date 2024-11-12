@@ -3,6 +3,7 @@
 #include "Manager/BgmManager.h"
 #include "Ui/Setting.h"
 #include "Ui/UI.h"
+#include "Library/MyLibrary.h"
 #include<memory>
 
 /// <summary>
@@ -55,6 +56,7 @@ protected:
 	std::shared_ptr<Setting> m_pSetting = std::make_shared<Setting>();
 	std::shared_ptr<BgmManager> m_pBgm = std::make_shared<BgmManager>();
 	std::shared_ptr<UI> m_pUi = std::make_shared<UI>();
+	std::shared_ptr<MyLibrary::Physics> m_pPhysics;
 
 };
 

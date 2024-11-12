@@ -4,6 +4,7 @@
 
 class Map;
 class SelectManager;
+class MapManager;
 
 //シーンタイトルのクラス
 class SceneTitle : public SceneBase
@@ -58,9 +59,10 @@ private:
 	VECTOR m_pos;
 
 	//スマートポインタ
-	std::shared_ptr<Map> pmap = std::make_shared<Map>();
+	//std::shared_ptr<Map> pmap = std::make_shared<Map>();
 	std::shared_ptr<SEManager> pse = std::make_shared<SEManager>();
 	std::shared_ptr<SelectManager> pselect = std::make_shared<SelectManager>();
+	std::shared_ptr<MapManager> m_pMap = std::make_shared<MapManager>();
 
 };
 

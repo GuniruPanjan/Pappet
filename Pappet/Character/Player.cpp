@@ -52,6 +52,8 @@ Player::Player() :
 	m_xpad(),
 	m_attackNumber(0),
 	m_menuOpen(false),
+	m_restTouch(false),
+	m_rest(false),
 	m_lockonTarget(false),
 	m_moveAnimFrameIndex(0),
 	m_moveAnimFrameRight(0),
@@ -345,6 +347,13 @@ void Player::Update()
 	m_pSearch->Update(centerPos);
 	m_pAttack->Update(attackPos);
 
+	//怯み中
+	if (m_anim.s_hit)
+	{
+		//攻撃判定リセット
+		m_pAttack->CollisionEnd();
+	}
+
 	//怯みを終わらせる
 	if (m_anim.s_hit && m_isAnimationFinish)
 	{
@@ -610,6 +619,18 @@ void Player::Action()
 		m_animChange.sa_recovery = true;
 	}
 	
+	//休息
+	//休息できたら
+	if (m_restTouch)
+	{
+		//Yボタンが押されたら
+		if (m_xpad.Buttons[15] == 1)
+		{
+			m_rest = true;
+		}
+	}
+
+
 	//メニューを開く
 	if (m_xpad.Buttons[4] == 1)
 	{
@@ -781,7 +802,7 @@ void Player::Draw()
 	DrawFormatString(200, 500, 0xffffff, "nowAttackNumber : %d", cNowAttackNumber);
 
 #endif
-#if true
+#if false
 	DrawFormatString(200, 100, 0xffffff, "animtime : %f", cAnimWalkTime);
 #endif
 	//モデルの回転地
@@ -852,7 +873,7 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 		message += "攻撃";
 #endif
 		//回避中じゃないとき
-		if (!m_avoidanceNow)
+		if (!m_avoidanceNow && !m_anim.s_hit)
 		{
 			m_anim.s_hit = true;
 		}

@@ -35,10 +35,11 @@ GameManager::~GameManager()
 /// </summary>
 void GameManager::Init()
 {
-	m_pMap->Init();
+	m_pMap->DataInit();
 
 	m_pPhysics = std::make_shared<MyLibrary::Physics>(m_pMap->GetCollisionMap());
 
+	m_pMap->Init(m_pPhysics);
 	//pCamera->Init();
 
 	m_pPlayer->Init(m_pPhysics);
@@ -53,8 +54,6 @@ void GameManager::Init()
 /// </summary>
 void GameManager::Update()
 {
-	m_pMap->Update();
-
 	m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
 	m_pPlayer->Update();
@@ -68,9 +67,15 @@ void GameManager::Update()
 	{
 		m_pCamera->LockUpdate(*m_pPlayer, *m_pEnemy);
 	}
-	
 
 	m_pEnemy->Update(m_pPhysics, this, m_pPlayer->GetPos(), m_pCamera->GetDirection(), !m_pPlayer->IsGetPlayerDead());
+	
+	m_pMap->JudgeUpdate();
+	//休息ができるか
+	m_pPlayer->SetRest(m_pMap->GetRest());
+
+
+	m_pMap->Update(m_pPhysics);
 
 	//メニューを開く
 	if (m_pPlayer->GetMenu())
@@ -85,6 +90,11 @@ void GameManager::Update()
 	else
 	{
 		m_pSetting->SetReturn(true);
+	}
+
+	//休息した場合
+	if (m_pPlayer->GetRest())
+	{
 	}
 
 	//物理更新
@@ -117,7 +127,7 @@ void GameManager::End()
 {
 	m_pPlayer->End();
 	m_pCamera->End();
-	m_pMap->End();
+	m_pMap->End(m_pPhysics);
 	m_pSetting->End();
 }
 
