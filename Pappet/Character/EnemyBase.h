@@ -14,12 +14,16 @@ public:
 
 	//初期化処理
 	virtual void Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics) {};
+	//ゲームの仕様上での初期化
+	virtual void GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics) {};
 	//終了
 	virtual void Finalize(std::shared_ptr<MyLibrary::Physics> physics);
 	//更新
 	virtual void Update(MyLibrary::LibVec3 playerPos, bool isChange) {};
 	//描画
 	virtual void Draw() {};
+	//終了処理
+	virtual void End();
 
 	//衝突したとき
 	void OnCollideEnter(const std::shared_ptr<Collidable>& collidable) override;
@@ -62,6 +66,8 @@ protected:
 	void LoadModel(std::string path);
 	//アニメーション情報や、ステータス情報を読み込む
 	void LoadData(std::string name);
+	//ステータス情報の初期化
+	void LoadDataInit(std::string name);
 	//物理クラスの初期化
 	void InitRigidbody(float posX, float posY, float posZ, bool isUseGravity = true);
 	//モデルの中心座標を計算

@@ -57,6 +57,48 @@ void EnemyManager::Init(const char* stageName)
 }
 
 /// <summary>
+/// ゲームの仕様上での初期化
+/// </summary>
+/// <param name="physics">物理クラス</param>
+/// <param name="gameManager">ゲームマネジャー</param>
+/// <param name="init">初期化するかどうか</param>
+void EnemyManager::GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, bool init)
+{
+	//敵の当たり判定削除
+	for (auto& enemy : m_pEnemys)
+	{
+		//削除
+		enemy->Finalize(physics);
+	}
+
+	if (init)
+	{
+		m_pEnemys.clear();
+	}
+
+
+	auto thisMapName = gameManager->GetThisMapName();
+
+	if (thisMapName == 1 || thisMapName == 2 || thisMapName == 3 ||
+		thisMapName == 4 || thisMapName == 5)
+	{
+		//敵生成情報をまわして
+		for (auto& generate : m_pGenerateInfo)
+		{
+			//今のマップが一致しているとき
+			if (generate->mapNumber == thisMapName)
+			{
+				//生成済みのキャラを初期化する
+				if (generate->isCreated)
+				{
+					EnemyInit(generate->posX, generate->posY, generate->posZ, generate->enemyName, physics);
+				}
+			}
+		}
+	}
+}
+
+/// <summary>
 /// 更新
 /// </summary>
 /// <param name="physics">物理クラス</param>
@@ -64,7 +106,7 @@ void EnemyManager::Init(const char* stageName)
 /// <param name="playerPos">プレイヤーポジション</param>
 /// <param name="playerDir">プレイヤーの方向</param>
 /// <param name="isPlayerChase">プレイヤーを発見したかどうか</param>
-void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, bool isPlayerChase)
+void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, bool isPlayerChase, bool init)
 {
 	m_enemyPos.clear();
 	m_enemyTarget.clear();
@@ -79,6 +121,7 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 		//敵生成情報をまわして
 		for (auto& generate : m_pGenerateInfo)
 		{
+
 			//今のマップが一致しているとき
 			if (generate->mapNumber == thisMapName)
 			{
@@ -96,12 +139,12 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 	//敵の更新する
 	for (auto& enemy : m_pEnemys)
 	{
-		
 		//更新
 		enemy->Update(playerPos, isPlayerChase);
 
 		m_enemyPos.emplace_back(enemy->GetPos());
 		m_enemyTarget.emplace_back(enemy->GetTarget());
+		
 	}
 }
 
@@ -118,6 +161,17 @@ void EnemyManager::Draw()
 }
 
 /// <summary>
+/// 終了処理
+/// </summary>
+void EnemyManager::End()
+{
+	for (auto& enemy : m_pEnemys)
+	{
+		enemy->End();
+	}
+}
+
+/// <summary>
 /// 敵の生成
 /// </summary>
 /// <param name="posX">X座標</param>
@@ -129,14 +183,41 @@ void EnemyManager::CreateEnemy(float posX, float posY, float posZ, std::string n
 {
 	if (name == "Immortal")
 	{
-		std::shared_ptr<Immortal> add = std::make_shared<Immortal>();
-		add->Init(posX, posY, posZ, physics);
-		m_pEnemys.emplace_back(add);
+		immortal = std::make_shared<Immortal>();
+		immortal->Init(posX, posY, posZ, physics);
+		m_pEnemys.emplace_back(immortal);
 	}
 	if (name == "bear")
 	{
-		std::shared_ptr<Bear> add = std::make_shared<Bear>();
-		add->Init(posX, posY, posZ, physics);
-		m_pEnemys.emplace_back(add);
+		bear = std::make_shared<Bear>();
+		bear->Init(posX, posY, posZ, physics);
+		m_pEnemys.emplace_back(bear);
+	}
+}
+
+/// <summary>
+/// 敵のゲームの仕様上での初期化
+/// </summary>
+/// <param name="posX">X座標</param>
+/// <param name="posY">Y座標</param>
+/// <param name="posZ">Z座標</param>
+/// <param name="name">キャラクター名</param>
+/// <param name="physics">物理ポインタ</param>
+void EnemyManager::EnemyInit(float posX, float posY, float posZ, std::string name, std::shared_ptr<MyLibrary::Physics> physics)
+{
+	if (name == "Immortal")
+	{
+		//std::shared_ptr<Immortal> add = std::make_shared<Immortal>();
+		immortal = std::make_shared<Immortal>();
+		immortal->GameInit(posX, posY, posZ, physics);
+		m_pEnemys.emplace_back(immortal);
+
+	}
+	if (name == "bear")
+	{
+		//std::shared_ptr<Bear> add = std::make_shared<Bear>();
+		bear = std::make_shared<Bear>();
+		bear->GameInit(posX, posY, posZ, physics);
+		m_pEnemys.emplace_back(bear);
 	}
 }

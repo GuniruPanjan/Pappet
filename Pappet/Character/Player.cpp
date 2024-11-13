@@ -152,6 +152,36 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	m_nowAnimIdx = m_animIdx["Idle"];
 }
 
+/// <summary>
+/// ゲームの仕様上で初期化処理
+/// </summary>
+/// <param name="physics"></param>
+void Player::GameInit(std::shared_ptr<MyLibrary::Physics> physics)
+{
+	m_pPhysics = physics;
+
+	//死んでいた場合
+	if (m_anim.s_isDead)
+	{
+		Collidable::Init(m_pPhysics);
+		m_pSearch->Init(m_pPhysics, rigidbody.GetPos());
+
+		m_anim.s_isDead = false;
+	}
+
+	CsvLoad::GetInstance().StatusLoad(m_status, "Player");
+
+	//プレイヤーの初期位置設定
+	rigidbody.Init(false);
+	rigidbody.SetPos(MyLibrary::LibVec3(485.0f, 12.0f, -800.0f));
+	rigidbody.SetNextPos(rigidbody.GetPos());
+	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
+	m_collisionPos = rigidbody.GetPos();
+	SetModelPos();
+	MV1SetPosition(m_modelHandle, m_modelPos.ConversionToVECTOR());
+
+}
+
 void Player::Finalize()
 {
 	Collidable::Finalize(m_pPhysics);
@@ -628,6 +658,10 @@ void Player::Action()
 		{
 			m_rest = true;
 		}
+	}
+	else
+	{
+		m_rest = false;
 	}
 
 

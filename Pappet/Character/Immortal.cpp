@@ -34,8 +34,6 @@ namespace
 Immortal::Immortal() :
 	EnemyBase(Collidable::Priority::Middle)
 {
-	//当たり判定の設定
-	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
 
 	//モデルの読み込み
 	LoadModel(cModelPath);
@@ -65,6 +63,9 @@ Immortal::~Immortal()
 /// <param name="physics">物理クラスのポインタ</param>
 void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics)
 {
+	//当たり判定の設定
+	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
+
 	//代入
 	m_pPhysics = physics;
 
@@ -93,9 +94,52 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
 	m_nowAnimIdx = m_animIdx["Idle"];
 
+	m_status.s_hp = 1.0f;
+
 	//死をfalseにする
 	m_anim.s_isDead = false;
 	cDead = false;
+}
+
+/// <summary>
+/// ゲームの仕様上での初期化
+/// </summary>
+/// <param name="posX">X座標</param>
+/// <param name="posY">Y座標</param>
+/// <param name="posZ">Z座標</param>
+/// <param name="physics">物理クラス</param>
+void Immortal::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics)
+{
+
+	m_pPhysics = physics;
+
+	//Finalize(m_pPhysics);
+
+	//当たり判定の設定
+	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
+
+	Collidable::Init(m_pPhysics);
+
+	//索敵判定をする当たり判定を作成
+	InitSearch(cSearchRadius, 0.0f);
+	InitAttack(cAttackRadius);
+
+	//中心座標の設定
+	CalculationCenterPos(1.0f, cModelSize);
+
+	//物理クラスの初期化
+	InitRigidbody(posX, posY + 14.0f, posZ);
+
+	//モデルの座標を設定
+	SetModelPos();
+	MV1SetPosition(m_modelHandle, m_modelPos.ConversionToVECTOR());
+
+	//モデルのサイズ設定
+	MV1SetScale(m_modelHandle, VGet(cModelSize, cModelSize, cModelSize));
+
+	m_anim.s_isDead = false;
+	cDead = false;
+
 }
 
 /// <summary>
@@ -158,7 +202,8 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 	TargetNow();
 	//攻撃を受けた時
 	//攻撃が当たっているとき
-	if (m_isEnterHit)
+	//怯んでいる時は当たらない
+	if (m_isEnterHit && !m_anim.s_hit)
 	{
 		m_status.s_hp -= m_col->GetAttack() - m_status.s_defense;
 
@@ -322,4 +367,6 @@ void Immortal::Draw()
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
 	//モデルの描画
 	MV1DrawModel(m_modelHandle);
+
+	DrawFormatString(200, 400, 0xffffff, "dead : %d", m_anim.s_isDead);
 }

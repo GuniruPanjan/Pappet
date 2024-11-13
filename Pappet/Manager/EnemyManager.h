@@ -7,6 +7,8 @@
 
 class EnemyBase;
 class GameManager;
+class Immortal;
+class Bear;
 
 /// <summary>
 /// 敵を管理するクラス
@@ -35,8 +37,10 @@ public:
 
 	//初期化
 	void Init(const char* stageName);
+	//ゲームの仕様上での初期化
+	void GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, bool init = false);
 	//更新
-	void Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, bool isPlayerChase);
+	void Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, bool isPlayerChase, bool init = false);
 	//描画
 	void Draw();
 	//終了処理
@@ -53,11 +57,16 @@ public:
 private:
 	//敵の生成
 	void CreateEnemy(float posX, float posY, float posZ, std::string name, std::shared_ptr<MyLibrary::Physics> physics);
+	//敵のゲームの仕様上での初期化
+	void EnemyInit(float posX, float posY, float posZ, std::string name, std::shared_ptr<MyLibrary::Physics> physics);
 private:
 	//敵の管理
 	std::list<std::shared_ptr<EnemyBase>> m_pEnemys;
 	//敵の生成情報
 	std::list<std::shared_ptr<EnemyGenerateInfo>> m_pGenerateInfo;
+
+	std::shared_ptr<Immortal> immortal;
+	std::shared_ptr<Bear> bear;
 
 	//ステージ名
 	const char* m_stageName;

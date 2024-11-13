@@ -19,6 +19,7 @@ namespace
 /// </summary>
 GameManager::GameManager() :
 	m_nowMap(eMapName::FirstMap),
+	m_init(false),
 	m_title(false)
 {
 }
@@ -68,7 +69,7 @@ void GameManager::Update()
 		m_pCamera->LockUpdate(*m_pPlayer, *m_pEnemy);
 	}
 
-	m_pEnemy->Update(m_pPhysics, this, m_pPlayer->GetPos(), m_pCamera->GetDirection(), !m_pPlayer->IsGetPlayerDead());
+	m_pEnemy->Update(m_pPhysics, this, m_pPlayer->GetPos(), m_pCamera->GetDirection(), !m_pPlayer->IsGetPlayerDead(), m_init);
 	
 	m_pMap->JudgeUpdate();
 	//‹x‘§‚ª‚Å‚«‚é‚©
@@ -95,6 +96,19 @@ void GameManager::Update()
 	//‹x‘§‚µ‚½ê‡
 	if (m_pPlayer->GetRest())
 	{
+		m_pPlayer->GameInit(m_pPhysics);
+		m_init = true;
+		//ˆê‰ñ‚¾‚¯ŽÀs
+		if (m_init == true)
+		{
+			m_pEnemy->GameInit(m_pPhysics, this, m_init);
+
+			m_init = false;
+		}
+	}
+	else
+	{
+		m_init = false;
 	}
 
 	//•¨—XV
@@ -129,6 +143,7 @@ void GameManager::End()
 	m_pCamera->End();
 	m_pMap->End(m_pPhysics);
 	m_pSetting->End();
+	m_pEnemy->End();
 }
 
 const MyLibrary::LibVec3 GameManager::GetPlayerPos() const

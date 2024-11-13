@@ -29,6 +29,7 @@ public:
 	virtual ~Player();
 
 	void Init(std::shared_ptr<MyLibrary::Physics> physics);
+	void GameInit(std::shared_ptr<MyLibrary::Physics> physics);
 	void Finalize();
 	void Update();
 	void Action();

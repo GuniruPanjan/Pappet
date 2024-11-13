@@ -61,7 +61,9 @@ private:
 	eMapName m_nowMap;
 	//ステージ名
 	//std::string m_stageName;
-
+	
+	//初期化する
+	bool m_init;
 	//タイトルに戻る
 	bool m_title;
 };

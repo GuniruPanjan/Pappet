@@ -59,6 +59,17 @@ void EnemyBase::Finalize(std::shared_ptr<MyLibrary::Physics> physics)
 	m_pSearch->Finalize(physics);
 }
 
+/// <summary>
+/// 終了処理
+/// </summary>
+void EnemyBase::End()
+{
+	//メモリ解放
+	MV1DeleteModel(m_modelHandle);
+
+	handle.Clear();
+}
+
 void EnemyBase::OnCollideEnter(const std::shared_ptr<Collidable>& collidable)
 {
 #if _DEBUG
@@ -282,6 +293,15 @@ void EnemyBase::LoadData(std::string name)
 	CsvLoad::GetInstance().AnimDataLoad(name, m_animIdx);
 	CsvLoad::GetInstance().StatusLoad(m_status, name.c_str());
 	m_dropCore = m_status.s_core;
+}
+
+/// <summary>
+/// ステータス情報の初期化
+/// </summary>
+/// <param name="name">キャラクター名</param>
+void EnemyBase::LoadDataInit(std::string name)
+{
+	CsvLoad::GetInstance().StatusLoad(m_status, name.c_str());
 }
 
 /// <summary>

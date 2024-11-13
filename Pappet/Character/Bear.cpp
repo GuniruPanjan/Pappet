@@ -28,8 +28,6 @@ namespace
 Bear::Bear() :
 	EnemyBase(Collidable::Priority::High)
 {
-	//当たり判定の設定
-	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
 	//モデルの読み込み
 	LoadModel(cModelPath);
 	//アニメーションやステータスを取得
@@ -56,6 +54,9 @@ Bear::~Bear()
 /// <param name="physics"></param>
 void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics)
 {
+	//当たり判定の設定
+	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
+
 	//代入
 	m_pPhysics = physics;
 
@@ -87,6 +88,45 @@ void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::P
 	cDead = false;
 
 	m_status.s_hp = 1.0f;
+}
+
+/// <summary>
+/// ゲームの仕様上での初期化処理
+/// </summary>
+/// <param name="posX">X座標</param>
+/// <param name="posY">Y座標</param>
+/// <param name="posZ">Z座標</param>
+/// <param name="physics">物理クラス</param>
+void Bear::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics)
+{
+	m_pPhysics = physics;
+
+	//Finalize(m_pPhysics);
+
+	//当たり判定の設定
+	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
+
+	Collidable::Init(m_pPhysics);
+
+	//索敵判定をする当たり判定を作成
+	InitSearch(cSearchRadius, 35.0f);
+
+	//中心座標の設定
+	CalculationCenterPos(1.0f, cModelSize);
+	
+	//物理クラスの初期化
+	InitRigidbody(posX, posY + cCapsuleRadius, posZ);
+
+	//モデルの座標を設定
+	SetModelPos();
+	MV1SetPosition(m_modelHandle, m_modelPos.ConversionToVECTOR());
+
+	//モデルのサイズ設定
+	MV1SetScale(m_modelHandle, VGet(cModelSize, cModelSize, cModelSize));
+
+	m_anim.s_isDead = false;
+	cDead = false;
+
 }
 
 /// <summary>

@@ -115,7 +115,7 @@ namespace MyLibrary
 			//’·‚³0‚Ìê‡
 			if (len == 0.0f)
 			{
-				assert(false);
+				//assert(false);
 				x = 0.0f;
 				y = 0.0f;
 				z = 0.0f;
