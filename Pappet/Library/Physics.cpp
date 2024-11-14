@@ -538,6 +538,20 @@ void MyLibrary::Physics::FixNextPosition(const Rigidbody& primaryRigid, Rigidbod
 		secondaryRigid.SetNextPos(fixedPos);
 
 	}
+	else if (primaryKind == MyLibrary::CollidableData::Kind::Rect && secondaryKind == MyLibrary::CollidableData::Kind::Capsule)
+	{
+		auto primaryToSecondary = secondaryRigid.GetNextPos() - primaryRigid.GetNextPos();
+		auto primaryToSecondaryN = primaryToSecondary.Normalize();
+
+		auto primaryColliderData = dynamic_cast<MyLibrary::CollidableDataRect*>(primaryCollider);
+		auto secondaryColliderData = dynamic_cast<MyLibrary::CollidableDataCapsule*>(secondaryCollider);
+		auto awayDist = primaryColliderData->m_size.width + secondaryColliderData->m_radius;
+		auto primaryToNewSecondaryPos = primaryToSecondaryN * awayDist;
+		primaryToNewSecondaryPos.y = secondaryRigid.GetPos().y;
+		secondaryRigid.SetNextPos(primaryToNewSecondaryPos);
+
+	}
+
 }
 
 /// <summary>

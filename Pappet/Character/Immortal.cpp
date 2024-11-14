@@ -34,7 +34,8 @@ namespace
 Immortal::Immortal() :
 	EnemyBase(Collidable::Priority::Middle)
 {
-
+	//当たり判定の設定
+	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
 	//モデルの読み込み
 	LoadModel(cModelPath);
 	//アニメーションやステータスを取得
@@ -63,9 +64,6 @@ Immortal::~Immortal()
 /// <param name="physics">物理クラスのポインタ</param>
 void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics)
 {
-	//当たり判定の設定
-	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
-
 	//代入
 	m_pPhysics = physics;
 
@@ -110,13 +108,7 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 /// <param name="physics">物理クラス</param>
 void Immortal::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics)
 {
-
 	m_pPhysics = physics;
-
-	//Finalize(m_pPhysics);
-
-	//当たり判定の設定
-	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
 
 	Collidable::Init(m_pPhysics);
 
@@ -136,6 +128,10 @@ void Immortal::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLi
 
 	//モデルのサイズ設定
 	MV1SetScale(m_modelHandle, VGet(cModelSize, cModelSize, cModelSize));
+
+	//アニメーション設定
+	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
+	m_nowAnimIdx = m_animIdx["Idle"];
 
 	m_anim.s_isDead = false;
 	cDead = false;
@@ -368,5 +364,5 @@ void Immortal::Draw()
 	//モデルの描画
 	MV1DrawModel(m_modelHandle);
 
-	DrawFormatString(200, 400, 0xffffff, "dead : %d", m_anim.s_isDead);
+	//DrawFormatString(200, 400, 0xffffff, "dead : %d", m_anim.s_isDead);
 }

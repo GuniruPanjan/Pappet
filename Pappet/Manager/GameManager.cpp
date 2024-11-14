@@ -74,6 +74,8 @@ void GameManager::Update()
 	m_pMap->JudgeUpdate();
 	//休息ができるか
 	m_pPlayer->SetRest(m_pMap->GetRest());
+	//ボス部屋に入ったか
+	m_pEnemy->SetBossRoom(m_pMap->GetBossRoom());
 
 
 	m_pMap->Update(m_pPhysics);
@@ -96,19 +98,19 @@ void GameManager::Update()
 	//休息した場合
 	if (m_pPlayer->GetRest())
 	{
-		m_pPlayer->GameInit(m_pPhysics);
-		m_init = true;
 		//一回だけ実行
 		if (m_init == true)
 		{
+			m_pPlayer->GameInit(m_pPhysics);
 			m_pEnemy->GameInit(m_pPhysics, this, m_init);
+			m_pMap->TriggerReset();
 
 			m_init = false;
 		}
 	}
 	else
 	{
-		m_init = false;
+		m_init = true;
 	}
 
 	//物理更新

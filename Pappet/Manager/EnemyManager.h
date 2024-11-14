@@ -54,6 +54,8 @@ public:
 	const std::list<MyLibrary::LibVec3> GetEnemyPos() const { return m_enemyPos; }
 	//敵のターゲットを返す
 	const std::list<bool> GetEnemyTarget() const { return m_enemyTarget; }
+	//プレイヤーが入ったかを判断する
+	bool SetBossRoom(bool set);
 private:
 	//敵の生成
 	void CreateEnemy(float posX, float posY, float posZ, std::string name, std::shared_ptr<MyLibrary::Physics> physics);
@@ -83,5 +85,6 @@ private:
 	std::list<MyLibrary::LibVec3> m_enemyPos;
 	//敵のターゲット判定
 	std::list<bool> m_enemyTarget;
+
 };
 

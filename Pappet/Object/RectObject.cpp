@@ -1,12 +1,12 @@
 #include "RectObject.h"
 
 RectObject::RectObject(float width, float hight, float depth) :
-	ObjectBase(Priority::Middle, ObjectTag::Shield),
+	ObjectBase(Priority::Static, ObjectTag::Rect),
 	m_isEnter(false),
 	m_isTriggerEnter(false)
 {
 	//ìñÇΩÇËîªíËÇÃê›íË
-	auto collider = Collidable::AddCollider(MyLibrary::CollidableData::Kind::Rect, true);
+	auto collider = Collidable::AddCollider(MyLibrary::CollidableData::Kind::Rect, false);
 	auto rectCol = dynamic_cast<MyLibrary::CollidableDataRect*>(collider.get());
 	rectCol->m_size = MyLibrary::LibVec3::Size(width, hight, depth);
 }

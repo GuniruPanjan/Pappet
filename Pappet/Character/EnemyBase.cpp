@@ -33,6 +33,7 @@ EnemyBase::EnemyBase(Priority priority) :
 	m_isExist(false),
 	m_isDroped(false),
 	m_isDiscovery(false),
+	m_isBossDiscovery(false),
 	m_isTarget(false),
 	m_isStayTarget(false),
 	m_isExitTarget(false),
@@ -141,7 +142,7 @@ void EnemyBase::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 #endif
 		m_isStayTarget = true;
 		break;
-	case ObjectTag::BossEnter:
+	case ObjectTag::Rect:
 #if _DEBUG
 		message += "ボス部屋入口";
 #endif
@@ -175,7 +176,7 @@ void EnemyBase::OnTriggerStay(const std::shared_ptr<Collidable>& collidable)
 #endif
 		m_isStayTarget = true;
 		break;
-	case ObjectTag::BossEnter:
+	case ObjectTag::Rect:
 #if _DEBUG
 		message += "ボス部屋入口";
 #endif
@@ -210,7 +211,7 @@ void EnemyBase::OnTriggerExit(const std::shared_ptr<Collidable>& collidable)
 #endif
 		m_isExitTarget = true;
 		break;
-	case ObjectTag::BossEnter:
+	case ObjectTag::Rect:
 #if _DEBUG
 		message += "ボス部屋入口";
 #endif

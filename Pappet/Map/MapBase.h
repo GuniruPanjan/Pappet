@@ -25,6 +25,8 @@ public:
 	virtual std::shared_ptr<MapBase> Update() = 0;
 	//当たったかの判定更新
 	virtual void JudgeUpdate() = 0;
+	//判定を初期化する
+	void TriggerReset() { m_pBossRoom->IsTriggerReset(); }
 	//描画
 	virtual void Draw() = 0;
 	//終了
@@ -32,15 +34,18 @@ public:
 
 	//コリジョンのマップハンドルを返す
 	int GetCollisionMap() { return m_collisionHandle; }
-
 	//休息できるように当たっているかを返す
 	bool GetRest() { return m_pSearch->GetIsStay(); }
+	//ボス部屋の入り口
+	bool GetBossRoom() { return m_pBossRoom->GetIsTrigger(); }
 
 protected:
 	//モデルを読み込む
 	void LoadData(std::string mapPath, std::string collisionPath);
 	//索敵判定をする当たり判定を作成
 	void InitSearch(float radius, MyLibrary::LibVec3 pos);
+	//ボス部屋の入り口
+	void InitBossRoom(float radius, MyLibrary::LibVec3 pos);
 	//ボス部屋の入口
 	void InitRect(float width, float hight, float depth, MyLibrary::LibVec3 pos);
 
@@ -49,6 +54,7 @@ protected:
 	std::shared_ptr<MyLibrary::Physics> m_pPhysics;
 
 	std::shared_ptr<SearchObject> m_pSearch;   //索敵判定
+	std::shared_ptr<SearchObject> m_pBossRoom; //ボス部屋の入り口判定
 	std::shared_ptr<RectObject> m_pRect;       //矩形判定
 
 	int m_light;                            //ライト
@@ -63,6 +69,7 @@ protected:
 	VECTOR m_mapPos;                        //マップのポジション
 	VECTOR m_mapCollisionPos;               //マップのコリジョンのポジション
 	MyLibrary::LibVec3 m_mapRestPos;        //休息ポイントのポジション
+	MyLibrary::LibVec3 m_mapBossRoomPos;    //ボス部屋入り口のポジション
 	MyLibrary::LibVec3 m_mapBossEnterPos;   //ボス部屋入り口のポジション
 };
 

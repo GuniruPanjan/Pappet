@@ -51,6 +51,9 @@ Player::Player() :
 	CharacterBase(Collidable::Priority::Low, ObjectTag::Player),
 	m_xpad(),
 	m_attackNumber(0),
+	m_updateX(0.0f),
+	m_updateY(0.0f),
+	m_updateZ(0.0f),
 	m_menuOpen(false),
 	m_restTouch(false),
 	m_rest(false),
@@ -136,6 +139,10 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	SetModelPos();
 	MV1SetPosition(m_modelHandle, m_modelPos.ConversionToVECTOR());
 
+	m_updateX = 485.0f;
+	m_updateY = 12.0f;
+	m_updateZ = -800.0f;
+
 	//メニューを閉じる
 	m_menuOpen = false;
 
@@ -173,7 +180,7 @@ void Player::GameInit(std::shared_ptr<MyLibrary::Physics> physics)
 
 	//プレイヤーの初期位置設定
 	rigidbody.Init(false);
-	rigidbody.SetPos(MyLibrary::LibVec3(485.0f, 12.0f, -800.0f));
+	rigidbody.SetPos(MyLibrary::LibVec3(m_updateX, m_updateY, m_updateZ));
 	rigidbody.SetNextPos(rigidbody.GetPos());
 	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
 	m_collisionPos = rigidbody.GetPos();
@@ -653,10 +660,20 @@ void Player::Action()
 	//休息できたら
 	if (m_restTouch)
 	{
+		//初期化位置更新
+		m_updateX = m_modelPos.x;
+		m_updateY = m_modelPos.y;
+		m_updateZ = m_modelPos.z;
+
 		//Yボタンが押されたら
 		if (m_xpad.Buttons[15] == 1)
 		{
 			m_rest = true;
+		}
+		//押されていなかったら
+		else
+		{
+			m_rest = false;
 		}
 	}
 	else
@@ -887,6 +904,11 @@ void Player::OnCollideStay(const std::shared_ptr<Collidable>& collidable)
 		message += "敵";
 #endif
 		break;
+	case ObjectTag::Rect:
+#if _DEBUG
+		message += "ボス部屋の入り口";
+#endif
+		break;
 	}
 #if _DEBUG
 	message += "と当たった\n";
@@ -913,11 +935,6 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 		}
 
 		break;
-	case ObjectTag::Shield:
-#if _DEBUG
-		message += "盾";
-#endif
-		break;
 	case ObjectTag::EnemySearch:
 #if _DEBUG
 		message += "索敵";
@@ -933,7 +950,7 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 		message += "休息";
 #endif
 		break;
-	case ObjectTag::BossEnter:
+	case ObjectTag::Rect:
 #if _DEBUG
 		message += "ボスの入口";
 #endif

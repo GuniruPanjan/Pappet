@@ -71,6 +71,9 @@ private:
 	XINPUT_STATE m_xpad;                //パッド入力
 	float m_cameraAngle;                //カメラ情報
 	float m_lockAngle;                  //ロックオンしたときのアングル
+	float m_updateX;                    //休息したときの初期化位置X
+	float m_updateY;                    //休息したときの初期化位置Y
+	float m_updateZ;                    //休息したときの初期化位置Z
 	bool m_menuOpen;                    //メニューを開く判定
 	bool m_restTouch;                   //休息できるかの判定
 	bool m_rest;                        //休息判定

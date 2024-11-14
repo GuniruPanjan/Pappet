@@ -8,6 +8,8 @@ namespace
 	constexpr const char* cMapCollisionName = "Data/Map/Collision.mv1";
 	//休息地点の半径
 	constexpr float cRestRadius = 50.0f;
+	//ボス部屋入り口の半径
+	constexpr float cBossRommRadius = 60.0f;
 }
 
 /// <summary>
@@ -42,9 +44,9 @@ void MapFirst::Init(std::shared_ptr<MyLibrary::Physics> physics)
 
 	//マップのサイズ
 	m_size = 0.12f;
-	m_width = 5.0f;
-	m_hight = 50.0f;
-	m_depth = 70.0f;
+	m_width = 20.0f;
+	m_hight = 100.0f;
+	m_depth = 100.0f;
 
 	//モデルのサイズ変更
 	MV1SetScale(m_handle, VGet(m_size, m_size, m_size));
@@ -54,7 +56,9 @@ void MapFirst::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	m_mapPos = VGet(0.0f, 250.0f, 0.0f);
 	m_mapCollisionPos = VGet(-241.0f, -277.0f, -173.0f);
 	m_mapRestPos = MyLibrary::LibVec3(100.0f, 0.0f, -75.0f);
-	m_mapBossEnterPos = MyLibrary::LibVec3(-10.0f, 50.0f, 0.0f);
+	m_mapBossRoomPos = MyLibrary::LibVec3(-80.0f, 0.0f, 0.0f);
+	//m_mapBossEnterPos = MyLibrary::LibVec3(-10.0f, 50.0f, 0.0f);
+	m_mapBossEnterPos = MyLibrary::LibVec3(0.0f, 400.0f, 0.0f);
 
 	//ライト関係
 	ChangeLightTypeDir(VGet(-1.0f, 0.0f, 0.0f));
@@ -62,6 +66,8 @@ void MapFirst::Init(std::shared_ptr<MyLibrary::Physics> physics)
 
 	//索敵判定初期化
 	InitSearch(cRestRadius, m_mapRestPos);
+	//ボス部屋入り口
+	InitBossRoom(cBossRommRadius, m_mapBossEnterPos);
 	//ボス部屋入り口
 	InitRect(m_width, m_hight, m_depth, m_mapBossEnterPos);
 }
@@ -73,6 +79,7 @@ void MapFirst::Init(std::shared_ptr<MyLibrary::Physics> physics)
 std::shared_ptr<MapBase> MapFirst::Update()
 {
 	m_pSearch->Update(m_mapRestPos);
+	m_pBossRoom->Update(m_mapBossRoomPos);
 	m_pRect->Update(m_mapBossEnterPos);
 
 	return shared_from_this();   //自身のポインタ
@@ -100,8 +107,6 @@ void MapFirst::Draw()
 
 	//3Dモデル描画
 	MV1DrawModel(m_handle);
-
-	DrawFormatString(200, 100, 0xffffff, "rest : %d", m_pSearch->GetIsStay());
 }
 
 /// <summary>

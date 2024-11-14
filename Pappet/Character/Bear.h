@@ -21,6 +21,8 @@ public:
 	void GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics) override;
 	//更新
 	void Update(MyLibrary::LibVec3 playerPos, bool isChase);
+	//ボスの行動
+	void Action(MyLibrary::LibVec3 playerPos, bool isChase);
 	//描画
 	void Draw();
 };

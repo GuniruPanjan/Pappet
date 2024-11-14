@@ -59,6 +59,9 @@ public:
 
 	int SetI(int &set) { return m_I = set; }
 
+	//ボス部屋の判定
+	bool SetBossRoom(bool set) { return m_isBossDiscovery = set; }
+
 protected:
 	//ほかのオブジェクトと押し出し判定をする当たり判定を作成
 	void InitCollision(MyLibrary::LibVec3 vec, float len, float radius);
@@ -125,6 +128,7 @@ protected:
 	bool m_isDroped;             //コアをドロップしたかどうか
 	bool m_isExist;              //存在するかどうか
 	bool m_isDiscovery;          //プレイヤーを見つけたかどうか
+	bool m_isBossDiscovery;      //ボス戦に入ったかどうか
 	bool m_isTarget;             //プレイヤーにターゲットされるかどうか
 	bool m_isStayTarget = false; //プレイヤーの索敵に当たってるかどうか
 	bool m_isExitTarget = false; //プレイヤーの索敵から外れたかどうか

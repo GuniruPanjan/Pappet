@@ -28,12 +28,19 @@ namespace
 Bear::Bear() :
 	EnemyBase(Collidable::Priority::High)
 {
+	//当たり判定の設定
+	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
 	//モデルの読み込み
 	LoadModel(cModelPath);
 	//アニメーションやステータスを取得
 	LoadData(cCharacterName);
 	//索敵範囲の設定
 	m_searchRadius = cSearchRadius;
+
+	//アニメーションの判定初期化
+	m_anim.s_attack = false;
+	m_anim.s_moveflag = false;
+	m_anim.s_hit = false;
 }
 
 /// <summary>
@@ -54,9 +61,6 @@ Bear::~Bear()
 /// <param name="physics"></param>
 void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics)
 {
-	//当たり判定の設定
-	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
-
 	//代入
 	m_pPhysics = physics;
 
@@ -101,11 +105,6 @@ void Bear::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 {
 	m_pPhysics = physics;
 
-	//Finalize(m_pPhysics);
-
-	//当たり判定の設定
-	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
-
 	Collidable::Init(m_pPhysics);
 
 	//索敵判定をする当たり判定を作成
@@ -123,6 +122,10 @@ void Bear::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 
 	//モデルのサイズ設定
 	MV1SetScale(m_modelHandle, VGet(cModelSize, cModelSize, cModelSize));
+
+	//アニメーション設定
+	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
+	m_nowAnimIdx = m_animIdx["Idle"];
 
 	m_anim.s_isDead = false;
 	cDead = false;
@@ -149,6 +152,11 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 
 	UpdateAnimationBlend();
 
+	DistanceUpdate(playerPos);
+
+	//移動処理
+	MoveUpdate();
+
 	//ターゲット状態
 	TargetNow();
 	//攻撃を受けた時
@@ -156,6 +164,13 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 	{
 		m_status.s_hp -= m_col->GetAttack() - m_status.s_defense;
 	}
+	//プレイヤーがボス部屋に入ったら
+	if (m_isBossDiscovery && !cDead)
+	{
+		Action(playerPos, isChase);
+	}
+
+
 
 	TriggerUpdate();
 	HitTriggerUpdate();
@@ -167,8 +182,92 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 	//死んだ時
 	if (m_status.s_hp <= 0.0f)
 	{
+		//アニメーションを初期化
+		m_anim.s_attack = false;
+		m_anim.s_hit = false;
+		m_anim.s_moveflag = false;
+
 		Death();
 		cDead = true;
+	}
+
+}
+
+/// <summary>
+/// ボスの行動
+/// </summary>
+/// <param name="playerPos">プレイヤーのポジション</param>
+/// <param name="isChase">プレイヤー</param>
+void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
+{
+	//敵がプレイヤーの位置によって方向を補正する
+	float Cx = m_modelPos.x - playerPos.x;
+	float Cz = m_modelPos.z - playerPos.z;
+
+	//攻撃してない時
+	if (!m_anim.s_attack)
+	{
+		//方向を決める
+		AngleUpdate(playerPos);
+	}
+
+	//プレイヤーが範囲外だった時
+	if (!m_pSearch->GetIsStay())
+	{
+		WalkUpdate("Walk", 2);
+
+		//攻撃してない時
+		if (!m_anim.s_attack)
+		{
+			//歩くアニメーション
+			m_anim.s_moveflag = true;
+			//スピード
+			m_status.s_speed = 0.01f;
+
+			m_move = VScale(m_difPlayer, m_status.s_speed);
+
+			//移動方向
+			m_moveVec = MyLibrary::LibVec3(m_move.x, m_move.y, m_move.z);
+		}
+		
+	}
+	//射程圏内に入った
+	else if (m_pSearch->GetIsStay())
+	{
+		//ランダム行動で0が出たら
+		if (m_randomAction == 0)
+		{
+			m_anim.s_moveflag = false;
+			m_anim.s_attack = true;
+
+			AttackUpdate("Attack1", 3);
+		}
+		//ランダム行動で1が出たら
+		else if (m_randomAction == 1)
+		{
+			m_anim.s_moveflag = false;
+			m_anim.s_attack = true;
+
+			AttackUpdate("Attack2", 4);
+		}
+		//ランダム行動で2が出たら
+		else if (m_randomAction == 2)
+		{
+			m_anim.s_moveflag = false;
+			m_anim.s_attack = true;
+
+			AttackUpdate("Attack3", 5);
+		}
+
+		m_moveVec = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
+	}
+
+
+	//アニメーションが終わる度にランダムな行動を行う
+	if (m_isAnimationFinish)
+	{
+		m_anim.s_attack = false;
+		m_randomAction = GetRand(2);
 	}
 
 }
@@ -180,6 +279,8 @@ void Bear::Draw()
 {
 	//当たり判定座標を取得してモデルの描画座標を設定する
 	SetDrawModelPos(cModelPosY);
+	//3Dモデルの回転地をセットする
+	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
 	//モデルの描画
 	MV1DrawModel(m_modelHandle);
 }

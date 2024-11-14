@@ -64,11 +64,17 @@ void EnemyManager::Init(const char* stageName)
 /// <param name="init">‰Šú‰»‚·‚é‚©‚Ç‚¤‚©</param>
 void EnemyManager::GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, bool init)
 {
-	//“G‚Ì“–‚½‚è”»’èíœ
+	//“G‚Ì“–‚½‚è”»’è‚Æƒ‚ƒfƒ‹íœ
 	for (auto& enemy : m_pEnemys)
 	{
-		//íœ
-		enemy->Finalize(physics);
+		//¶‚«‚Ä‚¢‚é“z
+		if (!enemy->GetIsDead())
+		{
+			//¶‚«‚Ä‚¢‚é‚â‚Â‚ğíœ
+			enemy->Finalize(physics);
+		}
+
+		enemy->End();
 	}
 
 	if (init)
@@ -169,6 +175,16 @@ void EnemyManager::End()
 	{
 		enemy->End();
 	}
+}
+
+/// <summary>
+/// ƒ{ƒX‚Ì•”‰®‚É“ü‚Á‚½‚©
+/// </summary>
+/// <param name="set"></param>
+/// <returns></returns>
+bool EnemyManager::SetBossRoom(bool set)
+{
+	return bear->SetBossRoom(set);
 }
 
 /// <summary>

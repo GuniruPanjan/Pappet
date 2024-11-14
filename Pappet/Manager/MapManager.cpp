@@ -63,6 +63,14 @@ void MapManager::JudgeUpdate()
 }
 
 /// <summary>
+/// ”»’è‚ğ‰Šú‰»‚·‚é
+/// </summary>
+void MapManager::TriggerReset()
+{
+	m_pMap->TriggerReset();
+}
+
+/// <summary>
 /// •`‰æˆ—
 /// </summary>
 void MapManager::Draw()

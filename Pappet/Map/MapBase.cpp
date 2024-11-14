@@ -38,6 +38,7 @@ MapBase::~MapBase()
 void MapBase::Finalize(std::shared_ptr<MyLibrary::Physics> physics)
 {
 	m_pSearch->Finalize(physics);
+	m_pBossRoom->Finalize(physics);
 	m_pRect->Finalize(physics);
 }
 
@@ -63,6 +64,17 @@ void MapBase::InitSearch(float radius, MyLibrary::LibVec3 pos)
 {
 	m_pSearch = std::make_shared<SearchObject>(radius);
 	m_pSearch->Init(m_pPhysics, pos, false, true);
+}
+
+/// <summary>
+/// ボス部屋の入り口判定を作成
+/// </summary>
+/// <param name="radius">半径</param>
+/// <param name="pos">ポジション</param>
+void MapBase::InitBossRoom(float radius, MyLibrary::LibVec3 pos)
+{
+	m_pBossRoom = std::make_shared<SearchObject>(radius);
+	m_pBossRoom->Init(m_pPhysics, pos, false, false, false, true);
 }
 
 /// <summary>

@@ -22,6 +22,8 @@ public:
 	void Update(std::shared_ptr<MyLibrary::Physics> physics);
 	//当たったかの判定処理
 	void JudgeUpdate();
+	//判定を初期化する
+	void TriggerReset();
 	//描画処理
 	void Draw();
 	//終了処理
@@ -33,6 +35,8 @@ public:
 	//休息地点を返す
 	bool GetRest() { return m_pMap->GetRest(); }
 
+	//ボス部屋
+	bool GetBossRoom() { return m_pMap->GetBossRoom(); }
 private:
 	//スマートポインタ
 	std::shared_ptr<MapBase> m_pMap;
