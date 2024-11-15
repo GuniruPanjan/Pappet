@@ -25,10 +25,14 @@ public:
 	virtual std::shared_ptr<MapBase> Update() = 0;
 	//当たったかの判定更新
 	virtual void JudgeUpdate() = 0;
+	//ボスが死んだら出す
+	virtual void CoreUpdate() = 0;
 	//判定を初期化する
 	void TriggerReset() { m_pBossRoom->IsTriggerReset(); }
 	//描画
 	virtual void Draw() = 0;
+	//コアの描画
+	virtual void CoreDraw() = 0;
 	//終了
 	virtual void End(std::shared_ptr<MyLibrary::Physics> physics) = 0;
 
@@ -41,7 +45,7 @@ public:
 
 protected:
 	//モデルを読み込む
-	void LoadData(std::string mapPath, std::string collisionPath);
+	void LoadData(std::string mapPath, std::string collisionPath, std::string corePath);
 	//索敵判定をする当たり判定を作成
 	void InitSearch(float radius, MyLibrary::LibVec3 pos);
 	//ボス部屋の入り口
@@ -61,6 +65,7 @@ protected:
 
 	int m_handle;                           //モデルのハンドル
 	int m_collisionHandle;                  //モデルの当たり判定用のハンドル
+	int m_coreHandle;                       //コアのハンドル
 	float m_size;                           //マップのサイズ
 	float m_width;                          //幅
 	float m_hight;                          //高さ

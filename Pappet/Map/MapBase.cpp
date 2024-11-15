@@ -14,6 +14,7 @@ MapBase::MapBase() :
 	m_light(0),
 	m_handle(-1),
 	m_collisionHandle(-1),
+	m_coreHandle(-1),
 	m_size(0.0f),
 	m_width(0.0f),
 	m_hight(0.0f),
@@ -33,6 +34,7 @@ MapBase::~MapBase()
 	//メモリ解放
 	MV1DeleteModel(m_handle);
 	MV1DeleteModel(m_collisionHandle);
+	MV1DeleteModel(m_coreHandle);
 }
 
 void MapBase::Finalize(std::shared_ptr<MyLibrary::Physics> physics)
@@ -47,10 +49,11 @@ void MapBase::Finalize(std::shared_ptr<MyLibrary::Physics> physics)
 /// </summary>
 /// <param name="mapPath">モデルのパス</param>
 /// <param name="collisionPath">コリジョンのモデルパス</param>
-void MapBase::LoadData(std::string mapPath, std::string collisionPath)
+void MapBase::LoadData(std::string mapPath, std::string collisionPath, std::string corePath)
 {
 	m_handle = handle.GetModelHandle(mapPath);
 	m_collisionHandle = handle.GetModelHandle(collisionPath);
+	m_coreHandle = handle.GetModelHandle(corePath);
 }
 
 /// <summary>

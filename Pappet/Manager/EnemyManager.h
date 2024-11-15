@@ -56,6 +56,8 @@ public:
 	const std::list<bool> GetEnemyTarget() const { return m_enemyTarget; }
 	//プレイヤーが入ったかを判断する
 	bool SetBossRoom(bool set);
+	//ボスが死んだかの判定
+	bool GetBossDead();
 private:
 	//敵の生成
 	void CreateEnemy(float posX, float posY, float posZ, std::string name, std::shared_ptr<MyLibrary::Physics> physics);

@@ -188,6 +188,15 @@ bool EnemyManager::SetBossRoom(bool set)
 }
 
 /// <summary>
+/// ƒ{ƒX‚ª€‚ñ‚¾‚©‚Ì”»’è
+/// </summary>
+/// <returns></returns>
+bool EnemyManager::GetBossDead()
+{
+	return bear->GetBossDead();
+}
+
+/// <summary>
 /// “G‚Ì¶¬
 /// </summary>
 /// <param name="posX">XÀ•W</param>

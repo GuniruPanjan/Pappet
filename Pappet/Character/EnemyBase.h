@@ -7,6 +7,14 @@
 class EnemyBase : public CharacterBase
 {
 public:
+	//アニメーション構造体
+	struct EnemyAnimation
+	{
+		bool s_turnRight;
+		bool s_turnLeft;
+	};
+
+public:
 	//コンストラクタ
 	EnemyBase(Priority priority);
 	//デストラクタ
@@ -61,6 +69,8 @@ public:
 
 	//ボス部屋の判定
 	bool SetBossRoom(bool set) { return m_isBossDiscovery = set; }
+	//ボスの死んだ判定
+	bool GetBossDead() { return m_isBossDead; }
 
 protected:
 	//ほかのオブジェクトと押し出し判定をする当たり判定を作成
@@ -115,6 +125,8 @@ protected:
 	std::shared_ptr<EnemyAttackObject> m_pAttack;    //攻撃判定
 	std::shared_ptr<SearchObject> m_pSearch;    //索敵判定
 
+	EnemyAnimation m_enemyAnim;   //アニメーション
+
 	AttackObject* m_col;
 
 	int m_randomAction;       //ランダムに行動するための変数
@@ -124,12 +136,14 @@ protected:
 	float m_moveTurning;         //時計周りに旋回する法線ベクトル
 	float m_moveReverseTurning;  //反時計周りに旋回する法線ベクトル
 	float m_difPSize;            //プレイヤーとの距離のサイズを入れる
+	float m_correctionAngle;     //補正を行うためのアングル
 
 	bool m_isDroped;             //コアをドロップしたかどうか
 	bool m_isExist;              //存在するかどうか
 	bool m_isDiscovery;          //プレイヤーを見つけたかどうか
 	bool m_isBossDiscovery;      //ボス戦に入ったかどうか
 	bool m_isTarget;             //プレイヤーにターゲットされるかどうか
+	bool m_isBossDead;           //ボスが死んだ判定
 	bool m_isStayTarget = false; //プレイヤーの索敵に当たってるかどうか
 	bool m_isExitTarget = false; //プレイヤーの索敵から外れたかどうか
 	bool m_isEnterHit = false;   //プレイヤーの攻撃が当たっているかどうか

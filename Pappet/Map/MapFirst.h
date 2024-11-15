@@ -20,8 +20,12 @@ public:
 	virtual std::shared_ptr<MapBase> Update();
 	//当たったかの判定
 	virtual void JudgeUpdate();
+	//ボスが死んだら出す
+	virtual void CoreUpdate();
 	//描画
 	virtual void Draw();
+	//コア描画
+	virtual void CoreDraw();
 	//終了
 	virtual void End(std::shared_ptr<MyLibrary::Physics> physics);
 

@@ -113,6 +113,12 @@ void GameManager::Update()
 		m_init = true;
 	}
 
+	//ボスが死んだ判定
+	if (m_pEnemy->GetBossDead())
+	{
+
+	}
+
 	//物理更新
 	m_pPhysics->Update();
 }
@@ -131,6 +137,11 @@ void GameManager::Draw()
 	{
 		m_pSetting->MenuDraw();
 	}
+	//ボスが死んだ判定
+	//if (m_pEnemy->GetBossDead())
+	//{
+
+	//}
 
 	m_pCamera->Draw();
 

@@ -6,6 +6,8 @@ namespace
 	constexpr const char* cMapName = "Data/Map/Map.mv1";
 	//マップのコリジョンパス
 	constexpr const char* cMapCollisionName = "Data/Map/Collision.mv1";
+	//コアのパス
+	constexpr const char* cCoreName = "Data/Object/Core.mv1";
 	//休息地点の半径
 	constexpr float cRestRadius = 50.0f;
 	//ボス部屋入り口の半径
@@ -32,7 +34,7 @@ MapFirst::~MapFirst()
 void MapFirst::DataInit()
 {
 	//データロード
-	LoadData(cMapName, cMapCollisionName);
+	LoadData(cMapName, cMapCollisionName, cCoreName);
 }
 
 /// <summary>
@@ -97,6 +99,14 @@ void MapFirst::JudgeUpdate()
 }
 
 /// <summary>
+/// ボスが死んだら出す
+/// </summary>
+void MapFirst::CoreUpdate()
+{
+
+}
+
+/// <summary>
 /// 描画処理
 /// </summary>
 void MapFirst::Draw()
@@ -107,6 +117,15 @@ void MapFirst::Draw()
 
 	//3Dモデル描画
 	MV1DrawModel(m_handle);
+}
+
+/// <summary>
+/// コア描画
+/// </summary>
+void MapFirst::CoreDraw()
+{
+	//3Dモデル描画
+	MV1DrawModel(m_coreHandle);
 }
 
 /// <summary>

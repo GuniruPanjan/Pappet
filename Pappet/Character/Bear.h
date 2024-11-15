@@ -25,5 +25,9 @@ public:
 	void Action(MyLibrary::LibVec3 playerPos, bool isChase);
 	//•`‰æ
 	void Draw();
+
+
+private:
+	MyLibrary::LibVec3 m_attackPos;    //UŒ‚”»’è‚ÌÀ•W
 };
 

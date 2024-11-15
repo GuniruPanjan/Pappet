@@ -363,6 +363,4 @@ void Immortal::Draw()
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
 	//ƒ‚ƒfƒ‹‚Ì•`‰æ
 	MV1DrawModel(m_modelHandle);
-
-	//DrawFormatString(200, 400, 0xffffff, "dead : %d", m_anim.s_isDead);
 }

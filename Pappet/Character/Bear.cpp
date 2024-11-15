@@ -20,13 +20,21 @@ namespace
 	constexpr float cDeadFrame = 137.0f;
 	//索敵範囲
 	constexpr float cSearchRadius = 120.0f;
+	//攻撃範囲1
+	constexpr float cAttackRadius1 = 40.0f;
+	//攻撃範囲2
+	constexpr float cAttackRadius2 = 60.0f;
+	//攻撃範囲3
+	constexpr float cAttackRadius3 = 130.0f;
+
 }
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 Bear::Bear() :
-	EnemyBase(Collidable::Priority::High)
+	EnemyBase(Collidable::Priority::High),
+	m_attackPos()
 {
 	//当たり判定の設定
 	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
@@ -189,6 +197,11 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 
 		Death();
 		cDead = true;
+		m_isBossDead = true;
+	}
+	else
+	{
+		m_isBossDead = false;
 	}
 
 }
@@ -204,15 +217,69 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 	float Cx = m_modelPos.x - playerPos.x;
 	float Cz = m_modelPos.z - playerPos.z;
 
+	m_correctionAngle = atan2f(Cx, Cz);
+
+	//左に回転する
+	if (m_angle > m_correctionAngle + 0.8f)
+	{
+		m_enemyAnim.s_turnLeft = true;
+		m_enemyAnim.s_turnRight = false;
+		m_anim.s_moveflag = false;
+	}
+	//右に回転する
+	if (m_angle < m_correctionAngle - 0.8f)
+	{
+		m_enemyAnim.s_turnRight = true;
+		m_enemyAnim.s_turnLeft = false;
+		m_anim.s_moveflag = false;
+	}
+
 	//攻撃してない時
 	if (!m_anim.s_attack)
 	{
-		//方向を決める
-		AngleUpdate(playerPos);
+		if (!m_enemyAnim.s_turnLeft && !m_enemyAnim.s_turnRight)
+		{
+			//方向を決める
+			AngleUpdate(playerPos);
+		}
+	}
+
+	//攻撃してない時
+	if (!m_anim.s_attack)
+	{
+		//動けないようにする
+		m_moveVec = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
+
+		//左回転させる
+		if (m_enemyAnim.s_turnLeft)
+		{
+			m_nowAnimIdx = m_animIdx["LeftWalk"];
+			ChangeAnim(m_nowAnimIdx, m_animOne[6], m_animOne);
+
+			//左回り
+			if (m_angle > m_correctionAngle + 0.8f)
+			{
+				m_angle -= 0.05f;
+			}
+
+		}
+		//右回転させる
+		if (m_enemyAnim.s_turnRight)
+		{
+			m_nowAnimIdx = m_animIdx["RightWalk"];
+			ChangeAnim(m_nowAnimIdx, m_animOne[7], m_animOne);
+
+			//右回り
+			if (m_angle < m_correctionAngle - 0.8f)
+			{
+				m_angle += 0.05f;
+			}
+
+		}
 	}
 
 	//プレイヤーが範囲外だった時
-	if (!m_pSearch->GetIsStay())
+	if (!m_pSearch->GetIsStay() && !m_enemyAnim.s_turnLeft && !m_enemyAnim.s_turnRight)
 	{
 		WalkUpdate("Walk", 2);
 
@@ -232,7 +299,7 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 		
 	}
 	//射程圏内に入った
-	else if (m_pSearch->GetIsStay())
+	else if (m_pSearch->GetIsStay() && !m_enemyAnim.s_turnLeft && !m_enemyAnim.s_turnRight)
 	{
 		//ランダム行動で0が出たら
 		if (m_randomAction == 0)
@@ -241,6 +308,33 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 			m_anim.s_attack = true;
 
 			AttackUpdate("Attack1", 3);
+			//攻撃力
+			m_status.s_attack = 30.0f;
+
+			//攻撃の初期化
+			if (m_nowFrame == 5.0f)
+			{
+				//攻撃の初期化
+				InitAttack(cAttackRadius1);
+			}
+			else if (m_nowFrame > 5.0f)
+			{
+				//攻撃判定の更新
+				m_attackPos = MyLibrary::LibVec3(rigidbody.GetPos().x + sinf(m_angle) * -75.0f, rigidbody.GetPos().y, rigidbody.GetPos().z - cosf(m_angle) * 75.0f);
+				m_pAttack->Update(m_attackPos);
+			}
+
+			//アニメーションフレーム中に攻撃判定を出す
+			if (m_nowFrame == 7.0f)
+			{
+				InitAttackUpdate(m_status.s_attack);
+			}
+			else if (m_nowFrame >= 12.0f)
+			{
+				//判定をリセット
+				m_pAttack->CollisionEnd();
+			}
+
 		}
 		//ランダム行動で1が出たら
 		else if (m_randomAction == 1)
@@ -249,6 +343,33 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 			m_anim.s_attack = true;
 
 			AttackUpdate("Attack2", 4);
+			//攻撃力
+			m_status.s_attack = 50.0f;
+
+			//攻撃の初期化
+			if (m_nowFrame == 5.0f)
+			{
+				//攻撃の初期化
+				InitAttack(cAttackRadius2);
+			}
+			else if (m_nowFrame > 5.0f)
+			{
+				//攻撃判定の更新
+				m_attackPos = MyLibrary::LibVec3(rigidbody.GetPos().x + sinf(m_angle) * -75.0f, rigidbody.GetPos().y, rigidbody.GetPos().z - cosf(m_angle) * 75.0f);
+				m_pAttack->Update(m_attackPos);
+			}
+
+			//アニメーションフレーム宙に攻撃判定を出す
+			if (m_nowFrame == 38.0f)
+			{
+				InitAttackUpdate(m_status.s_attack);
+			}
+			else if (m_nowFrame >= 45.0f)
+			{
+				//判定をリセット
+				m_pAttack->CollisionEnd();
+			}
+
 		}
 		//ランダム行動で2が出たら
 		else if (m_randomAction == 2)
@@ -257,19 +378,68 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 			m_anim.s_attack = true;
 
 			AttackUpdate("Attack3", 5);
+			//攻撃力
+			m_status.s_attack = 80.0f;
+
+			//攻撃の初期化
+			if (m_nowFrame == 5.0f)
+			{
+				//攻撃の初期化
+				InitAttack(cAttackRadius3);
+			}
+			else if (m_nowFrame > 5.0f)
+			{
+				//攻撃判定の更新
+				m_attackPos = MyLibrary::LibVec3(rigidbody.GetPos().x, rigidbody.GetPos().y, rigidbody.GetPos().z);
+				m_pAttack->Update(m_attackPos);
+			}
+
+			//アニメーションフレーム中に攻撃判定を出す
+			if (m_nowFrame == 58.0f)
+			{
+				InitAttackUpdate(m_status.s_attack);
+			}
+			else if (m_nowFrame >= 68.0f)
+			{
+				//判定をリセット
+				m_pAttack->CollisionEnd();
+			}
 		}
 
 		m_moveVec = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
 	}
 
 
+	//アニメーションが終わったら角度を入れる
+	if (m_enemyAnim.s_turnLeft && m_isAnimationFinish && !m_anim.s_attack && !m_anim.s_moveflag)
+	{
+		m_angle = m_correctionAngle;
+		m_enemyAnim.s_turnLeft = false;
+	}
+	//アニメーションが終わったら角度を入れる
+	if (m_enemyAnim.s_turnRight && m_isAnimationFinish && !m_anim.s_attack && !m_anim.s_moveflag)
+	{
+		m_angle = m_correctionAngle;
+		m_enemyAnim.s_turnRight = false;
+	}
+
 	//アニメーションが終わる度にランダムな行動を行う
 	if (m_isAnimationFinish)
 	{
 		m_anim.s_attack = false;
-		m_randomAction = GetRand(2);
-	}
 
+		//近いときのランダム行動
+		if (m_difPSize <= 80.0f)
+		{
+			m_randomAction = GetRand(2);
+		}
+		//近くないときのランダム行動
+		else
+		{
+			m_randomAction = GetRand(1) + 1;
+		}
+		
+	}
 }
 
 /// <summary>
@@ -283,4 +453,6 @@ void Bear::Draw()
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
 	//モデルの描画
 	MV1DrawModel(m_modelHandle);
+
+	DrawFormatString(200, 500, 0xffffff, "m_difPlayer : %f", m_difPSize);
 }
