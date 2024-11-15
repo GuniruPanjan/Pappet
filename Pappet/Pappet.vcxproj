@@ -170,6 +170,7 @@
     <ClCompile Include="Map\Map.cpp" />
     <ClCompile Include="Map\MapBase.cpp" />
     <ClCompile Include="Map\MapFirst.cpp" />
+    <ClCompile Include="Map\MapRest.cpp" />
     <ClCompile Include="Object\AttackObject.cpp" />
     <ClCompile Include="Object\EnemyAttackObject.cpp" />
     <ClCompile Include="Object\ObjectBase.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="Map\Map.h" />
     <ClInclude Include="Map\MapBase.h" />
     <ClInclude Include="Map\MapFirst.h" />
+    <ClInclude Include="Map\MapRest.h" />
     <ClInclude Include="Object\AttackObject.h" />
     <ClInclude Include="Object\EnemyAttackObject.h" />
     <ClInclude Include="Object\ObjectBase.h" />

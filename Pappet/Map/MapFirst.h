@@ -17,7 +17,7 @@ public:
 	//初期化
 	virtual void Init(std::shared_ptr<MyLibrary::Physics> physics);
 	//更新
-	virtual std::shared_ptr<MapBase> Update();
+	virtual std::shared_ptr<MapBase> Update(bool warp);
 	//当たったかの判定
 	virtual void JudgeUpdate();
 	//ボスが死んだら出す

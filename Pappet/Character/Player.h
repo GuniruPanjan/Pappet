@@ -33,6 +33,7 @@ public:
 	void Finalize();
 	void Update();
 	void Action();
+	void WarpMap();
 	void NotWeaponAnimation();
 	void AllAnimation();
 	void WeaponAnimation();
@@ -60,6 +61,9 @@ public:
 	bool GetRest() { return m_rest; }
 	bool SetRest(bool set) { return m_restTouch = set; }
 
+	//ワープ関係
+	bool GetWarp() { return m_warp; }
+
 	const MyLibrary::LibVec3 GetPos() const { return rigidbody.GetPos(); }
 
 private:
@@ -78,6 +82,7 @@ private:
 	bool m_restTouch;                   //休息できるかの判定
 	bool m_rest;                        //休息判定
 	bool m_lockonTarget;                //ターゲット判定
+	bool m_warp;                        //マップをワープするための判定
 
 	//アニメーション用変数
 	int m_attackNumber;                 //現在の攻撃段階の代入

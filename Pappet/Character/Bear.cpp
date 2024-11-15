@@ -409,7 +409,6 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 		m_moveVec = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
 	}
 
-
 	//アニメーションが終わったら角度を入れる
 	if (m_enemyAnim.s_turnLeft && m_isAnimationFinish && !m_anim.s_attack && !m_anim.s_moveflag)
 	{
@@ -424,7 +423,7 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 	}
 
 	//アニメーションが終わる度にランダムな行動を行う
-	if (m_isAnimationFinish)
+	if (m_isAnimationFinish && m_anim.s_attack)
 	{
 		m_anim.s_attack = false;
 

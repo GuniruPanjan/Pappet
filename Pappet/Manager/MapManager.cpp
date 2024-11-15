@@ -39,9 +39,9 @@ void MapManager::Init(std::shared_ptr<MyLibrary::Physics> physics)
 /// <summary>
 /// 更新処理
 /// </summary>
-void MapManager::Update(std::shared_ptr<MyLibrary::Physics> physics)
+void MapManager::Update(std::shared_ptr<MyLibrary::Physics> physics, bool warp)
 {
-	std::shared_ptr<MapBase> pNext = m_pMap->Update();
+	std::shared_ptr<MapBase> pNext = m_pMap->Update(warp);
 	if (pNext != m_pMap)
 	{
 		//現在のマップの終了処理
@@ -63,6 +63,14 @@ void MapManager::JudgeUpdate()
 }
 
 /// <summary>
+/// コア更新
+/// </summary>
+void MapManager::CoreUpdate()
+{
+	m_pMap->CoreUpdate();
+}
+
+/// <summary>
 /// 判定を初期化する
 /// </summary>
 void MapManager::TriggerReset()
@@ -76,6 +84,14 @@ void MapManager::TriggerReset()
 void MapManager::Draw()
 {
 	m_pMap->Draw();
+}
+
+/// <summary>
+/// コア描画
+/// </summary>
+void MapManager::CoreDraw()
+{
+	m_pMap->CoreDraw();
 }
 
 /// <summary>

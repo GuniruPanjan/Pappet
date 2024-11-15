@@ -58,6 +58,7 @@ Player::Player() :
 	m_restTouch(false),
 	m_rest(false),
 	m_lockonTarget(false),
+	m_warp(false),
 	m_moveAnimFrameIndex(0),
 	m_moveAnimFrameRight(0),
 	m_moveAnimShieldFrameIndex(0),
@@ -398,7 +399,7 @@ void Player::Update()
 	}
 
 	//回避行動中
-	if (!m_isAnimationFinish && m_animChange.sa_avoidance)
+	if (!m_isAnimationFinish && m_animChange.sa_avoidance && !m_anim.s_hit)
 	{
 		//フレーム回避
 		if (m_nowFrame >= 0.0f && m_nowFrame <= 20.0f)
@@ -686,6 +687,23 @@ void Player::Action()
 	if (m_xpad.Buttons[4] == 1)
 	{
 		m_menuOpen = true;
+	}
+}
+
+/// <summary>
+/// マップをワープするための関数
+/// </summary>
+void Player::WarpMap()
+{
+	//Yボタンが押されたら
+	if (m_xpad.Buttons[15] == 1)
+	{
+		//マップを変える
+		m_warp = true;
+	}
+	else
+	{
+		m_warp = false;
 	}
 }
 

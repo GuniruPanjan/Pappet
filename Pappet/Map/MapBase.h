@@ -22,7 +22,7 @@ public:
 	//終了
 	virtual void Finalize(std::shared_ptr<MyLibrary::Physics> physics);
 	//更新
-	virtual std::shared_ptr<MapBase> Update() = 0;
+	virtual std::shared_ptr<MapBase> Update(bool warp) = 0;
 	//当たったかの判定更新
 	virtual void JudgeUpdate() = 0;
 	//ボスが死んだら出す
@@ -42,7 +42,8 @@ public:
 	bool GetRest() { return m_pSearch->GetIsStay(); }
 	//ボス部屋の入り口
 	bool GetBossRoom() { return m_pBossRoom->GetIsTrigger(); }
-
+	//コアの当たり判定を返す
+	bool GetCore() { return m_pCore->GetIsStay(); }
 protected:
 	//モデルを読み込む
 	void LoadData(std::string mapPath, std::string collisionPath, std::string corePath);
@@ -52,6 +53,8 @@ protected:
 	void InitBossRoom(float radius, MyLibrary::LibVec3 pos);
 	//ボス部屋の入口
 	void InitRect(float width, float hight, float depth, MyLibrary::LibVec3 pos);
+	//コアの当たり判定
+	void InitCore(float radius, MyLibrary::LibVec3 pos);
 
 protected:
 	//物理クラスのポインタ
@@ -59,6 +62,7 @@ protected:
 
 	std::shared_ptr<SearchObject> m_pSearch;   //索敵判定
 	std::shared_ptr<SearchObject> m_pBossRoom; //ボス部屋の入り口判定
+	std::shared_ptr<SearchObject> m_pCore;     //コアの当たり判定
 	std::shared_ptr<RectObject> m_pRect;       //矩形判定
 
 	int m_light;                            //ライト
@@ -70,11 +74,14 @@ protected:
 	float m_width;                          //幅
 	float m_hight;                          //高さ
 	float m_depth;                          //奥行
+	float m_angle;                          //回転させるアングル
 
 	VECTOR m_mapPos;                        //マップのポジション
 	VECTOR m_mapCollisionPos;               //マップのコリジョンのポジション
+	VECTOR m_mapCorePos;                       //マップのコアポジション
 	MyLibrary::LibVec3 m_mapRestPos;        //休息ポイントのポジション
 	MyLibrary::LibVec3 m_mapBossRoomPos;    //ボス部屋入り口のポジション
 	MyLibrary::LibVec3 m_mapBossEnterPos;   //ボス部屋入り口のポジション
+	MyLibrary::LibVec3 m_mapCoreCollisionePos;        //コアのポジション
 };
 

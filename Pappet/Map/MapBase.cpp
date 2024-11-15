@@ -19,10 +19,13 @@ MapBase::MapBase() :
 	m_width(0.0f),
 	m_hight(0.0f),
 	m_depth(0.0f),
+	m_angle(0.0f),
 	m_mapPos(VGet(0.0f,0.0f,0.0f)),
 	m_mapCollisionPos(VGet(0.0f,0.0f,0.0f)),
+	m_mapCorePos(VGet(0.0f,0.0f,0.0f)),
 	m_mapRestPos(),
-	m_mapBossEnterPos()
+	m_mapBossEnterPos(),
+	m_mapCoreCollisionePos()
 {
 }
 
@@ -90,4 +93,15 @@ void MapBase::InitRect(float width, float hight, float depth, MyLibrary::LibVec3
 {
 	m_pRect = std::make_shared<RectObject>(width, hight, depth);
 	m_pRect->Init(m_pPhysics, pos, true);
+}
+
+/// <summary>
+/// コアの当たり判定を作成
+/// </summary>
+/// <param name="radius">半径</param>
+/// <param name="pos">ポジション</param>
+void MapBase::InitCore(float radius, MyLibrary::LibVec3 pos)
+{
+	m_pCore = std::make_shared<SearchObject>(radius);
+	m_pCore->Init(m_pPhysics, pos, false, false, false, false, true);
 }

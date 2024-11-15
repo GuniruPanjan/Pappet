@@ -25,7 +25,6 @@ public:
 		ThreeMap,       //3番目のステージ
 		FourMap,        //4番目のステージ
 		LastMap        //最後のステージ
-		
 	};
 
 public:

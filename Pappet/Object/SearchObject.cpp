@@ -6,6 +6,7 @@ SearchObject::SearchObject(float radius) :
 	m_isRest(false),
 	m_isItem(false),
 	m_isBossRoom(false),
+	m_isCore(false),
 	m_isTriggerEnter(false),
 	m_isTriggerStay(false),
 	m_isTriggerExit(false),
@@ -21,13 +22,14 @@ SearchObject::~SearchObject()
 {
 }
 
-void SearchObject::Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnemy, bool isRest, bool isItem, bool isBossRoom)
+void SearchObject::Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnemy, bool isRest, bool isItem, bool isBossRoom, bool isCore)
 {
 	m_pPhysics = physics;
 	m_isEnemy = isEnemy;
 	m_isRest = isRest;
 	m_isItem = isItem;
 	m_isBossRoom = isBossRoom;
+	m_isCore = isCore;
 
 	Collidable::Init(m_pPhysics);
 
@@ -84,6 +86,15 @@ void SearchObject::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 			m_isTriggerEnter = true;
 		}
 	}
+	//アタッチしたオブジェクトがコアなら
+	else if (m_isCore)
+	{
+		auto tag = collidable->GetTag();
+		if (tag == ObjectTag::Player)
+		{
+			m_isTriggerEnter = true;
+		}
+	}
 	
 }
 
@@ -116,6 +127,15 @@ void SearchObject::OnTriggerStay(const std::shared_ptr<Collidable>& collidable)
 			m_isTriggerStay = true;
 		}
 	}
+	//アタッチしたオブジェクトがコアなら
+	else if (m_isCore)
+	{
+		auto tag = collidable->GetTag();
+		if (tag == ObjectTag::Player)
+		{
+			m_isTriggerStay = true;
+		}
+	}
 }
 
 void SearchObject::OnTriggerExit(const std::shared_ptr<Collidable>& collidable)
@@ -140,6 +160,15 @@ void SearchObject::OnTriggerExit(const std::shared_ptr<Collidable>& collidable)
 	}
 	//アタッチしたオブジェクトがアイテムなら
 	else if (m_isItem)
+	{
+		auto tag = collidable->GetTag();
+		if (tag == ObjectTag::Player)
+		{
+			m_isTriggerExit = true;
+		}
+	}
+	//アタッチしたオブジェクトがコアなら
+	else if (m_isCore)
 	{
 		auto tag = collidable->GetTag();
 		if (tag == ObjectTag::Player)

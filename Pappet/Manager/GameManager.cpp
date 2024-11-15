@@ -11,7 +11,8 @@
 
 namespace
 {
-	
+	//マップをワープする準備
+	bool cWarp = false;
 }
 
 /// <summary>
@@ -77,8 +78,19 @@ void GameManager::Update()
 	//ボス部屋に入ったか
 	m_pEnemy->SetBossRoom(m_pMap->GetBossRoom());
 
+	//ボスが死んだ判定
+	if (m_pEnemy->GetBossDead())
+	{
+		cWarp = true;
+		m_pMap->CoreUpdate();
 
-	m_pMap->Update(m_pPhysics);
+		if (m_pMap->GetCore())
+		{
+			m_pPlayer->WarpMap();
+		}
+	}
+
+	m_pMap->Update(m_pPhysics, m_pPlayer->GetWarp());
 
 	//メニューを開く
 	if (m_pPlayer->GetMenu())
@@ -113,12 +125,6 @@ void GameManager::Update()
 		m_init = true;
 	}
 
-	//ボスが死んだ判定
-	if (m_pEnemy->GetBossDead())
-	{
-
-	}
-
 	//物理更新
 	m_pPhysics->Update();
 }
@@ -138,10 +144,10 @@ void GameManager::Draw()
 		m_pSetting->MenuDraw();
 	}
 	//ボスが死んだ判定
-	//if (m_pEnemy->GetBossDead())
-	//{
-
-	//}
+	if (cWarp)
+	{
+		m_pMap->CoreDraw();
+	}
 
 	m_pCamera->Draw();
 

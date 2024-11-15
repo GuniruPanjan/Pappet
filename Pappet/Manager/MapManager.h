@@ -19,13 +19,17 @@ public:
 	//初期化処理
 	void Init(std::shared_ptr<MyLibrary::Physics> physics);
 	//更新処理
-	void Update(std::shared_ptr<MyLibrary::Physics> physics);
+	void Update(std::shared_ptr<MyLibrary::Physics> physics, bool warp);
 	//当たったかの判定処理
 	void JudgeUpdate();
+	//コアの更新
+	void CoreUpdate();
 	//判定を初期化する
 	void TriggerReset();
 	//描画処理
 	void Draw();
+	//コアの描画
+	void CoreDraw();
 	//終了処理
 	void End(std::shared_ptr<MyLibrary::Physics> physics);
 
@@ -37,6 +41,9 @@ public:
 
 	//ボス部屋
 	bool GetBossRoom() { return m_pMap->GetBossRoom(); }
+
+	//コアの当たり判定を返す
+	bool GetCore() { return m_pMap->GetCore(); }
 private:
 	//スマートポインタ
 	std::shared_ptr<MapBase> m_pMap;

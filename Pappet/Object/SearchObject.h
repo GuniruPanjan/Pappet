@@ -6,7 +6,7 @@ public:
 	SearchObject(float radius);
 	~SearchObject();
 
-	void Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnemy = false, bool isRest = false, bool isItem = false, bool isBossRoom = false);
+	void Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnemy = false, bool isRest = false, bool isItem = false, bool isBossRoom = false, bool isCore = false);
 	void Update(MyLibrary::LibVec3 pos);
 
 	void OnCollideEnter(const std::shared_ptr<Collidable>& collidable) {};
@@ -30,6 +30,7 @@ private:
 	bool m_isRest = false;
 	bool m_isItem = false;
 	bool m_isBossRoom = false;
+	bool m_isCore = false;
 	bool m_isTriggerEnter = false;
 	bool m_isTriggerStay = false;
 	bool m_isTriggerExit = false;

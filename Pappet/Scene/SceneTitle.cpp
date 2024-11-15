@@ -126,7 +126,7 @@ void SceneTitle::Init()
 /// <returns>ƒV[ƒ“‚ğ•Ô‚·</returns>
 std::shared_ptr<SceneBase> SceneTitle::Update()
 {
-	m_pMap->Update(m_pPhysics);
+	m_pMap->Update(m_pPhysics, false);
 
 	if (m_pSetting->GetSettingScene() == false)
 	{
