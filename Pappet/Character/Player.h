@@ -62,6 +62,7 @@ public:
 	bool SetRest(bool set) { return m_restTouch = set; }
 
 	//ƒ[ƒvŠÖŒW
+	bool SetWarp(bool set) { return m_warp = set; }
 	bool GetWarp() { return m_warp; }
 
 	const MyLibrary::LibVec3 GetPos() const { return rigidbody.GetPos(); }

@@ -20,6 +20,8 @@ public:
 	void Init(std::shared_ptr<MyLibrary::Physics> physics);
 	//更新処理
 	void Update(std::shared_ptr<MyLibrary::Physics> physics, bool warp);
+	//ワープの更新処理
+	void WarpUpdate(std::shared_ptr<MyLibrary::Physics> physics, bool warp);
 	//当たったかの判定処理
 	void JudgeUpdate();
 	//コアの更新

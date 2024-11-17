@@ -10,6 +10,8 @@ namespace
 	constexpr const char* cCoreName = "Data/Object/Core.mv1";
 	//休息地点の半径
 	constexpr float cRestRadius = 100.0f;
+	//ボス部屋入口の半径
+	constexpr float cBossRommRadius = 60.0f;
 	//コアの半径
 	constexpr float cCoreRadius = 70.0f;
 	//コアのサイズ
@@ -53,19 +55,33 @@ void MapRest::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	m_pPhysics = physics;
 
 	//マップのサイズ
-	m_size = 0.12f;
+	m_size = 0.01f;
 
 	//モデルのサイズ変更
 	MV1SetScale(m_handle, VGet(m_size, m_size, m_size));
 	MV1SetScale(m_collisionHandle, VGet(m_size, m_size, m_size));
 
-	m_mapPos = VGet(0.0f, 0.0f, 0.0f);
-	m_mapCollisionPos = VGet(0.0f, 0.0f, 0.0f);
-	m_mapCorePos = VGet(-830.0f, 50.0f, 0.0f);
+	m_mapPos = VGet(-200.0f, -25.0f, 0.0f);
+	m_mapCollisionPos = VGet(-230.0f, -40.0f, 400.0f);
+	//m_mapCollisionPos = VGet(0.0f, 0.0f, 0.0f);
+	m_mapCorePos = VGet(0.0f, 0.0f, 0.0f);
+	m_mapRestPos = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
+	m_mapBossRoomPos = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
+	m_mapBossEnterPos = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
+	m_mapCoreCollisionePos = MyLibrary::LibVec3(m_mapCorePos.x, 0.0f, m_mapCorePos.z);
 
 	//ライト関係
 	ChangeLightTypeDir(VGet(-1.0f, 0.0f, 0.0f));
 	m_light = CreateDirLightHandle(VGet(1.0f, 0.0f, 0.0f));
+
+	//索敵判定初期化
+	InitSearch(cRestRadius, m_mapRestPos);
+	//ボス部屋入り口
+	InitBossRoom(cBossRommRadius, m_mapBossEnterPos);
+	//ボス部屋入り口
+	InitRect(m_width, m_hight, m_depth, m_mapBossEnterPos);
+	//コアの判定初期化
+	InitCore(cCoreRadius, m_mapCoreCollisionePos);
 }
 
 /// <summary>
@@ -79,7 +95,22 @@ std::shared_ptr<MapBase> MapRest::Update(bool warp)
 
 	}
 
-	return std::shared_ptr<MapBase>();
+	return shared_from_this();  //自身のポインタ
+}
+
+/// <summary>
+/// ワープの更新処理
+/// </summary>
+/// <param name="warp"></param>
+/// <returns></returns>
+std::shared_ptr<MapBase> MapRest::WarpUpdate(bool warp)
+{
+	if (warp)
+	{
+
+	}
+
+	return shared_from_this();  //自身のポインタ
 }
 
 /// <summary>
@@ -107,6 +138,7 @@ void MapRest::Draw()
 
 	//3Dモデル描画
 	MV1DrawModel(m_handle);
+	MV1DrawModel(m_collisionHandle);
 }
 
 /// <summary>

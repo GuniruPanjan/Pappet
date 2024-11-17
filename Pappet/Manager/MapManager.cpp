@@ -49,8 +49,30 @@ void MapManager::Update(std::shared_ptr<MyLibrary::Physics> physics, bool warp)
 
 		//Updateが返した新しいシーンの開始処理を行う
 		m_pMap = pNext;
+
+		//ここはいずれ消す
+		//m_pMap->DataInit();
+		//m_pMap->Init(physics);
+	}
+}
+
+/// <summary>
+/// ワープでの更新処理
+/// </summary>
+/// <param name="physics"></param>
+/// <param name="warp"></param>
+void MapManager::WarpUpdate(std::shared_ptr<MyLibrary::Physics> physics, bool warp)
+{
+	std::shared_ptr<MapBase> pNext = m_pMap->WarpUpdate(warp);
+	if (pNext != m_pMap)
+	{
+		//現在のマップの終了処理
+		m_pMap->End(physics);
+
+		m_pMap = pNext;
+
+		//データダウンロード
 		m_pMap->DataInit();
-		m_pMap->Init(physics);
 	}
 }
 

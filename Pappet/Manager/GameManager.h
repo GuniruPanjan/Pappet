@@ -32,6 +32,7 @@ public:
 	virtual ~GameManager();
 
 	void Init();
+	void GameInit();
 	void Update();
 	void Draw();
 	void End();

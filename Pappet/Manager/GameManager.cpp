@@ -13,6 +13,8 @@ namespace
 {
 	//マップをワープする準備
 	bool cWarp = false;
+	//ワープ時に一回リセットする
+	bool cOne = false;
 }
 
 /// <summary>
@@ -52,81 +54,130 @@ void GameManager::Init()
 }
 
 /// <summary>
+/// ゲーム中での初期化処理
+/// </summary>
+void GameManager::GameInit()
+{
+	m_pPhysics = std::make_shared<MyLibrary::Physics>(m_pMap->GetCollisionMap());
+
+	m_pMap->Init(m_pPhysics);
+
+	m_pPlayer->Init(m_pPhysics);
+	m_pEnemy->Init("stage1");
+	m_pNpc->Init(m_pPhysics);
+	m_pSetting->Init();
+}
+
+/// <summary>
 /// 更新処理
 /// </summary>
 void GameManager::Update()
 {
-	m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
-
-	m_pPlayer->Update();
-	//ロックオンしてない時
-	if (!m_pPlayer->GetLock())
+	if (!m_pPlayer->GetWarp())
 	{
-		m_pCamera->Update(*m_pPlayer);
-	}
-	//ロックオンしてる時
-	else if (m_pPlayer->GetLock())
-	{
-		m_pCamera->LockUpdate(*m_pPlayer, *m_pEnemy);
-	}
+		m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
-	m_pEnemy->Update(m_pPhysics, this, m_pPlayer->GetPos(), m_pCamera->GetDirection(), !m_pPlayer->IsGetPlayerDead(), m_init);
-	
-	m_pMap->JudgeUpdate();
-	//休息ができるか
-	m_pPlayer->SetRest(m_pMap->GetRest());
-	//ボス部屋に入ったか
-	m_pEnemy->SetBossRoom(m_pMap->GetBossRoom());
-
-	//ボスが死んだ判定
-	if (m_pEnemy->GetBossDead())
-	{
-		cWarp = true;
-		m_pMap->CoreUpdate();
-
-		if (m_pMap->GetCore())
+		m_pPlayer->Update();
+		//ロックオンしてない時
+		if (!m_pPlayer->GetLock())
 		{
-			m_pPlayer->WarpMap();
+			m_pCamera->Update(*m_pPlayer);
 		}
+		//ロックオンしてる時
+		else if (m_pPlayer->GetLock())
+		{
+			m_pCamera->LockUpdate(*m_pPlayer, *m_pEnemy);
+		}
+
+		m_pEnemy->Update(m_pPhysics, this, m_pPlayer->GetPos(), m_pCamera->GetDirection(), !m_pPlayer->IsGetPlayerDead(), m_init);
+
+		m_pMap->JudgeUpdate();
+		//休息ができるか
+		m_pPlayer->SetRest(m_pMap->GetRest());
+		//ボス部屋に入ったか
+		m_pEnemy->SetBossRoom(m_pMap->GetBossRoom());
+
+		//ボスが死んだ判定
+		if (m_pEnemy->GetBossDead())
+		{
+			cWarp = true;
+			m_pMap->CoreUpdate();
+
+			if (m_pMap->GetCore())
+			{
+				m_pPlayer->WarpMap();
+			}
+		}
+
+		m_pMap->Update(m_pPhysics, m_pPlayer->GetWarp());
+		//m_pMap->WarpUpdate(m_pPhysics, m_pPlayer->GetWarp());
+		////ワープ処理
+		//if (m_pPlayer->GetWarp())
+		//{
+		//	//一回だけ実行
+		//	if (!cOne)
+		//	{
+		//		Init();
+
+		//		cOne = true;
+		//	}
+		//}
+		
+
+		//メニューを開く
+		if (m_pPlayer->GetMenu())
+		{
+			m_pSetting->MenuUpdate();
+
+			m_title = m_pSetting->GetTitle();
+
+			m_pPlayer->SetMenu(m_pSetting->GetReturn());
+		}
+		//メニューを開けるようにする
+		else
+		{
+			m_pSetting->SetReturn(true);
+		}
+
+		//休息した場合
+		if (m_pPlayer->GetRest())
+		{
+			//一回だけ実行
+			if (m_init == true)
+			{
+				m_pPlayer->GameInit(m_pPhysics);
+				m_pEnemy->GameInit(m_pPhysics, this, m_init);
+				m_pMap->TriggerReset();
+
+				m_init = false;
+			}
+		}
+		else
+		{
+			m_init = true;
+		}
+
+		cOne = false;
+
+		//物理更新
+		m_pPhysics->Update();
 	}
-
-	m_pMap->Update(m_pPhysics, m_pPlayer->GetWarp());
-
-	//メニューを開く
-	if (m_pPlayer->GetMenu())
+	else if (m_pPlayer->GetWarp())
 	{
-		m_pSetting->MenuUpdate();
+		m_pMap->WarpUpdate(m_pPhysics, m_pPlayer->GetWarp());
 
-		m_title = m_pSetting->GetTitle();
-
-		m_pPlayer->SetMenu(m_pSetting->GetReturn());
-	}
-	//メニューを開けるようにする
-	else
-	{
-		m_pSetting->SetReturn(true);
-	}
-
-	//休息した場合
-	if (m_pPlayer->GetRest())
-	{
 		//一回だけ実行
-		if (m_init == true)
+		if (!cOne)
 		{
-			m_pPlayer->GameInit(m_pPhysics);
-			m_pEnemy->GameInit(m_pPhysics, this, m_init);
-			m_pMap->TriggerReset();
+			GameInit();
 
-			m_init = false;
+			m_pPlayer->SetWarp(false);
+
+			cOne = true;
 		}
 	}
-	else
-	{
-		m_init = true;
-	}
 
-	//物理更新
-	m_pPhysics->Update();
+	
 }
 
 /// <summary>

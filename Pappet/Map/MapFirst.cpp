@@ -101,6 +101,21 @@ std::shared_ptr<MapBase> MapFirst::Update(bool warp)
 
 	if (warp)
 	{
+		//return std::make_shared<MapRest>();
+	}
+
+	return shared_from_this();   //自身のポインタ
+}
+
+/// <summary>
+/// ワープの更新処理
+/// </summary>
+/// <param name="warp"></param>
+/// <returns></returns>
+std::shared_ptr<MapBase> MapFirst::WarpUpdate(bool warp)
+{
+	if (warp)
+	{
 		return std::make_shared<MapRest>();
 	}
 

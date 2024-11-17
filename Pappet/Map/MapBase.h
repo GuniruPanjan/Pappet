@@ -23,6 +23,8 @@ public:
 	virtual void Finalize(std::shared_ptr<MyLibrary::Physics> physics);
 	//更新
 	virtual std::shared_ptr<MapBase> Update(bool warp) = 0;
+	//ワープ更新
+	virtual std::shared_ptr<MapBase> WarpUpdate(bool warp) = 0;
 	//当たったかの判定更新
 	virtual void JudgeUpdate() = 0;
 	//ボスが死んだら出す
