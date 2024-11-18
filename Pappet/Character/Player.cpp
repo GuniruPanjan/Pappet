@@ -59,6 +59,7 @@ Player::Player() :
 	m_rest(false),
 	m_lockonTarget(false),
 	m_warp(false),
+	m_bossEnter(false),
 	m_moveAnimFrameIndex(0),
 	m_moveAnimFrameRight(0),
 	m_moveAnimShieldFrameIndex(0),
@@ -102,7 +103,7 @@ Player::Player() :
 	effect.EffectLoad("Imapct", "Data/Effect/HitEffect.efkefc", 30, 7.0f);
 
 	//モデル読み込み
-	m_modelHandle = handle.GetModelHandle("Data/Player/PlayerModel.mv1");
+	m_modelHandle = handle.GetModelHandle("Data/Player/PlayerModelPappet.mv1");
 
 	//モデルのサイズ設定
 	MV1SetScale(m_modelHandle, VGet(cModelSizeScale, cModelSizeScale, cModelSizeScale));
@@ -133,7 +134,9 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
 
 	//プレイヤーの初期位置設定
 	rigidbody.Init(false);
-	rigidbody.SetPos(MyLibrary::LibVec3(485.0f, 12.0f, -800.0f));
+	//rigidbody.SetPos(MyLibrary::LibVec3(485.0f, 12.0f, -800.0f));
+	// ↓色々試すための初期化位置
+	rigidbody.SetPos(MyLibrary::LibVec3(0.0f, 12.0f, 0.0f));
 	rigidbody.SetNextPos(rigidbody.GetPos());
 	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
 	m_collisionPos = rigidbody.GetPos();
@@ -682,6 +685,20 @@ void Player::Action()
 		m_rest = false;
 	}
 
+	//ボスの部屋に入る
+	//Yボタンを押したら
+	if (m_xpad.Buttons[15] == 1)
+	{
+		m_bossEnter = true;
+	}
+	else 
+	{
+		if (m_isAnimationFinish && m_bossEnter)
+		{
+			m_bossEnter = false;
+		}
+	}
+
 
 	//メニューを開く
 	if (m_xpad.Buttons[4] == 1)
@@ -713,7 +730,8 @@ void Player::WarpMap()
 void Player::NotWeaponAnimation()
 {
 	//攻撃が当たってない時
-	if (!m_anim.s_hit)
+	//ボス部屋に入っていない時
+	if (!m_anim.s_hit && !m_bossEnter)
 	{
 		//走り
 		if (m_animChange.sa_dashMove && m_anim.s_moveflag)
@@ -776,7 +794,8 @@ void Player::AllAnimation()
 	if (!m_anim.s_isDead)
 	{
 		//攻撃が当たった時
-		if (m_anim.s_hit)
+		//ボス部屋に入った時
+		if (m_anim.s_hit && !m_bossEnter)
 		{
 			m_nowAnimIdx = m_animIdx["Hit"];
 			ChangeAnim(m_nowAnimIdx, m_animOne[5], m_animOne);
@@ -784,7 +803,8 @@ void Player::AllAnimation()
 
 		}
 		//攻撃が当たってないとき
-		else if (!m_anim.s_hit)
+		//ボス部屋に入った時
+		else if (!m_anim.s_hit && !m_bossEnter)
 		{
 			//動いてない時
 			if (!m_anim.s_moveflag && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery)
@@ -830,8 +850,14 @@ void Player::AllAnimation()
 				m_nowAnimIdx = m_animIdx["Touch"];
 				ChangeAnim(m_nowAnimIdx, m_animOne[11], m_animOne);
 				NotInitAnim(false);
-
 			}
+		}
+		//ボス部屋入り口に入るとき
+		else if (m_bossEnter && !m_anim.s_hit)
+		{
+			m_nowAnimIdx = m_animIdx["BossEnter"];
+			ChangeAnim(m_nowAnimIdx, m_animOne[12], m_animOne);
+			NotInitAnim(false);
 		}
 	}
 }

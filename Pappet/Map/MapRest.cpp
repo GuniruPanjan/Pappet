@@ -62,7 +62,7 @@ void MapRest::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	MV1SetScale(m_collisionHandle, VGet(m_size, m_size, m_size));
 
 	m_mapPos = VGet(-200.0f, -25.0f, 0.0f);
-	m_mapCollisionPos = VGet(-230.0f, -40.0f, 400.0f);
+	m_mapCollisionPos = VGet(-220.0f, -40.0f, 395.0f);
 	//m_mapCollisionPos = VGet(0.0f, 0.0f, 0.0f);
 	m_mapCorePos = VGet(0.0f, 0.0f, 0.0f);
 	m_mapRestPos = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
@@ -138,7 +138,7 @@ void MapRest::Draw()
 
 	//3Dƒ‚ƒfƒ‹•`‰æ
 	MV1DrawModel(m_handle);
-	MV1DrawModel(m_collisionHandle);
+	//MV1DrawModel(m_collisionHandle);
 }
 
 /// <summary>

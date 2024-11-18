@@ -73,6 +73,7 @@ void GameManager::GameInit()
 /// </summary>
 void GameManager::Update()
 {
+	//ワープしてない時
 	if (!m_pPlayer->GetWarp())
 	{
 		m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
@@ -110,19 +111,6 @@ void GameManager::Update()
 		}
 
 		m_pMap->Update(m_pPhysics, m_pPlayer->GetWarp());
-		//m_pMap->WarpUpdate(m_pPhysics, m_pPlayer->GetWarp());
-		////ワープ処理
-		//if (m_pPlayer->GetWarp())
-		//{
-		//	//一回だけ実行
-		//	if (!cOne)
-		//	{
-		//		Init();
-
-		//		cOne = true;
-		//	}
-		//}
-		
 
 		//メニューを開く
 		if (m_pPlayer->GetMenu())
@@ -162,6 +150,7 @@ void GameManager::Update()
 		//物理更新
 		m_pPhysics->Update();
 	}
+	//ワープしたとき
 	else if (m_pPlayer->GetWarp())
 	{
 		m_pMap->WarpUpdate(m_pPhysics, m_pPlayer->GetWarp());

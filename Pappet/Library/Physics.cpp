@@ -538,18 +538,44 @@ void MyLibrary::Physics::FixNextPosition(const Rigidbody& primaryRigid, Rigidbod
 		secondaryRigid.SetNextPos(fixedPos);
 
 	}
+	//矩形とカプセルとの当たり判定
 	else if (primaryKind == MyLibrary::CollidableData::Kind::Rect && secondaryKind == MyLibrary::CollidableData::Kind::Capsule)
 	{
-		auto primaryToSecondary = secondaryRigid.GetNextPos() - primaryRigid.GetNextPos();
-		auto primaryToSecondaryN = primaryToSecondary.Normalize();
+		/*↓多少バグがあるため今後も修正していく*/
 
-		auto primaryColliderData = dynamic_cast<MyLibrary::CollidableDataRect*>(primaryCollider);
-		auto secondaryColliderData = dynamic_cast<MyLibrary::CollidableDataCapsule*>(secondaryCollider);
-		auto awayDist = primaryColliderData->m_size.width + secondaryColliderData->m_radius;
-		auto primaryToNewSecondaryPos = primaryToSecondaryN * awayDist;
-		primaryToNewSecondaryPos.y = secondaryRigid.GetPos().y;
-		secondaryRigid.SetNextPos(primaryToNewSecondaryPos);
+		//外積を使って算出
+		MyLibrary::LibVec3 SlideVec;
 
+		VECTOR ret;
+		float x = 0.0f;
+		float y = 0.0f;
+		float z = 0.0f;
+
+		float slide = 15.0f;
+
+		if (secondaryRigid.GetDirVECTOR().x <= -0.6f)
+		{
+			z = -slide;
+		}
+		else if (secondaryRigid.GetDirVECTOR().x >= 0.6f)
+		{
+			z = slide;
+		}
+
+		if (secondaryRigid.GetDirVECTOR().z <= -0.6f)
+		{
+			x = -slide;
+		}
+		else if (secondaryRigid.GetDirVECTOR().z >= 0.6f)
+		{
+			x = slide;
+		}
+
+		ret = VCross(secondaryRigid.GetVelocityVECTOR(), VGet(x, y, z));
+
+		SlideVec = MyLibrary::LibVec3(ret.x, ret.y, ret.z);
+
+		secondaryRigid.SetNextPos(secondaryRigid.GetPos() + SlideVec);
 	}
 
 }

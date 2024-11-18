@@ -84,6 +84,7 @@ private:
 	bool m_rest;                        //休息判定
 	bool m_lockonTarget;                //ターゲット判定
 	bool m_warp;                        //マップをワープするための判定
+	bool m_bossEnter;                   //ボスの入り口に入るとき
 
 	//アニメーション用変数
 	int m_attackNumber;                 //現在の攻撃段階の代入
