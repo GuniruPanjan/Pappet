@@ -39,21 +39,21 @@ void MapManager::Init(std::shared_ptr<MyLibrary::Physics> physics)
 /// <summary>
 /// 更新処理
 /// </summary>
-void MapManager::Update(std::shared_ptr<MyLibrary::Physics> physics, bool warp)
+void MapManager::Update(std::shared_ptr<MyLibrary::Physics> physics, bool warp, bool enter)
 {
-	std::shared_ptr<MapBase> pNext = m_pMap->Update(warp);
-	if (pNext != m_pMap)
-	{
-		//現在のマップの終了処理
-		m_pMap->End(physics);
+	std::shared_ptr<MapBase> pNext = m_pMap->Update(warp, enter);
+	//if (pNext != m_pMap)
+	//{
+	//	//現在のマップの終了処理
+	//	m_pMap->End(physics);
 
-		//Updateが返した新しいシーンの開始処理を行う
-		m_pMap = pNext;
+	//	//Updateが返した新しいシーンの開始処理を行う
+	//	m_pMap = pNext;
 
-		//ここはいずれ消す
-		//m_pMap->DataInit();
-		//m_pMap->Init(physics);
-	}
+	//	//ここはいずれ消す
+	//	//m_pMap->DataInit();
+	//	//m_pMap->Init(physics);
+	//}
 }
 
 /// <summary>

@@ -219,6 +219,8 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 
 	m_correctionAngle = atan2f(Cx, Cz);
 
+	//攻撃2を行った後に回転がおかしくなる
+
 	//左に回転する
 	if (m_angle > m_correctionAngle + 0.8f)
 	{
@@ -232,6 +234,27 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 		m_enemyAnim.s_turnRight = true;
 		m_enemyAnim.s_turnLeft = false;
 		m_anim.s_moveflag = false;
+	}
+
+	//左回りしているとき
+	if (m_enemyAnim.s_turnLeft)
+	{
+		//右回転させる
+		if (m_angle < m_correctionAngle - 0.5f)
+		{
+			m_enemyAnim.s_turnRight = true;
+			m_enemyAnim.s_turnLeft = false;
+		}
+	}
+	//右回りしているとき
+	else if (m_enemyAnim.s_turnRight)
+	{
+		//左回転させる
+		if (m_angle > m_correctionAngle + 0.5f)
+		{
+			m_enemyAnim.s_turnLeft = true;
+			m_enemyAnim.s_turnRight = false;
+		}
 	}
 
 	//攻撃してない時
@@ -310,7 +333,38 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 			AttackUpdate("Attack1", 3);
 			//攻撃力
 			m_status.s_attack = 30.0f;
+		}
+		//ランダム行動で1が出たら
+		else if (m_randomAction == 1)
+		{
+			m_anim.s_moveflag = false;
+			m_anim.s_attack = true;
 
+			AttackUpdate("Attack2", 4);
+			//攻撃力
+			m_status.s_attack = 50.0f;
+
+		}
+		//ランダム行動で2が出たら
+		else if (m_randomAction == 2)
+		{
+			m_anim.s_moveflag = false;
+			m_anim.s_attack = true;
+
+			AttackUpdate("Attack3", 5);
+			//攻撃力
+			m_status.s_attack = 80.0f;
+		}
+
+		m_moveVec = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
+	}
+
+	//攻撃での判定
+	if (m_anim.s_attack)
+	{
+		//ランダムで0が出たら
+		if (m_randomAction == 0)
+		{
 			//攻撃の初期化
 			if (m_nowFrame == 5.0f)
 			{
@@ -336,16 +390,9 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 			}
 
 		}
-		//ランダム行動で1が出たら
+		//ランダムで1が出たら
 		else if (m_randomAction == 1)
 		{
-			m_anim.s_moveflag = false;
-			m_anim.s_attack = true;
-
-			AttackUpdate("Attack2", 4);
-			//攻撃力
-			m_status.s_attack = 50.0f;
-
 			//攻撃の初期化
 			if (m_nowFrame == 5.0f)
 			{
@@ -359,8 +406,13 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 				m_pAttack->Update(m_attackPos);
 			}
 
+			//攻撃発生まではプレイヤーを向く
+			if (m_nowFrame > 0.1f && m_nowFrame < 38.0f)
+			{
+				AngleUpdate(playerPos);
+			}
 			//アニメーションフレーム宙に攻撃判定を出す
-			if (m_nowFrame == 38.0f)
+			else if (m_nowFrame == 38.0f)
 			{
 				InitAttackUpdate(m_status.s_attack);
 			}
@@ -369,18 +421,10 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 				//判定をリセット
 				m_pAttack->CollisionEnd();
 			}
-
 		}
-		//ランダム行動で2が出たら
+		//ランダムで2が出たら
 		else if (m_randomAction == 2)
 		{
-			m_anim.s_moveflag = false;
-			m_anim.s_attack = true;
-
-			AttackUpdate("Attack3", 5);
-			//攻撃力
-			m_status.s_attack = 80.0f;
-
 			//攻撃の初期化
 			if (m_nowFrame == 5.0f)
 			{
@@ -405,8 +449,6 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 				m_pAttack->CollisionEnd();
 			}
 		}
-
-		m_moveVec = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
 	}
 
 	//アニメーションが終わったら角度を入れる
@@ -431,11 +473,13 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 		if (m_difPSize <= 80.0f)
 		{
 			m_randomAction = GetRand(2);
+			//m_randomAction = 1;
 		}
 		//近くないときのランダム行動
 		else
 		{
 			m_randomAction = GetRand(1) + 1;
+			//m_randomAction = 1;
 		}
 		
 	}
@@ -453,5 +497,8 @@ void Bear::Draw()
 	//モデルの描画
 	MV1DrawModel(m_modelHandle);
 
-	DrawFormatString(200, 500, 0xffffff, "m_difPlayer : %f", m_difPSize);
+	DrawFormatString(200, 300, 0xffffff, "m_angle : %f", m_angle);
+	DrawFormatString(200, 350, 0xffffff, "m_correctionAngle : %f", m_correctionAngle);
+	DrawFormatString(200, 400, 0xffffff, "m_left : %d", m_enemyAnim.s_turnLeft);
+	DrawFormatString(200, 450, 0xffffff, "m_right : %d", m_enemyAnim.s_turnRight);
 }

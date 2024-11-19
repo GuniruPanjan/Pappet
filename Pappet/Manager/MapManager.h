@@ -19,7 +19,7 @@ public:
 	//初期化処理
 	void Init(std::shared_ptr<MyLibrary::Physics> physics);
 	//更新処理
-	void Update(std::shared_ptr<MyLibrary::Physics> physics, bool warp);
+	void Update(std::shared_ptr<MyLibrary::Physics> physics, bool warp, bool enter);
 	//ワープの更新処理
 	void WarpUpdate(std::shared_ptr<MyLibrary::Physics> physics, bool warp);
 	//当たったかの判定処理
@@ -46,6 +46,9 @@ public:
 
 	//コアの当たり判定を返す
 	bool GetCore() { return m_pMap->GetCore(); }
+
+	//ボス部屋に入るための判定を返す
+	bool GetBossEnter() { return m_pMap->GetBossEnter(); }
 private:
 	//スマートポインタ
 	std::shared_ptr<MapBase> m_pMap;

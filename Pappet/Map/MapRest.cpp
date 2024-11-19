@@ -16,6 +16,12 @@ namespace
 	constexpr float cCoreRadius = 70.0f;
 	//コアのサイズ
 	constexpr float cCoreSize = 0.5f;
+	//ボス部屋の幅
+	constexpr float cBossWidth = 20.0f;
+	//ボス部屋の横
+	constexpr float cBossHight = 100.0f;
+	//ボス部屋の奥行
+	constexpr float cBossDepth = 30.0f;
 }
 
 /// <summary>
@@ -69,6 +75,7 @@ void MapRest::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	m_mapBossRoomPos = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
 	m_mapBossEnterPos = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
 	m_mapCoreCollisionePos = MyLibrary::LibVec3(m_mapCorePos.x, 0.0f, m_mapCorePos.z);
+	m_mapBossEnterTriggerPos = MyLibrary::LibVec3(10.0f, 50.0f, 0.0f);
 
 	//ライト関係
 	ChangeLightTypeDir(VGet(-1.0f, 0.0f, 0.0f));
@@ -82,13 +89,15 @@ void MapRest::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	InitRect(m_width, m_hight, m_depth, m_mapBossEnterPos);
 	//コアの判定初期化
 	InitCore(cCoreRadius, m_mapCoreCollisionePos);
+	//ボス部屋の判定初期化
+	InitBossEnter(cBossWidth, cBossHight, cBossDepth, m_mapBossEnterTriggerPos);
 }
 
 /// <summary>
 /// 更新処理
 /// </summary>
 /// <returns></returns>
-std::shared_ptr<MapBase> MapRest::Update(bool warp)
+std::shared_ptr<MapBase> MapRest::Update(bool warp, bool enter)
 {
 	if (warp)
 	{

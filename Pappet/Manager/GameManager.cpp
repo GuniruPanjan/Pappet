@@ -93,6 +93,10 @@ void GameManager::Update()
 		m_pEnemy->Update(m_pPhysics, this, m_pPlayer->GetPos(), m_pCamera->GetDirection(), !m_pPlayer->IsGetPlayerDead(), m_init);
 
 		m_pMap->JudgeUpdate();
+
+		//プレイヤーのボス部屋に入り口判定
+		m_pPlayer->SetBossStart(m_pMap->GetBossEnter());
+
 		//休息ができるか
 		m_pPlayer->SetRest(m_pMap->GetRest());
 		//ボス部屋に入ったか
@@ -110,7 +114,7 @@ void GameManager::Update()
 			}
 		}
 
-		m_pMap->Update(m_pPhysics, m_pPlayer->GetWarp());
+		m_pMap->Update(m_pPhysics, m_pPlayer->GetWarp(), m_pPlayer->GetBossStart());
 
 		//メニューを開く
 		if (m_pPlayer->GetMenu())

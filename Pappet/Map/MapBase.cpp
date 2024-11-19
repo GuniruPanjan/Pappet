@@ -108,6 +108,15 @@ void MapBase::InitCore(float radius, MyLibrary::LibVec3 pos)
 	m_pCore->Init(m_pPhysics, pos, false, false, false, false, true);
 }
 
+/// <summary>
+/// ƒ{ƒX•”‰®“ü‚èŒû‚Ì“–‚½‚è”»’è‚ğì¬
+/// </summary>
+/// <param name="width"></param>
+/// <param name="hight"></param>
+/// <param name="depth"></param>
+/// <param name="pos"></param>
 void MapBase::InitBossEnter(float width, float hight, float depth, MyLibrary::LibVec3 pos)
 {
+	m_pRectTrigger = std::make_shared<RectObjectTrigger>(width, hight, depth);
+	m_pRectTrigger->Init(m_pPhysics, pos, true);
 }

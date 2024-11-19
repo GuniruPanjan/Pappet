@@ -61,6 +61,7 @@ Player::Player() :
 	m_rest(false),
 	m_lockonTarget(false),
 	m_warp(false),
+	m_bossStart(false),
 	m_moveAnimFrameIndex(0),
 	m_moveAnimFrameRight(0),
 	m_moveAnimShieldFrameIndex(0),
@@ -139,7 +140,7 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	rigidbody.Init(false);
 	//rigidbody.SetPos(MyLibrary::LibVec3(485.0f, 12.0f, -800.0f));
 	// ↓色々試すための初期化位置
-	rigidbody.SetPos(MyLibrary::LibVec3(0.0f, 12.0f, 0.0f));
+	rigidbody.SetPos(MyLibrary::LibVec3(20.0f, 12.0f, 0.0f));
 	rigidbody.SetNextPos(rigidbody.GetPos());
 	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
 	m_collisionPos = rigidbody.GetPos();
@@ -732,18 +733,18 @@ void Player::Action()
 	}
 
 	//ボスの部屋に入る
-	//Yボタンを押したら
-	if (m_xpad.Buttons[15] == 1)
+	if (m_bossStart)
 	{
-		m_animChange.sa_bossEnter = true;
+		//Yボタンを押したら
+		if (m_xpad.Buttons[15] == 1)
+		{
+			m_animChange.sa_bossEnter = true;
 
-		//当たり判定の削除
-		//Finalize();
+			//当たり判定の削除
+			//Finalize();
+		}
 	}
-	else 
-	{
-
-	}
+	
 
 
 	//メニューを開く
@@ -943,7 +944,7 @@ void Player::Draw()
 	DrawFormatString(200, 500, 0xffffff, "nowAttackNumber : %d", cNowAttackNumber);
 
 #endif
-#if true
+#if false
 	//DrawFormatString(200, 100, 0xffffff, "animtime : %f", cAnimWalkTime);
 	DrawFormatString(200, 600, 0xffffff, "m_moveX : %f", rigidbody.GetPos().x);
 	DrawFormatString(200, 650, 0xffffff, "m_moveY : %f", rigidbody.GetPos().y);

@@ -66,6 +66,10 @@ public:
 	bool SetWarp(bool set) { return m_warp = set; }
 	bool GetWarp() { return m_warp; }
 
+	//ボス部屋に入るための判定関係
+	bool SetBossStart(bool set) { return m_bossStart = set; }
+	bool GetBossStart() { return m_animChange.sa_bossEnter; }
+
 	const MyLibrary::LibVec3 GetPos() const { return rigidbody.GetPos(); }
 
 private:
@@ -85,6 +89,7 @@ private:
 	bool m_rest;                        //休息判定
 	bool m_lockonTarget;                //ターゲット判定
 	bool m_warp;                        //マップをワープするための判定
+	bool m_bossStart;                   //ボス部屋に入るための判定
 
 	//アニメーション用変数
 	int m_attackNumber;                 //現在の攻撃段階の代入
