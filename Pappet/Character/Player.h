@@ -22,6 +22,7 @@ public:
 		bool sa_recovery;                    //回復判定
 		bool sa_taking;                      //アイテムを取得する判定
 		bool sa_touch;                       //ギミックを作動させる判定
+		bool sa_bossEnter;                   //ボスの入り口に入る判定
 
 	}m_animChange;
 
@@ -84,7 +85,6 @@ private:
 	bool m_rest;                        //休息判定
 	bool m_lockonTarget;                //ターゲット判定
 	bool m_warp;                        //マップをワープするための判定
-	bool m_bossEnter;                   //ボスの入り口に入るとき
 
 	//アニメーション用変数
 	int m_attackNumber;                 //現在の攻撃段階の代入
@@ -99,5 +99,6 @@ private:
 	MATRIX m_moveWeaponFrameMatrix;     //武器をアタッチするフレームのローカル座標をワールド変換行列を取得する
 	MATRIX m_moveShieldFrameMatrix;
 	VECTOR m_rollMove;                  //回避で移動する距離
+	VECTOR m_moveVector;                //モーション中の移動
 };
 

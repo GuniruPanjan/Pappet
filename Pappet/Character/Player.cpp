@@ -35,6 +35,8 @@ namespace
 	bool cOneAvoidance = false;
 	//攻撃での追加攻撃時間
 	int cAddAttackTime = 0;
+	//行動での移動距離
+	float cMove = 0.0f;
 	//拳の攻撃範囲
 	constexpr float cFistAttackRadius = 18.0f;
 	//現在のアタックのナンバーを入れる
@@ -59,7 +61,6 @@ Player::Player() :
 	m_rest(false),
 	m_lockonTarget(false),
 	m_warp(false),
-	m_bossEnter(false),
 	m_moveAnimFrameIndex(0),
 	m_moveAnimFrameRight(0),
 	m_moveAnimShieldFrameIndex(0),
@@ -70,7 +71,8 @@ Player::Player() :
 	m_animReverse(false),
 	m_moveWeaponFrameMatrix(),
 	m_moveShieldFrameMatrix(),
-	m_rollMove(VGet(0.0f,0.0f,0.0f))
+	m_rollMove(VGet(0.0f,0.0f,0.0f)),
+	m_moveVector(VGet(0.0f,0.0f,0.0f))
 {
 
 	//カプセル型
@@ -96,6 +98,7 @@ Player::Player() :
 	m_animChange.sa_recovery = false;
 	m_animChange.sa_taking = false;
 	m_animChange.sa_touch = false;
+	m_animChange.sa_bossEnter = false;
 	
 	//エフェクト読み込み
 	effect.EffectLoad("Rest", "Data/Effect/Benediction.efkefc", 210, 10.0f);
@@ -161,6 +164,9 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	//待機アニメーション設定
 	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
 	m_nowAnimIdx = m_animIdx["Idle"];
+
+	//移動距離
+	cMove = 0.5f;
 }
 
 /// <summary>
@@ -253,7 +259,7 @@ void Player::Update()
 	float SetAngleX = 0.0f;
 	float SetAngleY = 0.0f;
 
-	if (!m_anim.s_isDead && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery && !m_anim.s_hit)
+	if (!m_anim.s_isDead && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery && !m_anim.s_hit && !m_animChange.sa_bossEnter)
 	{
 		GetJoypadAnalogInput(&analogX, &analogY, DX_INPUT_PAD1);
 
@@ -329,6 +335,12 @@ void Player::Update()
 		m_anim.s_moveflag = false;
 	}
 
+	if (!m_animChange.sa_bossEnter)
+	{
+		
+	}
+	
+
 	//回避してないとき
 	if (!m_animChange.sa_avoidance)
 	{
@@ -366,7 +378,7 @@ void Player::Update()
 		if (!m_menuOpen)
 		{
 			//アクションをできなくする
-			if (!m_animChange.sa_avoidance || !m_anim.s_hit || !m_animChange.sa_recovery)
+			if (!m_animChange.sa_avoidance && !m_anim.s_hit && !m_animChange.sa_recovery && !m_animChange.sa_bossEnter)
 			{
 				Action();
 			}
@@ -379,8 +391,18 @@ void Player::Update()
 	//アニメーションの更新
 	m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
 
+	if (!m_animChange.sa_bossEnter)
+	{
+		
+	}
+	else
+	{
+		//m_collisionPos = 
+	}
+
 	//プレイヤーのポジションを入れる
 	SetModelPos();
+	
 
 	//判定の更新
 	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
@@ -539,6 +561,30 @@ void Player::Update()
 	{
 		m_animChange.sa_recovery = false;
 	}
+
+	
+	//ボス部屋に入るモーション終了
+	if (m_isAnimationFinish && m_animChange.sa_bossEnter)
+	{
+		//当たり判定の追加
+		//Collidable::Init(m_pPhysics);
+
+		m_animChange.sa_bossEnter = false;
+	}
+	//ボス部屋に入るモーション中
+	else if (m_animChange.sa_bossEnter)
+	{
+		//とりあえず妥協点で後で直す
+		//主にプレイヤーの当たり判定を消し、モデルだけを動かしモデルの最終地点に当たり判定を出す
+
+		//回避で移動する距離
+		m_moveVector = VScale(VGet(sinf(m_angle), 0.0f, cosf(m_angle)), cMove);
+
+		//アングルの方向に一定距離移動させたい
+		MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
+		MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(-m_moveVector.x, prevVelocity.y, -m_moveVector.z);
+		rigidbody.SetVelocity(newVelocity);
+	}
 }
 
 /// <summary>
@@ -689,14 +735,14 @@ void Player::Action()
 	//Yボタンを押したら
 	if (m_xpad.Buttons[15] == 1)
 	{
-		m_bossEnter = true;
+		m_animChange.sa_bossEnter = true;
+
+		//当たり判定の削除
+		//Finalize();
 	}
 	else 
 	{
-		if (m_isAnimationFinish && m_bossEnter)
-		{
-			m_bossEnter = false;
-		}
+
 	}
 
 
@@ -731,7 +777,7 @@ void Player::NotWeaponAnimation()
 {
 	//攻撃が当たってない時
 	//ボス部屋に入っていない時
-	if (!m_anim.s_hit && !m_bossEnter)
+	if (!m_anim.s_hit && !m_animChange.sa_bossEnter)
 	{
 		//走り
 		if (m_animChange.sa_dashMove && m_anim.s_moveflag)
@@ -795,7 +841,7 @@ void Player::AllAnimation()
 	{
 		//攻撃が当たった時
 		//ボス部屋に入った時
-		if (m_anim.s_hit && !m_bossEnter)
+		if (m_anim.s_hit && !m_animChange.sa_bossEnter)
 		{
 			m_nowAnimIdx = m_animIdx["Hit"];
 			ChangeAnim(m_nowAnimIdx, m_animOne[5], m_animOne);
@@ -804,7 +850,7 @@ void Player::AllAnimation()
 		}
 		//攻撃が当たってないとき
 		//ボス部屋に入った時
-		else if (!m_anim.s_hit && !m_bossEnter)
+		else if (!m_anim.s_hit && !m_animChange.sa_bossEnter)
 		{
 			//動いてない時
 			if (!m_anim.s_moveflag && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery)
@@ -853,11 +899,11 @@ void Player::AllAnimation()
 			}
 		}
 		//ボス部屋入り口に入るとき
-		else if (m_bossEnter && !m_anim.s_hit)
+		else if (m_animChange.sa_bossEnter && !m_anim.s_hit)
 		{
 			m_nowAnimIdx = m_animIdx["BossEnter"];
 			ChangeAnim(m_nowAnimIdx, m_animOne[12], m_animOne);
-			NotInitAnim(false);
+			NotInitAnim(true);
 		}
 	}
 }
@@ -897,8 +943,11 @@ void Player::Draw()
 	DrawFormatString(200, 500, 0xffffff, "nowAttackNumber : %d", cNowAttackNumber);
 
 #endif
-#if false
-	DrawFormatString(200, 100, 0xffffff, "animtime : %f", cAnimWalkTime);
+#if true
+	//DrawFormatString(200, 100, 0xffffff, "animtime : %f", cAnimWalkTime);
+	DrawFormatString(200, 600, 0xffffff, "m_moveX : %f", rigidbody.GetPos().x);
+	DrawFormatString(200, 650, 0xffffff, "m_moveY : %f", rigidbody.GetPos().y);
+	DrawFormatString(200, 700, 0xffffff, "m_moveZ : %f", rigidbody.GetPos().z);
 #endif
 	//モデルの回転地
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
@@ -973,7 +1022,7 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 		message += "攻撃";
 #endif
 		//回避中じゃないとき
-		if (!m_avoidanceNow && !m_anim.s_hit)
+		if (!m_avoidanceNow && !m_anim.s_hit && !m_animChange.sa_bossEnter)
 		{
 			m_anim.s_hit = true;
 		}

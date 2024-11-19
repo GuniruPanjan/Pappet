@@ -219,6 +219,9 @@
     <ClCompile Include="Map\MapRest.cpp">
       <Filter>ソース ファイル\Map</Filter>
     </ClCompile>
+    <ClCompile Include="Object\RectObjectTrigger.cpp">
+      <Filter>ソース ファイル\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Icon\Icon.h">
@@ -373,6 +376,9 @@
     </ClInclude>
     <ClInclude Include="Map\MapRest.h">
       <Filter>ヘッダー ファイル\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\RectObjectTrigger.h">
+      <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -70,8 +70,8 @@ void MapFirst::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	m_mapCorePos = VGet(-830.0f, 50.0f, 0.0f);
 	m_mapRestPos = MyLibrary::LibVec3(100.0f, 0.0f, -75.0f);
 	m_mapBossRoomPos = MyLibrary::LibVec3(-80.0f, 0.0f, 0.0f);
-	//m_mapBossEnterPos = MyLibrary::LibVec3(-10.0f, 50.0f, 0.0f);
-	m_mapBossEnterPos = MyLibrary::LibVec3(0.0f, 400.0f, 0.0f);
+	m_mapBossEnterPos = MyLibrary::LibVec3(-10.0f, 50.0f, 0.0f);
+	//m_mapBossEnterPos = MyLibrary::LibVec3(0.0f, 400.0f, 0.0f);
 	m_mapCoreCollisionePos = MyLibrary::LibVec3(m_mapCorePos.x, 0.0f, m_mapCorePos.z);
 
 	//ƒ‰ƒCƒgŠÖŒW

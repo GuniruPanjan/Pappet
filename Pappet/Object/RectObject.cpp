@@ -38,17 +38,8 @@ void RectObject::Finalize(const std::shared_ptr<MyLibrary::Physics> physics)
 
 void RectObject::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 {
-	//アタッチしたオブジェクトがボス部屋入り口じゃないなら
-	if (!m_isEnter)
-	{
-		auto tag = collidable->GetTag();
-		if (tag == ObjectTag::Attack)
-		{
-			m_isTriggerEnter = true;
-		}
-	}
 	//アタッチしたオブジェクトがボス部屋入り口なら
-	else
+	if(m_isEnter)
 	{
 		auto tag = collidable->GetTag();
 		if (tag == ObjectTag::Player)

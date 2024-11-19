@@ -2,6 +2,7 @@
 #include "Library/MyLibrary.h"
 #include "Object/SearchObject.h"
 #include "Object/RectObject.h"
+#include "Object/RectObjectTrigger.h"
 #include <string>
 
 /// <summary>
@@ -46,6 +47,8 @@ public:
 	bool GetBossRoom() { return m_pBossRoom->GetIsTrigger(); }
 	//コアの当たり判定を返す
 	bool GetCore() { return m_pCore->GetIsStay(); }
+	//マップのボス部屋判定を返す
+	bool GetBossEnter() { return m_pRectTrigger->GetIsStay(); }
 protected:
 	//モデルを読み込む
 	void LoadData(std::string mapPath, std::string collisionPath, std::string corePath);
@@ -57,15 +60,17 @@ protected:
 	void InitRect(float width, float hight, float depth, MyLibrary::LibVec3 pos);
 	//コアの当たり判定
 	void InitCore(float radius, MyLibrary::LibVec3 pos);
-
+	//ボス部屋に入るための判定
+	void InitBossEnter(float width, float hight, float depth, MyLibrary::LibVec3 pos);
 protected:
 	//物理クラスのポインタ
 	std::shared_ptr<MyLibrary::Physics> m_pPhysics;
 
-	std::shared_ptr<SearchObject> m_pSearch;   //索敵判定
-	std::shared_ptr<SearchObject> m_pBossRoom; //ボス部屋の入り口判定
-	std::shared_ptr<SearchObject> m_pCore;     //コアの当たり判定
-	std::shared_ptr<RectObject> m_pRect;       //矩形判定
+	std::shared_ptr<SearchObject> m_pSearch;             //索敵判定
+	std::shared_ptr<SearchObject> m_pBossRoom;           //ボス部屋の入り口判定
+	std::shared_ptr<SearchObject> m_pCore;               //コアの当たり判定
+	std::shared_ptr<RectObject> m_pRect;                 //矩形判定
+	std::shared_ptr<RectObjectTrigger> m_pRectTrigger;   //矩形のトリガー判定
 
 	int m_light;                            //ライト
 
@@ -78,12 +83,13 @@ protected:
 	float m_depth;                          //奥行
 	float m_angle;                          //回転させるアングル
 
-	VECTOR m_mapPos;                        //マップのポジション
-	VECTOR m_mapCollisionPos;               //マップのコリジョンのポジション
-	VECTOR m_mapCorePos;                       //マップのコアポジション
-	MyLibrary::LibVec3 m_mapRestPos;        //休息ポイントのポジション
-	MyLibrary::LibVec3 m_mapBossRoomPos;    //ボス部屋入り口のポジション
-	MyLibrary::LibVec3 m_mapBossEnterPos;   //ボス部屋入り口のポジション
+	VECTOR m_mapPos;                                  //マップのポジション
+	VECTOR m_mapCollisionPos;                         //マップのコリジョンのポジション
+	VECTOR m_mapCorePos;                              //マップのコアポジション
+	MyLibrary::LibVec3 m_mapRestPos;                  //休息ポイントのポジション
+	MyLibrary::LibVec3 m_mapBossRoomPos;              //ボス部屋入り口のポジション
+	MyLibrary::LibVec3 m_mapBossEnterPos;             //ボス部屋入り口のポジション
 	MyLibrary::LibVec3 m_mapCoreCollisionePos;        //コアのポジション
+	MyLibrary::LibVec3 m_mapBossEnterTriggerPos;      //ボス部屋に入るためのポジション
 };
 
