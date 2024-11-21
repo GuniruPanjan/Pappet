@@ -49,6 +49,9 @@ public:
 
 	//ボス部屋に入るための判定を返す
 	bool GetBossEnter() { return m_pMap->GetBossEnter(); }
+
+	//ステージ名を返す
+	const char* GetStageName() { return m_pMap->GetStageName(); }
 private:
 	//スマートポインタ
 	std::shared_ptr<MapBase> m_pMap;

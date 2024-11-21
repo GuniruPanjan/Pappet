@@ -28,7 +28,7 @@ public:
 	/// </summary>
 	/// <param name="player">プレイヤーの呼び出し</param>
 	/// <param name="enemy">エネミーの呼び出し</param>
-	void Init(Player& player, Enemy& enemy);
+	void Init();
 
 	/// <summary>
 	/// 描画処理
@@ -86,6 +86,9 @@ private:
 	float m_enemyBossHpPosY3;
 	float m_enemyBossHpPosY4;
 	const char* m_enemyBossName;
+
+	//装備画面から戻る
+	bool m_equipmentReturn;
 };
 
 

@@ -13,6 +13,7 @@ UIBase::UIBase()
 	m_eqSword = MyLoadGraph("Data/UI/SwordUI.png", 7, 7);
 	m_shield = MyLoadGraph("Data/UI/Shield.png", 3, 3);
 	m_eqShield = MyLoadGraph("Data/UI/Shield.png", 7, 7);
+	m_equipment = MyLoadGraph("Data/UI/‘•”õ‰æ–ÊUI.png", 1, 1);
 }
 
 /// <summary>
@@ -28,6 +29,7 @@ UIBase::~UIBase()
 	DeleteGraph(m_eqFist);
 	DeleteGraph(m_eqSword);
 	DeleteGraph(m_eqShield);
+	DeleteGraph(m_equipment);
 }
 
 /// <summary>

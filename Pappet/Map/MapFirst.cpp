@@ -53,6 +53,8 @@ void MapFirst::DataInit()
 {
 	//データロード
 	LoadData(cMapName, cMapCollisionName, cCoreName);
+
+	m_stageName = "stage1";
 }
 
 /// <summary>

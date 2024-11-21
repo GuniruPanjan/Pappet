@@ -5,6 +5,7 @@
 #include "Map/Map.h"
 #include "Manager/EnemyManager.h"
 #include "Ui/Setting.h"
+#include "Ui/UI.h"
 
 //カメラの初期化で描画バグが発生する
 //カメラのせいでマップとモデルの描画がバグる
@@ -48,7 +49,7 @@ void GameManager::Init()
 
 	m_pPlayer->Init(m_pPhysics);
 	m_pEnemy = std::make_shared<EnemyManager>();
-	m_pEnemy->Init("stage1");
+	m_pEnemy->Init(m_pMap->GetStageName());
 	m_pNpc->Init(m_pPhysics);
 	m_pSetting->Init();
 }
@@ -58,12 +59,15 @@ void GameManager::Init()
 /// </summary>
 void GameManager::GameInit()
 {
+	//マップを変える時の処理
+	ChangeStage(m_pMap->GetStageName());
+
 	m_pPhysics = std::make_shared<MyLibrary::Physics>(m_pMap->GetCollisionMap());
 
 	m_pMap->Init(m_pPhysics);
 
 	m_pPlayer->Init(m_pPhysics);
-	m_pEnemy->Init("stage1");
+	m_pEnemy->Init(m_pMap->GetStageName());
 	m_pNpc->Init(m_pPhysics);
 	m_pSetting->Init();
 }
@@ -117,7 +121,7 @@ void GameManager::Update()
 		m_pMap->Update(m_pPhysics, m_pPlayer->GetWarp(), m_pPlayer->GetBossStart());
 
 		//メニューを開く
-		if (m_pPlayer->GetMenu())
+		if (m_pPlayer->GetMenu() && !m_pSetting->GetEquipment())
 		{
 			m_pSetting->MenuUpdate();
 
@@ -125,11 +129,17 @@ void GameManager::Update()
 
 			m_pPlayer->SetMenu(m_pSetting->GetReturn());
 		}
+		//装備画面を開く
+		else if (m_pSetting->GetEquipment())
+		{
+			m_pSetting->EquipmentUpdate();
+		}
 		//メニューを開けるようにする
-		else
+		else if(!m_pPlayer->GetMenu() && !m_pSetting->GetEquipment())
 		{
 			m_pSetting->SetReturn(true);
 		}
+
 
 		//休息した場合
 		if (m_pPlayer->GetRest())
@@ -162,6 +172,7 @@ void GameManager::Update()
 		//一回だけ実行
 		if (!cOne)
 		{
+			m_pEnemy->End();
 			GameInit();
 
 			m_pPlayer->SetWarp(false);
@@ -183,10 +194,6 @@ void GameManager::Draw()
 	m_pEnemy->Draw();
 	m_pNpc->Draw();
 
-	if (m_pPlayer->GetMenu())
-	{
-		m_pSetting->MenuDraw();
-	}
 	//ボスが死んだ判定
 	if (cWarp)
 	{
@@ -195,6 +202,41 @@ void GameManager::Draw()
 
 	m_pCamera->Draw();
 
+	//メニューの背景描画
+	if (m_pPlayer->GetMenu())
+	{
+		m_pSetting->MenuBackDraw();
+	}
+
+	//メニュー画面
+	if (m_pPlayer->GetMenu() && !m_pSetting->GetEquipment())
+	{
+		m_pSetting->MenuDraw();
+	}
+	//装備画面
+	else if (m_pSetting->GetEquipment())
+	{
+		m_pSetting->EquipmentDraw();
+	}
+
+}
+
+/// <summary>
+/// ステージを変える時の処理
+/// </summary>
+/// <param name="stageName">ステージ名</param>
+void GameManager::ChangeStage(const char* stageName)
+{
+	//休息地点だった場合
+	if (stageName == "stageRest")
+	{
+		m_nowMap = eMapName::RestMap;
+	}
+	//マップ1だった場合
+	else if (stageName == "stage1")
+	{
+		m_nowMap == eMapName::FirstMap;
+	}
 }
 
 /// <summary>

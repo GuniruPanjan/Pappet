@@ -50,6 +50,8 @@ void MapRest::DataInit()
 {
 	//データロード
 	LoadData(cMapName, cMapCollisionName, cCoreName);
+
+	m_stageName = "stageRest";
 }
 
 /// <summary>

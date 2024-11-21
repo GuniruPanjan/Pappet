@@ -37,6 +37,13 @@ EnemyManager::~EnemyManager()
 /// <param name="stageName">ステージ名前</param>
 void EnemyManager::Init(const char* stageName)
 {
+	//敵のモデル削除
+	//for (auto& enemy : m_pEnemys)
+	//{
+	//	enemy->End();
+	//}
+
+
 	m_stageName = stageName;
 
 	//敵生成情報を取得する
@@ -141,17 +148,22 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 			}
 		}
 	}
-
-	//敵の更新する
-	for (auto& enemy : m_pEnemys)
+	
+	//マップが0以外だと動かす
+	if (thisMapName != 0)
 	{
-		//更新
-		enemy->Update(playerPos, isPlayerChase);
+		//敵の更新する
+		for (auto& enemy : m_pEnemys)
+		{
+			//更新
+			enemy->Update(playerPos, isPlayerChase);
 
-		m_enemyPos.emplace_back(enemy->GetPos());
-		m_enemyTarget.emplace_back(enemy->GetTarget());
-		
+			m_enemyPos.emplace_back(enemy->GetPos());
+			m_enemyTarget.emplace_back(enemy->GetTarget());
+
+		}
 	}
+	
 }
 
 /// <summary>

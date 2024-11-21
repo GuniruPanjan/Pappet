@@ -19,6 +19,7 @@ private:
 		int Rubbish = 0;         //ゴミ
 		int BlackSword = 0;      //黒い剣
 		int Distorted = 0;       //歪んだ盾
+		int ArmorNormal = 0;     //普通の鎧
 	};
 
 	//アイテム生成情報

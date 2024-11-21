@@ -49,6 +49,8 @@ public:
 	bool GetCore() { return m_pCore->GetIsStay(); }
 	//マップのボス部屋判定を返す
 	bool GetBossEnter() { return m_pRectTrigger->GetIsStay(); }
+	//ステージ名を返す
+	const char* GetStageName() { return m_stageName; }
 protected:
 	//モデルを読み込む
 	void LoadData(std::string mapPath, std::string collisionPath, std::string corePath);
@@ -82,6 +84,7 @@ protected:
 	float m_hight;                          //高さ
 	float m_depth;                          //奥行
 	float m_angle;                          //回転させるアングル
+	const char* m_stageName;                //ステージ名
 
 	VECTOR m_mapPos;                                  //マップのポジション
 	VECTOR m_mapCollisionPos;                         //マップのコリジョンのポジション

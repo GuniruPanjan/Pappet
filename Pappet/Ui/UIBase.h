@@ -36,6 +36,7 @@ protected:
 	int m_eqSword;        //‘•”õ‚ÌŒ•‰æ‘œŠi”[•Ï”
 	int m_shield;         //‚‚Ì‰æ‘œŠi”[•Ï”
 	int m_eqShield;       //‘•”õ‚Ì‚‰æ‘œŠi”[•Ï”
+	int m_equipment;      //‘•”õ‰æ–ÊŠi”[•Ï”
 
 	//ƒXƒ}[ƒgƒ|ƒCƒ“ƒ^
 	std::shared_ptr<SEManager> pse = std::make_shared<SEManager>();

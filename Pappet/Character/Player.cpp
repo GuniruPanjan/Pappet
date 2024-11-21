@@ -335,11 +335,6 @@ void Player::Update()
 	{
 		m_anim.s_moveflag = false;
 	}
-
-	if (!m_animChange.sa_bossEnter)
-	{
-		
-	}
 	
 
 	//回避してないとき
@@ -391,15 +386,6 @@ void Player::Update()
 
 	//アニメーションの更新
 	m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
-
-	if (!m_animChange.sa_bossEnter)
-	{
-		
-	}
-	else
-	{
-		//m_collisionPos = 
-	}
 
 	//プレイヤーのポジションを入れる
 	SetModelPos();
@@ -567,9 +553,6 @@ void Player::Update()
 	//ボス部屋に入るモーション終了
 	if (m_isAnimationFinish && m_animChange.sa_bossEnter)
 	{
-		//当たり判定の追加
-		//Collidable::Init(m_pPhysics);
-
 		m_animChange.sa_bossEnter = false;
 	}
 	//ボス部屋に入るモーション中
@@ -739,9 +722,6 @@ void Player::Action()
 		if (m_xpad.Buttons[15] == 1)
 		{
 			m_animChange.sa_bossEnter = true;
-
-			//当たり判定の削除
-			//Finalize();
 		}
 	}
 	

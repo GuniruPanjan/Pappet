@@ -1,15 +1,15 @@
 #pragma once
 #include "Manager/SEManager.h"
 #include "DxLib.h"
+#include "Ui/UIBase.h"
 #include<memory>
 
 class SelectManager;
-class UIBase;
 
 /// <summary>
 /// 設定処理用のクラス
 /// </summary>
-class Setting
+class Setting : public UIBase
 {
 public:
 	/// <summary>
@@ -36,6 +36,11 @@ public:
 	/// メニューの更新処理
 	/// </summary>
 	void MenuUpdate();
+
+	/// <summary>
+	/// 装備の更新処理
+	/// </summary>
+	void EquipmentUpdate();
 
 	/// <summary>
 	/// 描画処理
@@ -77,6 +82,16 @@ public:
 	/// メニュー描画
 	/// </summary>
 	void MenuDraw();
+
+	/// <summary>
+	/// 背景描画
+	/// </summary>
+	void MenuBackDraw();
+
+	/// <summary>
+	/// 装備の描画処理
+	/// </summary>
+	void EquipmentDraw();
 
 	/// <summary>
 	/// 終了処理
@@ -163,7 +178,6 @@ private:
 	//スマートポインタ
 	std::shared_ptr<SEManager> pse = std::make_shared<SEManager>();
 	std::shared_ptr<SelectManager> pselect = std::make_shared<SelectManager>();
-	std::shared_ptr<UIBase> ui = std::make_shared<UIBase>();
 };
 
 

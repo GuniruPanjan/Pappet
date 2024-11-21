@@ -20,6 +20,7 @@ MapBase::MapBase() :
 	m_hight(0.0f),
 	m_depth(0.0f),
 	m_angle(0.0f),
+	m_stageName(""),
 	m_mapPos(VGet(0.0f,0.0f,0.0f)),
 	m_mapCollisionPos(VGet(0.0f,0.0f,0.0f)),
 	m_mapCorePos(VGet(0.0f,0.0f,0.0f)),

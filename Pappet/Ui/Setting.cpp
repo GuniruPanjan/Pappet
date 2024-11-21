@@ -66,7 +66,7 @@ void Setting::Init()
 {
 	//画像読み込み
 	m_black = LoadGraph("Data/SceneBack/BlackMini.png");         //14.1 KB (14,532 バイト)
-	m_back = ui->MyLoadGraph("Data/SceneBack/BlackMini.png", 1, 1);
+	m_back = MyLoadGraph("Data/SceneBack/BlackMini.png", 1, 1);
 	m_white = LoadGraph("Data/SceneBack/WhiteMini.png");         //14.1 KB (14,529 バイト)
 
 	selectDecision = 0;
@@ -276,6 +276,22 @@ void Setting::MenuUpdate()
 }
 
 /// <summary>
+/// 更新処理
+/// </summary>
+void Setting::EquipmentUpdate()
+{
+	//パッド入力所得
+	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
+
+	//Bボタンが押されたら
+	if (m_xpad.Buttons[13] == 1)
+	{
+		//装備画面から戻る
+		m_equipmentMenu = false;
+	}
+}
+
+/// <summary>
 /// 描画
 /// </summary>
 void Setting::Draw()
@@ -475,9 +491,6 @@ void Setting::SettingDraw(int volume)
 
 void Setting::MenuDraw()
 {
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150);
-	DrawGraph(0, 0, m_back, false);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	if (pselect->NowSelect == pselect->Eight)
 	{
@@ -511,6 +524,24 @@ void Setting::MenuDraw()
 
 	//フォントのサイズを戻す
 	SetFontSize(40);
+}
+
+/// <summary>
+/// メニュー背景描画
+/// </summary>
+void Setting::MenuBackDraw()
+{
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150);
+	DrawGraph(0, 0, m_back, false);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}
+
+/// <summary>
+/// 装備画面
+/// </summary>
+void Setting::EquipmentDraw()
+{
+	DrawGraph(0, 0, m_equipment, true);
 }
 
 /// <summary>

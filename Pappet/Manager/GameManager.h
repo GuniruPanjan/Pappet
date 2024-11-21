@@ -10,6 +10,8 @@ class Map;
 class Camera;
 class EnemyManager;
 class Setting;
+class ItemManager;
+class UI;
 
 /// <summary>
 /// ゲームの内容を管理するクラス
@@ -35,6 +37,7 @@ public:
 	void GameInit();
 	void Update();
 	void Draw();
+	void ChangeStage(const char* stageName);
 	void End();
 
 	//現在のマップ名を取得
