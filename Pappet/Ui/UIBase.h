@@ -30,13 +30,19 @@ public:
 
 protected:
 	int m_heelStone;      //‰ñ•œÎ‚Ì‰æ‘œŠi”[•Ï”
-	int m_fist;           //Œ‚Ì‰æ‘œŠi”[•Ï”
 	int m_eqFist;         //‘•”õ‚ÌŒ‰æ‘œŠi”[•Ï”
 	int m_sword;          //Œ•‚Ì‰æ‘œŠi”[•Ï”
 	int m_eqSword;        //‘•”õ‚ÌŒ•‰æ‘œŠi”[•Ï”
 	int m_shield;         //‚‚Ì‰æ‘œŠi”[•Ï”
 	int m_eqShield;       //‘•”õ‚Ì‚‰æ‘œŠi”[•Ï”
 	int m_equipment;      //‘•”õ‰æ–ÊŠi”[•Ï”
+	int m_itemBox;        //ƒAƒCƒeƒ€‰æ–ÊŠi”[•Ï”
+	int m_selectEquipment;//‘•”õ‘I‘ğ‰æ–ÊŠi”[•Ï”
+
+	//ƒAƒCƒeƒ€‚Ì‰æ‘œ
+	int m_blackSword;     //•‚¢Œ•‚Ì‰æ‘œŠi”[•Ï”
+	int m_fist;           //Œ‚Ì‰æ‘œŠi”[•Ï”
+	int m_body;           //—‡‘Ì‚Ì‰æ‘œŠi”[•Ï”
 
 	//ƒXƒ}[ƒgƒ|ƒCƒ“ƒ^
 	std::shared_ptr<SEManager> pse = std::make_shared<SEManager>();

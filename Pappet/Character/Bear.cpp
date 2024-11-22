@@ -496,9 +496,10 @@ void Bear::Draw()
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
 	//ƒ‚ƒfƒ‹‚Ì•`‰æ
 	MV1DrawModel(m_modelHandle);
-
+#if false
 	DrawFormatString(200, 300, 0xffffff, "m_angle : %f", m_angle);
 	DrawFormatString(200, 350, 0xffffff, "m_correctionAngle : %f", m_correctionAngle);
 	DrawFormatString(200, 400, 0xffffff, "m_left : %d", m_enemyAnim.s_turnLeft);
 	DrawFormatString(200, 450, 0xffffff, "m_right : %d", m_enemyAnim.s_turnRight);
+#endif
 }

@@ -7,6 +7,44 @@ namespace
 	int selectDecision = 0;     //選択したものを決定する変数
 	int brightDecision = 0;     //明るさを決定する変数
 	int volumeDecision = 0;     //音量を決定する変数
+
+	//a値をいじる変数
+	int cBlenda = 10;  
+
+	//間違って押さないようにする
+	int cWaitTime = 0;
+
+	//変更する変数
+	constexpr int cEquipmentOneX = 630;
+	constexpr int cEquipmentOneY = 0;
+	constexpr int cEquipmentSecondX = 800;
+	constexpr int cEquipmentSecondY = 170;
+
+	constexpr int cItemOneX = 800;
+	constexpr int cItemOneY = 0;
+	constexpr int cItemSecondX = 970;
+	constexpr int cItemSecondY = 170;
+
+	constexpr int cRightEquipmentOneX = 107;
+	constexpr int cRightEquipmentOneY = 298;
+	constexpr int cRightEquipmentSecondX = 276;
+	constexpr int cRightEquipmentSecondY = 467;
+
+	constexpr int cLeftEquipmentOneX = 308;
+	constexpr int cLeftEquipmentOneY = 298;
+	constexpr int cLeftEquipmentSecondX = 477;
+	constexpr int cLeftEquipmentSecondY = 467;
+
+	constexpr int cArmorEquipmentOneX = 509;
+	constexpr int cArmorEquipmentOneY = 298;
+	constexpr int cArmorEquipmentSecondX = 678;
+	constexpr int cArmorEquipmentSecondY = 467;
+
+	constexpr int cOneX = 75;
+	constexpr int cOneY = 60;
+	constexpr int cSecondX = 218;
+	constexpr int cSecondY = 200;
+	constexpr int cDifferenceY = 155;
 }
 
 /// <summary>
@@ -30,6 +68,9 @@ Setting::Setting() :
 	m_volume(false),
 	m_volumeSize(0),
 	m_equipmentMenu(false),
+	m_itemMenu(false),
+	m_decisionEquipment(false),
+	m_blend(false),
 	m_returnMenu(true),
 	m_titleMenu(false),
 	m_xpad()
@@ -260,6 +301,9 @@ void Setting::MenuUpdate()
 		if (selectDecision == 8)
 		{
 			m_equipmentMenu = true;
+
+			//リセット
+			cWaitTime = 0;
 		}
 		//元の画面に戻る
 		if (selectDecision == 9)
@@ -276,19 +320,207 @@ void Setting::MenuUpdate()
 }
 
 /// <summary>
-/// 更新処理
+/// ステータス画面を変える更新処理
+/// </summary>
+void Setting::MenuChange()
+{
+	//パッド入力所得
+	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
+
+	//Rボタンが押されたら
+	if (m_xpad.Buttons[9] == 1)
+	{
+		//装備画面から戻る
+		m_equipmentMenu = false;
+		//アイテム画面に移る
+		m_itemMenu = true;
+	}
+	//Lボタンが押されたら
+	else if (m_xpad.Buttons[8] == 1)
+	{
+		//アイテム画面から戻る
+		m_itemMenu = false;
+		//装備画面に移る
+		m_equipmentMenu = true;
+	}
+}
+
+/// <summary>
+/// 装備画面更新処理
 /// </summary>
 void Setting::EquipmentUpdate()
 {
 	//パッド入力所得
 	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
 
+	m_change.oneX = cEquipmentOneX;
+	m_change.oneY = cEquipmentOneY;
+	m_change.secondX = cEquipmentSecondX;
+	m_change.secondY = cEquipmentSecondY;
+
+	m_select.right = false;
+	m_select.left = false;
+	m_select.armor = false;
+
+	//右
+	if (m_xpad.Buttons[3] == 1)
+	{
+		m_thumb--;
+	}
+	//左
+	else if (m_xpad.Buttons[2] == 1)
+	{
+		m_thumb++;
+	}
+	else
+	{
+		//初期化
+		m_thumb = 0;
+
+		m_one = false;
+	}
+
+	pselect->Menu_Update(m_thumb, m_one, m_xpad.Buttons[12], selectDecision, pselect->Eight);
+
+
+	if (cWaitTime >= 10)
+	{
+		//Bボタンが押されたら
+		if (m_xpad.Buttons[13] == 1)
+		{
+			//装備画面から戻る
+			m_equipmentMenu = false;
+		}
+
+
+		//Aボタンを押したら
+		if (m_xpad.Buttons[12] == 1)
+		{
+			//右装備選択
+			//右アイテム選択
+			if (selectDecision == 8)
+			{
+				m_select.right = true;
+			}
+			//左装備選択
+			//右指輪選択
+			//真ん中選択
+			else if (selectDecision == 9)
+			{
+				m_select.left = true;
+			}
+			//防具選択
+			//左指輪選択
+			//左アイテム選択
+			else if (selectDecision == 10)
+			{
+				m_select.armor = true;
+			}
+
+			//装備を開く
+			m_decisionEquipment = true;
+
+			//リセット
+			cWaitTime = 0;
+		}
+	}
+	else
+	{
+		cWaitTime++;
+	}
+
+}
+
+/// <summary>
+/// アイテムボックス画面更新処理
+/// </summary>
+void Setting::ItemBoxUpdate()
+{
+	//パッド入力所得
+	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
+
+	m_change.oneX = cItemOneX;
+	m_change.oneY = cItemOneY;
+	m_change.secondX = cItemSecondX;
+	m_change.secondY = cItemSecondY;
+
 	//Bボタンが押されたら
 	if (m_xpad.Buttons[13] == 1)
 	{
 		//装備画面から戻る
-		m_equipmentMenu = false;
+		m_itemMenu = false;
 	}
+}
+
+/// <summary>
+/// 装備選択画面更新処理
+/// </summary>
+void Setting::EquipmentDecisionUpdate()
+{
+	//パッド入力所得
+	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
+
+	//上
+	if (m_xpad.Buttons[0] == 1)
+	{
+		m_button++;
+	}
+	//下
+	else if (m_xpad.Buttons[1] == 1)
+	{
+		m_button--;
+	}
+	else
+	{
+		//初期化
+		m_button = 0;
+
+		m_one = false;
+	}
+
+	pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Nine);
+
+	if (cWaitTime >= 10)
+	{
+		//Bボタンが押されたら
+		if (m_xpad.Buttons[13] == 1)
+		{
+			//装備画面から戻る
+			m_decisionEquipment = false;
+
+			cWaitTime = 0;
+		}
+
+		//Aボタンを押したら
+		if (m_xpad.Buttons[12] == 1)
+		{
+			if (selectDecision == 8)
+			{
+				
+			}
+			else if (selectDecision == 9)
+			{
+				
+			}
+			else if (selectDecision == 10)
+			{
+				
+			}
+
+			//装備を開く
+			m_decisionEquipment = true;
+
+			//リセット
+			cWaitTime = 0;
+		}
+	}
+	else
+	{
+		cWaitTime++;
+	}
+
+
+
 }
 
 /// <summary>
@@ -537,11 +769,104 @@ void Setting::MenuBackDraw()
 }
 
 /// <summary>
+/// メニューを変更する所の描画処理
+/// </summary>
+void Setting::MenuChangeDraw()
+{
+	if (!m_blend)
+	{
+		if (cBlenda < 100)
+		{
+			cBlenda++;
+		}
+		else
+		{
+			m_blend = true;
+		}
+	}
+	else if (m_blend)
+	{
+		if (cBlenda > 10)
+		{
+			cBlenda--;
+		}
+		else
+		{
+			m_blend = false;
+		}
+	}
+
+
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, cBlenda);
+	DrawBox(m_change.oneX, m_change.oneY, m_change.secondX, m_change.secondY, 0x000fff, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}
+
+/// <summary>
 /// 装備画面
 /// </summary>
 void Setting::EquipmentDraw()
 {
 	DrawGraph(0, 0, m_equipment, true);
+
+	if (pselect->NowSelect == pselect->Eight)
+	{
+		m_equipmentColorPos.oneX = cRightEquipmentOneX;
+		m_equipmentColorPos.oneY = cRightEquipmentOneY;
+		m_equipmentColorPos.secondX = cRightEquipmentSecondX;
+		m_equipmentColorPos.secondY = cRightEquipmentSecondY;
+	}
+	else if (pselect->NowSelect == pselect->Nine)
+	{
+		m_equipmentColorPos.oneX = cLeftEquipmentOneX;
+		m_equipmentColorPos.oneY = cLeftEquipmentOneY;
+		m_equipmentColorPos.secondX = cLeftEquipmentSecondX;
+		m_equipmentColorPos.secondY = cLeftEquipmentSecondY;
+	}
+	else if (pselect->NowSelect == pselect->Ten)
+	{
+		m_equipmentColorPos.oneX = cArmorEquipmentOneX;
+		m_equipmentColorPos.oneY = cArmorEquipmentOneY;
+		m_equipmentColorPos.secondX = cArmorEquipmentSecondX;
+		m_equipmentColorPos.secondY = cArmorEquipmentSecondY;
+	}
+
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	DrawBox(m_equipmentColorPos.oneX, m_equipmentColorPos.oneY, m_equipmentColorPos.secondX, m_equipmentColorPos.secondY, 0x000fff, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}
+
+/// <summary>
+/// アイテム画面
+/// </summary>
+void Setting::ItemBoxDraw()
+{
+	DrawGraph(0, 0, m_itemBox, true);
+}
+
+/// <summary>
+/// 装備選択画面
+/// </summary>
+void Setting::EquipmentDecisionDraw()
+{
+	DrawGraph(0, 0, m_selectEquipment, true);
+
+	if (pselect->NowSelect == pselect->Nine)
+	{
+		m_selectObject.oneX = cOneX;
+		m_selectObject.oneY = cOneY;
+		m_selectObject.secondX = cSecondX;
+		m_selectObject.secondY = cSecondY;
+	}
+	else if (pselect->NowSelect == pselect->Ten)
+	{
+		m_selectObject.oneY = cOneY + cDifferenceY;
+		m_selectObject.secondY = cSecondY + cDifferenceY;
+	}
+
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	DrawBox(m_selectObject.oneX, m_selectObject.oneY, m_selectObject.secondX, m_selectObject.secondY, 0x000fff, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 /// <summary>

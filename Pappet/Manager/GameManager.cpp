@@ -26,6 +26,7 @@ GameManager::GameManager() :
 	m_init(false),
 	m_title(false)
 {
+	m_pUi = std::make_shared<UI>();
 }
 
 /// <summary>
@@ -121,7 +122,7 @@ void GameManager::Update()
 		m_pMap->Update(m_pPhysics, m_pPlayer->GetWarp(), m_pPlayer->GetBossStart());
 
 		//メニューを開く
-		if (m_pPlayer->GetMenu() && !m_pSetting->GetEquipment())
+		if (m_pPlayer->GetMenu() && !m_pSetting->GetEquipment() && !m_pSetting->GetItem())
 		{
 			m_pSetting->MenuUpdate();
 
@@ -130,14 +131,35 @@ void GameManager::Update()
 			m_pPlayer->SetMenu(m_pSetting->GetReturn());
 		}
 		//装備画面を開く
-		else if (m_pSetting->GetEquipment())
+		else if (m_pSetting->GetEquipment() && !m_pSetting->GetDecision())
 		{
 			m_pSetting->EquipmentUpdate();
 		}
+		//アイテム画面を開く
+		else if (m_pSetting->GetItem() && !m_pSetting->GetDecision())
+		{
+			m_pSetting->ItemBoxUpdate();
+		}
+		//装備選択画面更新
+		else if (m_pSetting->GetDecision())
+		{
+			m_pSetting->EquipmentDecisionUpdate();
+			EquipmentUpdate();
+		}
 		//メニューを開けるようにする
-		else if(!m_pPlayer->GetMenu() && !m_pSetting->GetEquipment())
+		else if(!m_pPlayer->GetMenu() && !m_pSetting->GetEquipment() && !m_pSetting->GetItem())
 		{
 			m_pSetting->SetReturn(true);
+		}
+
+		//装備画面とアイテム画面の変更更新
+		if (m_pSetting->GetEquipment() || m_pSetting->GetItem())
+		{
+			if (!m_pSetting->GetDecision())
+			{
+				m_pSetting->MenuChange();
+			}
+			
 		}
 
 
@@ -209,14 +231,35 @@ void GameManager::Draw()
 	}
 
 	//メニュー画面
-	if (m_pPlayer->GetMenu() && !m_pSetting->GetEquipment())
+	if (m_pPlayer->GetMenu() && !m_pSetting->GetEquipment() && !m_pSetting->GetItem())
 	{
 		m_pSetting->MenuDraw();
 	}
 	//装備画面
-	else if (m_pSetting->GetEquipment())
+	else if (m_pSetting->GetEquipment() && !m_pSetting->GetDecision())
 	{
 		m_pSetting->EquipmentDraw();
+		m_pUi->EquipmentDraw(*m_pPlayer);
+	}
+	//アイテム画面
+	else if (m_pSetting->GetItem() && !m_pSetting->GetDecision())
+	{
+		m_pSetting->ItemBoxDraw();
+	}
+	//装備選択画面描画
+	else if (m_pSetting->GetDecision())
+	{
+		m_pSetting->EquipmentDecisionDraw();
+		EquipmentDraw();
+	}
+
+	//アイテム画面と装備画面の変更描画
+	if (m_pSetting->GetEquipment() || m_pSetting->GetItem())
+	{
+		if (!m_pSetting->GetDecision())
+		{
+			m_pSetting->MenuChangeDraw();
+		}
 	}
 
 }
@@ -249,6 +292,50 @@ void GameManager::End()
 	m_pMap->End(m_pPhysics);
 	m_pSetting->End();
 	m_pEnemy->End();
+}
+
+/// <summary>
+/// 装備の更新処理
+/// </summary>
+void GameManager::EquipmentUpdate()
+{
+	//右装備
+	if (m_pSetting->GetSelect().right)
+	{
+
+	}
+	//左装備
+	else if (m_pSetting->GetSelect().left)
+	{
+
+	}
+	//防具
+	else if (m_pSetting->GetSelect().armor)
+	{
+
+	}
+}
+
+/// <summary>
+/// 装備の描画処理
+/// </summary>
+void GameManager::EquipmentDraw()
+{
+	//右装備
+	if (m_pSetting->GetSelect().right)
+	{
+		m_pUi->RightDraw();
+	}
+	//左装備
+	else if (m_pSetting->GetSelect().left)
+	{
+		m_pUi->LeftDraw();
+	}
+	//防具
+	else if (m_pSetting->GetSelect().armor)
+	{
+		m_pUi->ArmorDraw();
+	}
 }
 
 const MyLibrary::LibVec3 GameManager::GetPlayerPos() const

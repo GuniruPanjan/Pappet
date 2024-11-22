@@ -40,6 +40,9 @@ public:
 	void ChangeStage(const char* stageName);
 	void End();
 
+	void EquipmentUpdate();
+	void EquipmentDraw();
+
 	//現在のマップ名を取得
 	const int GetThisMapName() const { return m_nowMap; }
 
@@ -59,6 +62,7 @@ private:
 	std::shared_ptr<CollidableNpc> m_pNpc = std::make_shared<CollidableNpc>();
 	std::shared_ptr<EnemyManager> m_pEnemy;
 	std::shared_ptr<Setting> m_pSetting = std::make_shared<Setting>();
+	std::shared_ptr<UI> m_pUi;
 
 	//現在のマップ
 	eMapName m_nowMap;

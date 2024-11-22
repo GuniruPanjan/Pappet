@@ -7,13 +7,18 @@ UIBase::UIBase()
 {
 	//画像読み込み
 	m_heelStone = MyLoadGraph("Data/UI/HeelStoneMini.png", 6, 6);
-	m_fist = MyLoadGraph("Data/UI/FistUi.png", 4, 4);
 	m_eqFist = MyLoadGraph("Data/UI/FistUi.png", 7, 7);
 	m_sword = MyLoadGraph("Data/UI/SwordUI.png", 3, 3);
 	m_eqSword = MyLoadGraph("Data/UI/SwordUI.png", 7, 7);
 	m_shield = MyLoadGraph("Data/UI/Shield.png", 3, 3);
 	m_eqShield = MyLoadGraph("Data/UI/Shield.png", 7, 7);
 	m_equipment = MyLoadGraph("Data/UI/装備画面UI.png", 1, 1);
+	m_itemBox = MyLoadGraph("Data/UI/アイテム画面UI.png", 1, 1);
+	m_selectEquipment = MyLoadGraph("Data/UI/装備選択画面UI.png", 1, 1);
+
+	m_blackSword = MyLoadGraph("Data/UI/黒い剣UI.png", 3, 3);
+	m_fist = MyLoadGraph("Data/UI/拳UI.png", 3, 3);
+	m_body = MyLoadGraph("Data/UI/裸体UI.png", 3, 3);
 }
 
 /// <summary>
@@ -23,13 +28,17 @@ UIBase::~UIBase()
 {
 	//メモリ解放
 	DeleteGraph(m_heelStone);
-	DeleteGraph(m_fist);
 	DeleteGraph(m_sword);
 	DeleteGraph(m_shield);
 	DeleteGraph(m_eqFist);
 	DeleteGraph(m_eqSword);
 	DeleteGraph(m_eqShield);
 	DeleteGraph(m_equipment);
+	DeleteGraph(m_itemBox);
+	DeleteGraph(m_selectEquipment);
+	DeleteGraph(m_blackSword);
+	DeleteGraph(m_fist);
+	DeleteGraph(m_body);
 }
 
 /// <summary>

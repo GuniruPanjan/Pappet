@@ -41,6 +41,26 @@ public:
 	void Draw(Player& player, Enemy& enemy, Equipment& eq, Map& map, ItemManager& item);
 
 	/// <summary>
+	/// 装備の描画処理
+	/// </summary>
+	void EquipmentDraw(Player& player);
+
+	/// <summary>
+	/// 右武器描画処理
+	/// </summary>
+	void RightDraw();
+
+	/// <summary>
+	/// 左武器描画処理
+	/// </summary>
+	void LeftDraw();
+
+	/// <summary>
+	/// 防具描画処理
+	/// </summary>
+	void ArmorDraw();
+
+	/// <summary>
 	/// 死んだときの描画
 	/// </summary>
 	void DiedDraw();
@@ -54,38 +74,38 @@ private:
 	unsigned int m_hpColor = 0xff0000;    //HPカラー
 	unsigned int m_staminaColor = 0x00ff00;       //スタミナカラー
 	//プレイヤーのUI関係変数
-	float m_hpCover;
-	float m_staminaCover;
-	float m_hpExpressionDivide1;
-	float m_hpExpressionDivide2;
-	float m_staminaExpressionDivide1;
-	float m_staminaExpressionDivide2;
-	float m_hpPosX1;
-	float m_hpPosY1;
-	float m_hpPosX2;
-	float m_hpPosY2;
-	float m_hpPosY3;
-	float m_hpPosY4;
-	float m_staminaPosX1;
-	float m_staminaPosY1;
-	float m_staminaPosX2;
-	float m_staminaPosY2;
-	float m_staminaPosY3;
-	float m_staminaPosY4;
-	int m_equipmentUI;
-	int m_youDied;
+	//float m_hpCover;
+	//float m_staminaCover;
+	//float m_hpExpressionDivide1;
+	//float m_hpExpressionDivide2;
+	//float m_staminaExpressionDivide1;
+	//float m_staminaExpressionDivide2;
+	//float m_hpPosX1;
+	//float m_hpPosY1;
+	//float m_hpPosX2;
+	//float m_hpPosY2;
+	//float m_hpPosY3;
+	//float m_hpPosY4;
+	//float m_staminaPosX1;
+	//float m_staminaPosY1;
+	//float m_staminaPosX2;
+	//float m_staminaPosY2;
+	//float m_staminaPosY3;
+	//float m_staminaPosY4;
+	//int m_equipmentUI;
+	//int m_youDied;
 
 	//敵のUI変数
-	float m_enemyBossHpCover;
-	float m_enemyBossHpExpressionDivide1;
-	float m_enemyBossHpExpressionDivide2;
-	float m_enemyBossHpPosX1;
-	float m_enemyBossHpPosY1;
-	float m_enemyBossHpPosX2;
-	float m_enemyBossHpPosY2;
-	float m_enemyBossHpPosY3;
-	float m_enemyBossHpPosY4;
-	const char* m_enemyBossName;
+	//float m_enemyBossHpCover;
+	//float m_enemyBossHpExpressionDivide1;
+	//float m_enemyBossHpExpressionDivide2;
+	//float m_enemyBossHpPosX1;
+	//float m_enemyBossHpPosY1;
+	//float m_enemyBossHpPosX2;
+	//float m_enemyBossHpPosY2;
+	//float m_enemyBossHpPosY3;
+	//float m_enemyBossHpPosY4;
+	//const char* m_enemyBossName;
 
 	//装備画面から戻る
 	bool m_equipmentReturn;

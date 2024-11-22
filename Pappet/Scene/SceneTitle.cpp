@@ -137,23 +137,11 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 		if (m_xpad.ThumbLY > 2000)
 		{
 			m_button++;
-
-			m_cameraTarget.x++;
 		}
 		//‰º
 		else if (m_xpad.ThumbLY < 0)
 		{
 			m_button--;
-
-			m_cameraTarget.z++;
-		}
-		else if (m_xpad.ThumbLX > 2000)
-		{
-			m_cameraTarget.x--;
-		}
-		else if (m_xpad.ThumbLX < 0)
-		{
-			m_cameraTarget.z--;
 		}
 		else
 		{

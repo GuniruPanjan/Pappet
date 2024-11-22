@@ -12,6 +12,23 @@ class SelectManager;
 class Setting : public UIBase
 {
 public:
+
+	struct SelectXY
+	{
+		int oneX;
+		int oneY;
+		int secondX;
+		int secondY;
+	};
+
+	struct SelectEquipment
+	{
+		bool right = false;
+		bool left = false;
+		bool armor = false;
+	};
+
+public:
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
@@ -38,9 +55,24 @@ public:
 	void MenuUpdate();
 
 	/// <summary>
+	/// ステータス画面を変える更新処理
+	/// </summary>
+	void MenuChange();
+
+	/// <summary>
 	/// 装備の更新処理
 	/// </summary>
 	void EquipmentUpdate();
+
+	/// <summary>
+	/// アイテムボックス更新処理
+	/// </summary>
+	void ItemBoxUpdate();
+
+	/// <summary>
+	/// 装備選択画面更新処理
+	/// </summary>
+	void EquipmentDecisionUpdate();
 
 	/// <summary>
 	/// 描画処理
@@ -89,9 +121,24 @@ public:
 	void MenuBackDraw();
 
 	/// <summary>
+	/// ステータス画面を変える描画処理
+	/// </summary>
+	void MenuChangeDraw();
+
+	/// <summary>
 	/// 装備の描画処理
 	/// </summary>
 	void EquipmentDraw();
+
+	/// <summary>
+	/// アイテムボックス描画処理
+	/// </summary>
+	void ItemBoxDraw();
+
+	/// <summary>
+	/// 装備選択画面描画処理
+	/// </summary>
+	void EquipmentDecisionDraw();
 
 	/// <summary>
 	/// 終了処理
@@ -129,6 +176,31 @@ public:
 	/// <param name="re">判定をとる</param>
 	/// <returns>結果を返す</returns>
 	bool SetEquipment(bool re) { return m_equipmentMenu = re; }
+
+	/// <summary>
+	/// アイテム画面を開く判定をとる
+	/// </summary>
+	/// <returns>結果を返す</returns>
+	bool GetItem() { return m_itemMenu; }
+
+	/// <summary>
+	/// アイテムを開く判定を決める
+	/// </summary>
+	/// <param name="re">判定を取る</param>
+	/// <returns>結果を返す</returns>
+	bool Setitem(bool re) { return m_itemMenu = re; }
+
+	/// <summary>
+	/// 装備を選択する画面遷移判定を取る
+	/// </summary>
+	/// <returns></returns>
+	bool GetDecision() { return m_decisionEquipment; }
+
+	/// <summary>
+	/// 何の装備を開いているか
+	/// </summary>
+	/// <returns></returns>
+	SelectEquipment GetSelect() { return m_select; }
 
 	/// <summary>
 	/// 画面に戻る判定をとる
@@ -172,8 +244,19 @@ private:
 	bool m_volume;          //音量設定
 	int m_volumeSize;         //音量
 	bool m_equipmentMenu;     //装備メニュー
+	bool m_itemMenu;          //アイテムボックスメニュー
+	bool m_decisionEquipment; //装備選択画面
 	bool m_returnMenu;        //戻るメニュー
 	bool m_titleMenu;         //タイトルメニュー
+	bool m_blend;             //ブレンド判定
+
+	//選んだ装備
+	SelectEquipment m_select;
+
+	//選んでいる色を変える
+	SelectXY m_change;
+	SelectXY m_equipmentColorPos;
+	SelectXY m_selectObject;
 
 	//スマートポインタ
 	std::shared_ptr<SEManager> pse = std::make_shared<SEManager>();

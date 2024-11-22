@@ -25,6 +25,51 @@ void UI::Init()
 }
 
 /// <summary>
+/// ‘•”õ‚Ì•`‰æˆ—
+/// </summary>
+/// <param name="player"></param>
+void UI::EquipmentDraw(Player& player)
+{
+	//Œ
+	DrawGraph(110, 310, m_fist, true);
+
+	//Œ
+	DrawGraph(310, 310, m_fist, true);
+
+	//—‡‘Ì
+	DrawGraph(565, 320, m_body, true);
+}
+
+/// <summary>
+/// ‰E•Ší•`‰æˆ—
+/// </summary>
+void UI::RightDraw()
+{
+	//Œ
+	DrawGraph(70, 56, m_fist, true);
+	//•‚¢Œ•
+	DrawGraph(100, 210, m_blackSword, true);
+}
+
+/// <summary>
+/// ¶•Ší•`‰æˆ—
+/// </summary>
+void UI::LeftDraw()
+{
+	//Œ
+	DrawGraph(70, 56, m_fist, true);
+}
+
+/// <summary>
+/// –h‹ï•`‰æˆ—
+/// </summary>
+void UI::ArmorDraw()
+{
+	//—‡
+	DrawGraph(120, 66, m_body, true);
+}
+
+/// <summary>
 /// I—¹ˆ—
 /// </summary>
 void UI::End()
