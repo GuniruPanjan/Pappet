@@ -1,0 +1,42 @@
+#pragma once
+#include "ItemBase.h"
+#include <string>
+
+/// <summary>
+/// 防具のクラス
+/// </summary>
+class Armor :  public ItemBase
+{
+public:
+	//コンストラクタ
+	Armor();
+	//デストラクタ
+	virtual ~Armor();
+
+	//初期化
+	void Init();
+	//更新処理
+	void Update();
+	//描画処理
+	void Draw();
+	//終了処理
+	void End();
+
+	//装備したかの判定
+	bool GetBody() { return m_body.sa_equipment; }
+	bool SetBody(bool set) { return m_body.sa_equipment = set; }
+	bool GetCommon() { return m_common.sa_equipment; }
+	bool SetCommon(bool set) { return m_common.sa_equipment = set; }
+
+	//防具のパス
+	std::string GetPath() { return m_path; }
+
+private:
+	//防具の構造体
+	sArmor m_body;      //裸体
+	sArmor m_common;    //平凡な鎧
+
+	//防具のパス
+	std::string m_path;
+};
+

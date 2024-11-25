@@ -222,6 +222,9 @@
     <ClCompile Include="Object\RectObjectTrigger.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
+    <ClCompile Include="Item\Armor.cpp">
+      <Filter>ソース ファイル\Item</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Icon\Icon.h">
@@ -379,6 +382,9 @@
     </ClInclude>
     <ClInclude Include="Object\RectObjectTrigger.h">
       <Filter>ヘッダー ファイル\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Item\Armor.h">
+      <Filter>ヘッダー ファイル\Item</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -147,6 +147,7 @@
     <ClCompile Include="Character\Immortal.cpp" />
     <ClCompile Include="Character\Player.cpp" />
     <ClCompile Include="External\CsvLoad.cpp" />
+    <ClCompile Include="Item\Armor.cpp" />
     <ClCompile Include="Item\ItemBase.cpp" />
     <ClCompile Include="Item\Shield.cpp" />
     <ClCompile Include="Item\Weapon.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="Character\Player.h" />
     <ClInclude Include="External\CsvLoad.h" />
     <ClInclude Include="Icon\Icon.h" />
+    <ClInclude Include="Item\Armor.h" />
     <ClInclude Include="Item\ItemBase.h" />
     <ClInclude Include="Item\Shield.h" />
     <ClInclude Include="Item\Weapon.h" />

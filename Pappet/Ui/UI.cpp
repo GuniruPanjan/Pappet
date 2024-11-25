@@ -28,7 +28,7 @@ void UI::Init()
 /// ‘•”õ‚Ì•`‰æˆ—
 /// </summary>
 /// <param name="player"></param>
-void UI::EquipmentDraw(Player& player)
+void UI::EquipmentDraw()
 {
 	//Œ
 	DrawGraph(110, 310, m_fist, true);
@@ -58,6 +58,8 @@ void UI::LeftDraw()
 {
 	//Œ
 	DrawGraph(70, 56, m_fist, true);
+	//X‚¢‚
+	DrawGraph(85, 230, m_uglyShield, true);
 }
 
 /// <summary>
@@ -67,6 +69,8 @@ void UI::ArmorDraw()
 {
 	//—‡
 	DrawGraph(120, 66, m_body, true);
+	//•½–}‚ÈŠZ
+	DrawGraph(85, 220, m_commonArmor, true);
 }
 
 /// <summary>

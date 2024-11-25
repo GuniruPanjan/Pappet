@@ -20,5 +20,16 @@ public:
 	void Draw();
 	//•`‰æˆ—
 	void End();
+
+	//‘•”õ‚µ‚½‚©‚Ì”»’è
+	bool GetFist() { return m_fist.ss_equipment; }
+	bool SetFist(bool set) { return m_fist.ss_equipment = set; }
+	bool GetUgly() { return m_ugly.ss_equipment; }
+	bool SetUgly(bool set) { return m_ugly.ss_equipment = set; }
+	
+private:
+	//‚‚Ì\‘¢‘Ì
+	sShield m_fist;    //‘fè
+	sShield m_ugly;    //X‚¢‚
 };
 

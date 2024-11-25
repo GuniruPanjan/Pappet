@@ -2,6 +2,9 @@
 #include "DxLib.h"
 #include "Library/MyLibrary.h"
 #include "Manager/MapManager.h"
+#include "Item/Weapon.h"
+#include "Item/Shield.h"
+#include "Item/Armor.h"
 #include<memory>
 
 class Player;
@@ -63,6 +66,9 @@ private:
 	std::shared_ptr<EnemyManager> m_pEnemy;
 	std::shared_ptr<Setting> m_pSetting = std::make_shared<Setting>();
 	std::shared_ptr<UI> m_pUi;
+	std::shared_ptr<Weapon> m_pWeapon = std::make_shared<Weapon>();
+	std::shared_ptr<Shield> m_pShield = std::make_shared<Shield>();
+	std::shared_ptr<Armor> m_pArmor = std::make_shared<Armor>();
 
 	//åªç›ÇÃÉ}ÉbÉv
 	eMapName m_nowMap;

@@ -36,9 +36,16 @@ Weapon::~Weapon()
 void Weapon::Init()
 {
 	//黒い剣初期化
-	m_weapon.sw_attack = 30.0f;
-	m_weapon.sw_radius = 25.0f;
-	m_itemHandle = handle.GetModelHandle("Data/Weapon/Sword.mv1");
+	if (m_fist.sw_equipment)
+	{
+
+	}
+	else if (m_black.sw_equipment)
+	{
+		m_black.sw_attack = 30.0f;
+		m_black.sw_radius = 25.0f;
+		m_itemHandle = handle.GetModelHandle("Data/Weapon/Sword.mv1");
+	}
 }
 
 /// <summary>
@@ -67,10 +74,10 @@ void Weapon::Update(MATRIX mat)
 /// 描画処理
 /// </summary>
 /// <param name="mat">行列</param>
-void Weapon::Draw(MATRIX mat)
+void Weapon::Draw()
 {
-	//モデルのポジション
-	m_pos = VAdd(m_framePos, m_pos);
+	//モデル描画
+	MV1DrawModel(m_itemHandle);
 }
 
 /// <summary>

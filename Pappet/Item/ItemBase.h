@@ -8,23 +8,26 @@ class ItemBase
 {
 public:
 	//武器の構造体
-	struct Weapon
+	struct sWeapon
 	{
-		float sw_attack;       //攻撃力
-		float sw_radius;       //武器の当たり判定
+		float sw_attack;               //攻撃力
+		float sw_radius;               //武器の当たり判定
+		bool sw_equipment = false;     //装備したかの判定
 	};
 
 	//盾の構造体
-	struct Shield
+	struct sShield
 	{
-		int ss_cut;          //カット率
-		int ss_strength;     //盾強度
+		int ss_cut;                    //カット率
+		int ss_strength;               //盾強度
+		bool ss_equipment = false;     //装備したかの判定
 	};
 
 	//防具の構造体
-	struct Armor
+	struct sArmor
 	{
-		int sa_defense;      //防御力
+		int sa_defense;                //防御力
+		bool sa_equipment = false;     //装備したかの判定
 	};
 
 	//コンストラクタ
@@ -49,12 +52,6 @@ protected:
 	int m_itemHandle;
 	//フレーム検索
 	int m_frameIndex;
-	//武器
-	Weapon m_weapon;
-	//盾
-	Shield m_shield;
-	//防具
-	Armor m_armor;
 	//フレームポジション
 	VECTOR m_framePos;
 	//ポジション

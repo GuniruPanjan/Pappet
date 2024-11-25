@@ -10,7 +10,6 @@ UIBase::UIBase()
 	m_eqFist = MyLoadGraph("Data/UI/FistUi.png", 7, 7);
 	m_sword = MyLoadGraph("Data/UI/SwordUI.png", 3, 3);
 	m_eqSword = MyLoadGraph("Data/UI/SwordUI.png", 7, 7);
-	m_shield = MyLoadGraph("Data/UI/Shield.png", 3, 3);
 	m_eqShield = MyLoadGraph("Data/UI/Shield.png", 7, 7);
 	m_equipment = MyLoadGraph("Data/UI/‘•”õ‰æ–ÊUI.png", 1, 1);
 	m_itemBox = MyLoadGraph("Data/UI/ƒAƒCƒeƒ€‰æ–ÊUI.png", 1, 1);
@@ -19,6 +18,8 @@ UIBase::UIBase()
 	m_blackSword = MyLoadGraph("Data/UI/•‚¢Œ•UI.png", 3, 3);
 	m_fist = MyLoadGraph("Data/UI/ŒUI.png", 3, 3);
 	m_body = MyLoadGraph("Data/UI/—‡‘ÌUI.png", 3, 3);
+	m_uglyShield = MyLoadGraph("Data/UI/X‚¢‚UI.png", 4, 4);
+	m_commonArmor = MyLoadGraph("Data/UI/•½–}‚ÈŠZUI.png", 3, 3);
 }
 
 /// <summary>
@@ -29,7 +30,6 @@ UIBase::~UIBase()
 	//ƒƒ‚ƒŠ‰ğ•ú
 	DeleteGraph(m_heelStone);
 	DeleteGraph(m_sword);
-	DeleteGraph(m_shield);
 	DeleteGraph(m_eqFist);
 	DeleteGraph(m_eqSword);
 	DeleteGraph(m_eqShield);
@@ -39,6 +39,8 @@ UIBase::~UIBase()
 	DeleteGraph(m_blackSword);
 	DeleteGraph(m_fist);
 	DeleteGraph(m_body);
+	DeleteGraph(m_uglyShield);
+	DeleteGraph(m_commonArmor);
 }
 
 /// <summary>

@@ -43,7 +43,7 @@ public:
 	/// <summary>
 	/// ‘•”õ‚Ì•`‰æˆ—
 	/// </summary>
-	void EquipmentDraw(Player& player);
+	void EquipmentDraw();
 
 	/// <summary>
 	/// ‰E•Ší•`‰æˆ—

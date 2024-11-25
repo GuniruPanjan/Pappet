@@ -1,6 +1,9 @@
 #include "Setting.h"
 #include "Manager/SelectManager.h"
 #include "UI/UIBase.h"
+#include "Item/Shield.h"
+#include "Item/Weapon.h"
+#include "Item/Armor.h"
 
 namespace
 {
@@ -404,7 +407,7 @@ void Setting::EquipmentUpdate()
 			}
 			//左装備選択
 			//右指輪選択
-			//真ん中選択
+			//真ん中アイテム選択
 			else if (selectDecision == 9)
 			{
 				m_select.left = true;
@@ -455,7 +458,7 @@ void Setting::ItemBoxUpdate()
 /// <summary>
 /// 装備選択画面更新処理
 /// </summary>
-void Setting::EquipmentDecisionUpdate()
+void Setting::EquipmentDecisionUpdate(Weapon& weapon, Shield& shield, Armor& armor)
 {
 	//パッド入力所得
 	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
@@ -500,15 +503,69 @@ void Setting::EquipmentDecisionUpdate()
 			}
 			else if (selectDecision == 9)
 			{
-				
+				//右装備だった場合
+				if (m_select.right)
+				{
+					weapon.End();
+
+					weapon.SetFist(true);
+					weapon.SetBlack(false);
+
+					weapon.Init();
+				}
+				//左装備だった場合
+				else if (m_select.left)
+				{
+					shield.End();
+
+					shield.SetFist(true);
+					shield.SetUgly(false);
+
+					shield.Init();
+				}
+				//防具だった場合
+				else if (m_select.armor)
+				{
+					armor.SetBody(true);
+					armor.SetCommon(false);
+
+					armor.Init();
+				}
 			}
 			else if (selectDecision == 10)
 			{
-				
+				//右装備だった場合
+				if (m_select.right)
+				{
+					weapon.End();
+
+					weapon.SetBlack(true);
+					weapon.SetFist(false);
+
+					weapon.Init();
+				}
+				//左装備だった場合
+				else if (m_select.left)
+				{
+					shield.End();
+
+					shield.SetUgly(true);
+				    shield.SetFist(false);
+
+					shield.Init();
+				}
+				//防具だった場合
+				else if (m_select.armor)
+				{
+					armor.SetCommon(true);
+					armor.SetBody(false);
+
+					armor.Init();
+				}
 			}
 
 			//装備を開く
-			m_decisionEquipment = true;
+			m_decisionEquipment = false;
 
 			//リセット
 			cWaitTime = 0;

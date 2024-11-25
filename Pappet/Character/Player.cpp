@@ -2,6 +2,9 @@
 #include "Manager/EffectManager.h"
 #include "Manager/HandleManager.h"
 #include "External/CsvLoad.h"
+#include "Item/Weapon.h"
+#include "Item/Shield.h"
+#include "Item/Armor.h"
 
 namespace
 {
@@ -43,6 +46,8 @@ namespace
 	int cNowAttackNumber = 0;
 	//攻撃の終了判定
 	int cIsEndAttack = 0;
+	//装備の攻撃力所得
+	float cEquipmentAttack = 0.0f;
 
 	//シングルトン
 	auto& handle = HandleManager::GetInstance();
@@ -115,6 +120,11 @@ Player::Player() :
 	//Csvによるデータの読み込み
 	CsvLoad::GetInstance().AnimDataLoad("Player", m_animIdx);
 	CsvLoad::GetInstance().StatusLoad(m_status, "Player");
+
+	for (int i = 0; i < 10; i++)
+	{
+		m_armorOne[i] = false;
+	}
 }
 
 Player::~Player()
@@ -129,7 +139,7 @@ Player::~Player()
 /// 初期化処理
 /// </summary>
 /// <param name="physics">物理クラスのポインタ</param>
-void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
+void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, Shield& shield, Armor& armor)
 {
 	m_pPhysics = physics;
 
@@ -168,6 +178,12 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics)
 
 	//移動距離
 	cMove = 0.5f;
+
+	//装備初期化
+	weapon.SetFist(true);
+	shield.SetFist(true);
+	armor.SetBody(true);
+	m_armorOne[0] = true;
 }
 
 /// <summary>
@@ -205,7 +221,7 @@ void Player::Finalize()
 	Collidable::Finalize(m_pPhysics);
 }
 
-void Player::Update()
+void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 {
 	//アニメーションで移動しているフレームの番号を検索する
 	m_moveAnimFrameIndex = MV1SearchFrame(m_modelHandle, "mixamorig:Hips");
@@ -356,15 +372,38 @@ void Player::Update()
 		rigidbody.SetVelocity(newVelocity);
 	}
 
-	//後ろ歩き
-	if (m_lockonTarget && !m_animChange.sa_dashMove && cAnY > 0 && cAnX < 500 && cAnX > -500)
+	//装備していないとき
+	if (weapon.GetFist() && shield.GetFist())
 	{
-		//再生時間を進める
-		m_animReverse = true;
+		//後ろ歩き
+		if (m_lockonTarget && !m_animChange.sa_dashMove && cAnY > 0 && cAnX < 500 && cAnX > -500)
+		{
+			//再生時間を進める
+			m_animReverse = true;
+		}
+		else
+		{
+			m_animReverse = false;
+		}
 	}
-	else
+	//装備しているとき
+	else if (!weapon.GetFist() || !shield.GetFist())
 	{
-		m_animReverse = false;
+		//後ろ歩き
+		if (m_lockonTarget && !m_animChange.sa_dashMove && cAnY > 0 && cAnX < 500 && cAnX > -500)
+		{
+			//再生時間を進める
+			m_animReverse = true;
+		}
+		else if (m_lockonTarget && !m_animChange.sa_dashMove && cAnX > 500)
+		{
+			//再生時間を進める
+			m_animReverse = true;
+		}
+		else
+		{
+			m_animReverse = false;
+		}
 	}
 
 	//プレイヤーが生きている時だけ
@@ -380,8 +419,57 @@ void Player::Update()
 			}
 		}
 
-		NotWeaponAnimation();
+		//装備をしていない時のアニメーション
+		if (weapon.GetFist() && shield.GetFist())
+		{
+			NotWeaponAnimation();
+		}
+		//装備したときのアニメーション
+		else if (!weapon.GetFist() || !shield.GetFist())
+		{
+			WeaponAnimation(shield);
+		}
+
 		AllAnimation();
+
+		//モデルの初期化を行うとバグる
+		//防具をしていない時の処理
+		if (armor.GetBody())
+		{
+			//一回だけ実行
+			if (!m_armorOne[0])
+			{
+				//End();
+
+				////モデル読み込み
+				//m_modelHandle = handle.GetModelHandle("Data/Player/PlayerModelPappet.mv1");
+
+				//m_animOne[0] = true;
+			}
+
+			m_animOne[1] = false;
+			
+		}
+		//防具をした時の処理
+		else if (!armor.GetBody())
+		{
+			//一回だけ実行
+			if (!m_armorOne[1])
+			{
+				////メモリ削除
+				//End();
+
+				////モデル読み込み
+				//m_modelHandle = handle.GetModelHandle("Data/Player/PlayerModelPappet.mv1");
+
+				//m_animOne[1] = true;
+
+			}
+
+			m_animOne[0] = false;
+			
+		}
+		
 	}
 
 	//アニメーションの更新
@@ -390,6 +478,19 @@ void Player::Update()
 	//プレイヤーのポジションを入れる
 	SetModelPos();
 	
+	//装備の更新
+	weapon.Update(m_moveWeaponFrameMatrix);
+	shield.Update(m_moveShieldFrameMatrix);
+
+	//装備でのステータス上昇をプラスする
+	if (weapon.GetFist())
+	{
+		cEquipmentAttack = weapon.GetFistAttack();
+	}
+	else if (weapon.GetBlack())
+	{
+		cEquipmentAttack = weapon.GetBlackAttack();
+	}
 
 	//判定の更新
 	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
@@ -448,7 +549,7 @@ void Player::Update()
 			//現在のアタックナンバー
 			cNowAttackNumber = 1;
 
-			m_pAttack->SetAttack(m_status.s_attack);
+			m_pAttack->SetAttack(m_status.s_attack + cEquipmentAttack);
 
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 25.0f)
@@ -473,7 +574,7 @@ void Player::Update()
 			//現在のアタックナンバー
 			cNowAttackNumber = 2;
 
-			m_pAttack->SetAttack(m_status.s_attack * 1.1);
+			m_pAttack->SetAttack((m_status.s_attack + cEquipmentAttack) * 1.1);
 
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 55.0f)
@@ -497,7 +598,7 @@ void Player::Update()
 			//現在のアタックナンバー
 			cNowAttackNumber = 3;
 
-			m_pAttack->SetAttack(m_status.s_attack * 1.2);
+			m_pAttack->SetAttack((m_status.s_attack + cEquipmentAttack) * 1.2);
 
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 85.0f)
@@ -892,8 +993,57 @@ void Player::AllAnimation()
 /// <summary>
 /// 武器を持ってる状態の時に行うアニメーション
 /// </summary>
-void Player::WeaponAnimation()
+void Player::WeaponAnimation(Shield& shield)
 {
+	//とりあえず
+	m_animChange.sa_imapact = false;
+
+	//プレイヤーが生きている時だけ
+	if (!m_anim.s_isDead)
+	{
+		//攻撃が当たってない時盾受けしていないとき
+		if (!m_anim.s_hit && !m_animChange.sa_imapact)
+		{
+			//走り
+			if (m_animChange.sa_dashMove && m_anim.s_moveflag)
+			{
+				m_nowAnimIdx = m_animIdx["ShieldRun"];
+				ChangeAnim(m_nowAnimIdx, m_animOne[13], m_animOne);
+				NotInitAnim(false);
+			}
+			//歩き
+			else if (m_anim.s_moveflag)
+			{
+				//ターゲットしていないとき
+				if (!m_lockonTarget)
+				{
+					m_nowAnimIdx = m_animIdx["ShieldWalk"];
+					ChangeAnim(m_nowAnimIdx, m_animOne[14], m_animOne);
+					NotInitAnim(false);
+				}
+				//ターゲットしているとき
+				else if (m_lockonTarget)
+				{
+					//左右歩き
+					if (cAnX < -500 || cAnX > 500)
+					{
+						m_nowAnimIdx = m_animIdx["ShieldSideWalk"];
+						ChangeAnim(m_nowAnimIdx, m_animOne[15], m_animOne);
+						NotInitAnim(false);
+
+					}
+					//後ろ歩きor歩き
+					else if (cAnX < 500 && cAnX > -500)
+					{
+						m_nowAnimIdx = m_animIdx["ShieldWalk"];
+						ChangeAnim(m_nowAnimIdx, m_animOne[14], m_animOne, cAnimWalkTime, m_animReverse, cAnimWalkReverseTimeInit);
+						NotInitAnim(false);
+
+					}
+				}
+			}
+		}
+	}
 }
 
 /// <summary>
@@ -926,9 +1076,10 @@ void Player::Draw()
 #endif
 #if false
 	//DrawFormatString(200, 100, 0xffffff, "animtime : %f", cAnimWalkTime);
-	DrawFormatString(200, 600, 0xffffff, "m_moveX : %f", rigidbody.GetPos().x);
-	DrawFormatString(200, 650, 0xffffff, "m_moveY : %f", rigidbody.GetPos().y);
-	DrawFormatString(200, 700, 0xffffff, "m_moveZ : %f", rigidbody.GetPos().z);
+	DrawFormatString(200, 600, 0xffffff, "weapon : %d", m_pWeapon->GetBlack());
+	DrawFormatString(200, 650, 0xffffff, "shield : %d", m_pShield->GetUgly());
+	DrawFormatString(200, 700, 0xffffff, "fist : %d", m_pWeapon->GetFist());
+	DrawFormatString(200, 750, 0xffffff, "fist : %d", m_pShield->GetFist());
 #endif
 	//モデルの回転地
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));

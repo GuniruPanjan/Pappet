@@ -48,7 +48,7 @@ void GameManager::Init()
 	m_pMap->Init(m_pPhysics);
 	//pCamera->Init();
 
-	m_pPlayer->Init(m_pPhysics);
+	m_pPlayer->Init(m_pPhysics, *m_pWeapon, *m_pShield, *m_pArmor);
 	m_pEnemy = std::make_shared<EnemyManager>();
 	m_pEnemy->Init(m_pMap->GetStageName());
 	m_pNpc->Init(m_pPhysics);
@@ -67,7 +67,7 @@ void GameManager::GameInit()
 
 	m_pMap->Init(m_pPhysics);
 
-	m_pPlayer->Init(m_pPhysics);
+	m_pPlayer->Init(m_pPhysics, *m_pWeapon, *m_pShield, *m_pArmor);
 	m_pEnemy->Init(m_pMap->GetStageName());
 	m_pNpc->Init(m_pPhysics);
 	m_pSetting->Init();
@@ -83,7 +83,7 @@ void GameManager::Update()
 	{
 		m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
-		m_pPlayer->Update();
+		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor);
 		//ロックオンしてない時
 		if (!m_pPlayer->GetLock())
 		{
@@ -143,7 +143,7 @@ void GameManager::Update()
 		//装備選択画面更新
 		else if (m_pSetting->GetDecision())
 		{
-			m_pSetting->EquipmentDecisionUpdate();
+			m_pSetting->EquipmentDecisionUpdate(*m_pWeapon, *m_pShield, *m_pArmor);
 			EquipmentUpdate();
 		}
 		//メニューを開けるようにする
@@ -213,6 +213,8 @@ void GameManager::Draw()
 {
 	m_pMap->Draw();
 	m_pPlayer->Draw();
+	m_pWeapon->Draw();
+	m_pShield->Draw();
 	m_pEnemy->Draw();
 	m_pNpc->Draw();
 
@@ -239,7 +241,7 @@ void GameManager::Draw()
 	else if (m_pSetting->GetEquipment() && !m_pSetting->GetDecision())
 	{
 		m_pSetting->EquipmentDraw();
-		m_pUi->EquipmentDraw(*m_pPlayer);
+		m_pUi->EquipmentDraw();
 	}
 	//アイテム画面
 	else if (m_pSetting->GetItem() && !m_pSetting->GetDecision())

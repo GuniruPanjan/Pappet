@@ -5,6 +5,9 @@
 #include<memory>
 
 class SelectManager;
+class Shield;
+class Weapon;
+class Armor;
 
 /// <summary>
 /// 設定処理用のクラス
@@ -72,7 +75,7 @@ public:
 	/// <summary>
 	/// 装備選択画面更新処理
 	/// </summary>
-	void EquipmentDecisionUpdate();
+	void EquipmentDecisionUpdate(Weapon& weapon, Shield& shield, Armor& armor);
 
 	/// <summary>
 	/// 描画処理

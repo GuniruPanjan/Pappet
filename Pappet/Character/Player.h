@@ -1,5 +1,10 @@
 #pragma once
 #include "CharacterBase.h"
+
+class Weapon;
+class Shield;
+class Armor;
+
 class Player : public CharacterBase
 {
 public:
@@ -23,21 +28,24 @@ public:
 		bool sa_taking;                      //アイテムを取得する判定
 		bool sa_touch;                       //ギミックを作動させる判定
 		bool sa_bossEnter;                   //ボスの入り口に入る判定
+		bool sa_enterShield;                 //盾を構える判定
+		bool sa_shieldIdle;                  //盾を構えてる判定
+		bool sa_imapact;                     //盾受けした判定
 
 	}m_animChange;
 
 	Player();
 	virtual ~Player();
 
-	void Init(std::shared_ptr<MyLibrary::Physics> physics);
+	void Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, Shield& shield, Armor& armor);
 	void GameInit(std::shared_ptr<MyLibrary::Physics> physics);
 	void Finalize();
-	void Update();
+	void Update(Weapon& weapon, Shield& shield, Armor& armor);
 	void Action();
 	void WarpMap();
 	void NotWeaponAnimation();
 	void AllAnimation();
-	void WeaponAnimation();
+	void WeaponAnimation(Shield& shield);
 	void Draw();
 	void End();
 
@@ -75,7 +83,7 @@ public:
 private:
 	void SetModelPos();
 private:
-	std::shared_ptr<AttackObject> m_pAttack;   //攻撃判定
+	std::shared_ptr<AttackObject> m_pAttack;         //攻撃判定
 	std::shared_ptr<PlayerSearchObject> m_pSearch;   //索敵判定
 
 	XINPUT_STATE m_xpad;                //パッド入力
@@ -90,6 +98,7 @@ private:
 	bool m_lockonTarget;                //ターゲット判定
 	bool m_warp;                        //マップをワープするための判定
 	bool m_bossStart;                   //ボス部屋に入るための判定
+	bool m_armorOne[10];                //防具の初期化(適当に作っておく)
 
 	//アニメーション用変数
 	int m_attackNumber;                 //現在の攻撃段階の代入

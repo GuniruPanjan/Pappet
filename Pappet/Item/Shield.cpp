@@ -35,9 +35,17 @@ Shield::~Shield()
 void Shield::Init()
 {
 	//‚‚Ì‰Šú‰»
-	m_itemHandle = handle.GetModelHandle("Data/Weapon/Shield.mv1");
-	m_shield.ss_cut = 90.0f;
-	m_shield.ss_strength = 20.0f;
+	if (m_fist.ss_equipment)
+	{
+
+	}
+	else if (m_ugly.ss_equipment)
+	{
+		m_itemHandle = handle.GetModelHandle("Data/Weapon/Shield.mv1");
+		m_ugly.ss_cut = 90.0f;
+		m_ugly.ss_strength = 20.0f;
+	}
+	
 }
 
 /// <summary>
