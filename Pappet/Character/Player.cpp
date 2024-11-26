@@ -6,6 +6,8 @@
 #include "Item/Shield.h"
 #include "Item/Armor.h"
 
+#include <cassert>
+
 namespace
 {
 	//モデルサイズ
@@ -113,6 +115,7 @@ Player::Player() :
 
 	//モデル読み込み
 	m_modelHandle = handle.GetModelHandle("Data/Player/PlayerModelPappet.mv1");
+
 
 	//モデルのサイズ設定
 	MV1SetScale(m_modelHandle, VGet(cModelSizeScale, cModelSizeScale, cModelSizeScale));
@@ -223,6 +226,13 @@ void Player::Finalize()
 
 void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 {
+
+	//防具をしていない時の処理
+	if (armor.GetBody())
+	{
+		
+	}
+
 	//アニメーションで移動しているフレームの番号を検索する
 	m_moveAnimFrameIndex = MV1SearchFrame(m_modelHandle, "mixamorig:Hips");
 	m_moveAnimFrameRight = MV1SearchFrame(m_modelHandle, "mixamorig:RightHandThumb2");
@@ -252,6 +262,14 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 		//アニメーションのブレンド率を設定する
 		MV1SetAttachAnimBlendRate(m_modelHandle, m_prevAnimNo, cAnimBlendRateMax - m_animBlendRate);
 		MV1SetAttachAnimBlendRate(m_modelHandle, m_nowAnimNo, m_animBlendRate);
+		
+
+		//防具をしていない時の処理
+		if (armor.GetBody())
+		{
+			
+		}
+		
 	}
 
 	//死んだ時のアニメーション
@@ -406,6 +424,8 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 		}
 	}
 
+	
+
 	//プレイヤーが生きている時だけ
 	if (!m_anim.s_isDead)
 	{
@@ -439,15 +459,19 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 			//一回だけ実行
 			if (!m_armorOne[0])
 			{
-				//End();
+				//メモリ解放
+				MV1DeleteModel(m_modelHandle);
+				//モデル読み込み
+				m_modelHandle = MV1LoadModel("Data/Player/PlayerModelPappet.mv1");
+				
+				//待機アニメーション設定
+				m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
+				m_nowAnimIdx = m_animIdx["Idle"];
 
-				////モデル読み込み
-				//m_modelHandle = handle.GetModelHandle("Data/Player/PlayerModelPappet.mv1");
-
-				//m_animOne[0] = true;
+				m_armorOne[0] = true;
 			}
 
-			m_animOne[1] = false;
+			m_armorOne[1] = false;
 			
 		}
 		//防具をした時の処理
@@ -456,21 +480,30 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 			//一回だけ実行
 			if (!m_armorOne[1])
 			{
-				////メモリ削除
-				//End();
+				//メモリ解放
+				MV1DeleteModel(m_modelHandle);
+				//モデル読み込み
+				m_modelHandle = MV1LoadModel("Data/Armor/CommonArmor.mv1");
+				
+				//待機アニメーション設定
+				//m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
+				//m_nowAnimIdx = m_animIdx["Idle"];
 
-				////モデル読み込み
-				//m_modelHandle = handle.GetModelHandle("Data/Player/PlayerModelPappet.mv1");
+				m_nowAnimIdx = m_animIdx["Idle"];
 
-				//m_animOne[1] = true;
+				ChangeAnim(m_nowAnimIdx, m_animOne[20], m_animOne);
+
+
+				m_armorOne[1] = true;
 
 			}
 
-			m_animOne[0] = false;
+			m_armorOne[0] = false;
 			
 		}
 		
 	}
+
 
 	//アニメーションの更新
 	m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
@@ -1049,12 +1082,12 @@ void Player::WeaponAnimation(Shield& shield)
 /// <summary>
 /// 描画処理
 /// </summary>
-void Player::Draw()
+void Player::Draw(Armor& armor)
 {
 	rigidbody.SetPos(rigidbody.GetNextPos());
 	m_collisionPos = rigidbody.GetPos();
 	
-	MV1SetPosition(m_modelHandle, VSub(m_modelPos.ConversionToVECTOR(), VGet(0.0f, 12.0f, 0.0f)));
+	
 
 #if false
 	DrawFormatString(200, 100, 0xffffff, "posx : %f", m_modelPos.x);
@@ -1081,11 +1114,19 @@ void Player::Draw()
 	DrawFormatString(200, 700, 0xffffff, "fist : %d", m_pWeapon->GetFist());
 	DrawFormatString(200, 750, 0xffffff, "fist : %d", m_pShield->GetFist());
 #endif
+
+	MV1SetPosition(m_modelHandle, VSub(m_modelPos.ConversionToVECTOR(), VGet(0.0f, 12.0f, 0.0f)));
 	//モデルの回転地
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
-
 	//描画
 	MV1DrawModel(m_modelHandle);
+
+	//防具をしていない時の処理
+	if (armor.GetBody())
+	{
+		
+	}
+	
 }
 
 void Player::End()

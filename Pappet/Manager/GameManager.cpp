@@ -162,7 +162,6 @@ void GameManager::Update()
 			
 		}
 
-
 		//‹x‘§‚µ‚½ê‡
 		if (m_pPlayer->GetRest())
 		{
@@ -212,7 +211,7 @@ void GameManager::Update()
 void GameManager::Draw()
 {
 	m_pMap->Draw();
-	m_pPlayer->Draw();
+	m_pPlayer->Draw(*m_pArmor);
 	m_pWeapon->Draw();
 	m_pShield->Draw();
 	m_pEnemy->Draw();

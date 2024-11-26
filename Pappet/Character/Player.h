@@ -46,7 +46,7 @@ public:
 	void NotWeaponAnimation();
 	void AllAnimation();
 	void WeaponAnimation(Shield& shield);
-	void Draw();
+	void Draw(Armor& armor);
 	void End();
 
 	//è’ìÀÇµÇΩÇ∆Ç´
