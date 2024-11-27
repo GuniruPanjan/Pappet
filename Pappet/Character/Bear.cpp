@@ -483,6 +483,7 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 		}
 		
 	}
+
 }
 
 /// <summary>

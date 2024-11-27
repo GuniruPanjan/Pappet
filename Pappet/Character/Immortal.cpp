@@ -319,6 +319,8 @@ void Immortal::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 				}
 				else if (m_nowFrame >= 35.0f)
 				{
+					m_pAttack->GetAttack();
+
 					//”»’è‚ðƒŠƒZƒbƒg
 					m_pAttack->CollisionEnd();
 				}

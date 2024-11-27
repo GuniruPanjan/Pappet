@@ -50,6 +50,8 @@ namespace
 	int cIsEndAttack = 0;
 	//装備の攻撃力所得
 	float cEquipmentAttack = 0.0f;
+	//人形のモデルパス
+	constexpr const char* cPath = "Data/Player/PlayerModelPuppet.mv1";
 
 	//シングルトン
 	auto& handle = HandleManager::GetInstance();
@@ -76,6 +78,7 @@ Player::Player() :
 	m_cameraAngle(0.0f),
 	m_lockAngle(0.0f),
 	m_avoidanceNow(false),
+	m_shieldNow(false),
 	m_animReverse(false),
 	m_moveWeaponFrameMatrix(),
 	m_moveShieldFrameMatrix(),
@@ -107,6 +110,8 @@ Player::Player() :
 	m_animChange.sa_taking = false;
 	m_animChange.sa_touch = false;
 	m_animChange.sa_bossEnter = false;
+	m_animChange.sa_shieldIdle = false;
+	m_animChange.sa_enterShield = false;
 	
 	//エフェクト読み込み
 	effect.EffectLoad("Rest", "Data/Effect/Benediction.efkefc", 210, 10.0f);
@@ -114,7 +119,7 @@ Player::Player() :
 	effect.EffectLoad("Imapct", "Data/Effect/HitEffect.efkefc", 30, 7.0f);
 
 	//モデル読み込み
-	m_modelHandle = handle.GetModelHandle("Data/Player/PlayerModelPappet.mv1");
+	m_modelHandle = handle.GetModelHandle(cPath);
 
 
 	//モデルのサイズ設定
@@ -227,12 +232,6 @@ void Player::Finalize()
 void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 {
 
-	//防具をしていない時の処理
-	if (armor.GetBody())
-	{
-		
-	}
-
 	//アニメーションで移動しているフレームの番号を検索する
 	m_moveAnimFrameIndex = MV1SearchFrame(m_modelHandle, "mixamorig:Hips");
 	m_moveAnimFrameRight = MV1SearchFrame(m_modelHandle, "mixamorig:RightHandThumb2");
@@ -262,14 +261,6 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 		//アニメーションのブレンド率を設定する
 		MV1SetAttachAnimBlendRate(m_modelHandle, m_prevAnimNo, cAnimBlendRateMax - m_animBlendRate);
 		MV1SetAttachAnimBlendRate(m_modelHandle, m_nowAnimNo, m_animBlendRate);
-		
-
-		//防具をしていない時の処理
-		if (armor.GetBody())
-		{
-			
-		}
-		
 	}
 
 	//死んだ時のアニメーション
@@ -396,7 +387,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 		//後ろ歩き
 		if (m_lockonTarget && !m_animChange.sa_dashMove && cAnY > 0 && cAnX < 500 && cAnX > -500)
 		{
-			//再生時間を進める
+			//逆再生を進める
 			m_animReverse = true;
 		}
 		else
@@ -410,12 +401,13 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 		//後ろ歩き
 		if (m_lockonTarget && !m_animChange.sa_dashMove && cAnY > 0 && cAnX < 500 && cAnX > -500)
 		{
-			//再生時間を進める
+			//逆再生を進める
 			m_animReverse = true;
 		}
+		//右歩き
 		else if (m_lockonTarget && !m_animChange.sa_dashMove && cAnX > 500)
 		{
-			//再生時間を進める
+			//逆再生を進める
 			m_animReverse = true;
 		}
 		else
@@ -452,54 +444,15 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 
 		AllAnimation();
 
-		//モデルの初期化を行うとバグる
 		//防具をしていない時の処理
 		if (armor.GetBody())
 		{
-			//一回だけ実行
-			if (!m_armorOne[0])
-			{
-				//メモリ解放
-				MV1DeleteModel(m_modelHandle);
-				//モデル読み込み
-				m_modelHandle = MV1LoadModel("Data/Player/PlayerModelPappet.mv1");
-				
-				//待機アニメーション設定
-				m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
-				m_nowAnimIdx = m_animIdx["Idle"];
-
-				m_armorOne[0] = true;
-			}
-
-			m_armorOne[1] = false;
-			
+			ArmorChange(0, cPath);	
 		}
 		//防具をした時の処理
 		else if (!armor.GetBody())
 		{
-			//一回だけ実行
-			if (!m_armorOne[1])
-			{
-				//メモリ解放
-				MV1DeleteModel(m_modelHandle);
-				//モデル読み込み
-				m_modelHandle = MV1LoadModel("Data/Armor/CommonArmor.mv1");
-				
-				//待機アニメーション設定
-				//m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
-				//m_nowAnimIdx = m_animIdx["Idle"];
-
-				m_nowAnimIdx = m_animIdx["Idle"];
-
-				ChangeAnim(m_nowAnimIdx, m_animOne[20], m_animOne);
-
-
-				m_armorOne[1] = true;
-
-			}
-
-			m_armorOne[0] = false;
-			
+			ArmorChange(1, armor.GetPath());	
 		}
 		
 	}
@@ -524,6 +477,16 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 	{
 		cEquipmentAttack = weapon.GetBlackAttack();
 	}
+
+	if (armor.GetBody())
+	{
+		m_status.s_defense = armor.GetBodyDefence();
+	}
+	else if (armor.GetCommon())
+	{
+		m_status.s_defense = armor.GetCommonDefence();
+	}
+	
 
 	//判定の更新
 	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
@@ -817,6 +780,45 @@ void Player::Action()
 	//追加攻撃受付時間を減らす
 	if (cAddAttackTime <= 40 && cAddAttackTime > 0 && --cAddAttackTime > -1);
 
+	//行動中は防御できない
+	if (!m_anim.s_attack && !m_animChange.sa_avoidance && !m_animChange.sa_recovery)
+	{
+		//Lボタンで防御
+		if (m_xpad.Buttons[8] == 1)
+		{
+			m_shieldNow = true;
+
+			if (!m_animChange.sa_shieldIdle)
+			{
+				m_animChange.sa_enterShield = true;
+			}
+			
+			//盾の構えが終了したとき
+			if (m_animChange.sa_enterShield && m_isAnimationFinish)
+			{
+				m_animChange.sa_enterShield = false;
+				m_animChange.sa_shieldIdle = true;
+			}
+		}
+		else
+		{
+			//Lボタンを離した瞬間
+			if (m_animChange.sa_enterShield || m_animChange.sa_shieldIdle)
+			{
+				m_animChange.sa_enterShield = false;
+				m_animChange.sa_shieldIdle = false;
+			}
+
+			m_shieldNow = false;
+		}
+	}
+	else
+	{
+		m_animChange.sa_enterShield = false;
+		m_animChange.sa_shieldIdle = false;
+		m_shieldNow = false;
+	}
+
 	//回復
 	//Xボタンが押されたら
 	if (m_xpad.Buttons[14] == 1 && !m_anim.s_attack)
@@ -968,7 +970,8 @@ void Player::AllAnimation()
 		else if (!m_anim.s_hit && !m_animChange.sa_bossEnter)
 		{
 			//動いてない時
-			if (!m_anim.s_moveflag && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery)
+			if (!m_anim.s_moveflag && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery && 
+				!m_shieldNow)
 			{
 				m_nowAnimIdx = m_animIdx["Idle"];
 				ChangeAnim(m_nowAnimIdx, m_animOne[6], m_animOne);
@@ -1061,7 +1064,7 @@ void Player::WeaponAnimation(Shield& shield)
 					if (cAnX < -500 || cAnX > 500)
 					{
 						m_nowAnimIdx = m_animIdx["ShieldSideWalk"];
-						ChangeAnim(m_nowAnimIdx, m_animOne[15], m_animOne);
+						ChangeAnim(m_nowAnimIdx, m_animOne[15], m_animOne, cAnimWalkTime, m_animReverse);
 						NotInitAnim(false);
 
 					}
@@ -1075,6 +1078,46 @@ void Player::WeaponAnimation(Shield& shield)
 					}
 				}
 			}
+			//盾があるとき
+			if (!shield.GetFist())
+			{
+				//防御開始と防御終了
+				if (m_animChange.sa_enterShield)
+				{
+					//キャラが動いていない時
+					if (!m_anim.s_moveflag)
+					{
+						m_nowAnimIdx = m_animIdx["ShieldStart"];
+						ChangeAnim(m_nowAnimIdx, m_animOne[16], m_animOne, 1.0f);
+						NotInitAnim(true);
+					}
+					//キャラが動いているとき
+					else
+					{
+						//デタッチされているためフレームブレンドができない
+					}
+					
+				}
+				//防御中
+				if (m_animChange.sa_shieldIdle)
+				{
+					//キャラが動いていないとき
+					if (!m_anim.s_moveflag)
+					{
+						m_nowAnimIdx = m_animIdx["ShieldIdle"];
+						ChangeAnim(m_nowAnimIdx, m_animOne[17], m_animOne);
+						NotInitAnim(false);
+					}
+					//キャラが動いているとき
+					else
+					{
+						//デタッチされているためフレームブレンドができない
+
+					}
+					
+				}
+				
+			}
 		}
 	}
 }
@@ -1086,13 +1129,9 @@ void Player::Draw(Armor& armor)
 {
 	rigidbody.SetPos(rigidbody.GetNextPos());
 	m_collisionPos = rigidbody.GetPos();
-	
-	
 
-#if false
-	DrawFormatString(200, 100, 0xffffff, "posx : %f", m_modelPos.x);
-	DrawFormatString(200, 200, 0xffffff, "posy : %f", m_modelPos.y);
-	DrawFormatString(200, 300, 0xffffff, "posz : %f", m_modelPos.z);
+#if true
+	DrawFormatString(200, 100, 0xffffff, "HP : %f", m_status.s_hp);
 #endif
 #if false
 	DrawFormatString(0, 400, 0xffffff, "m_nowAnim : %d", m_nowAnimIdx);
@@ -1120,12 +1159,6 @@ void Player::Draw(Armor& armor)
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
 	//描画
 	MV1DrawModel(m_modelHandle);
-
-	//防具をしていない時の処理
-	if (armor.GetBody())
-	{
-		
-	}
 	
 }
 
@@ -1194,12 +1227,18 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 #if _DEBUG
 		message += "攻撃";
 #endif
-		//回避中じゃないとき
-		if (!m_avoidanceNow && !m_anim.s_hit && !m_animChange.sa_bossEnter)
+		//HPが0以上だとヒットする
+		if (m_status.s_hp > 0.0f)
 		{
-			m_anim.s_hit = true;
-		}
+			//回避中とヒット中とボス部屋に入っている時は攻撃が当たらない
+			if (!m_avoidanceNow && !m_anim.s_hit && !m_animChange.sa_bossEnter)
+			{
+				//おそらく敵が配列のため攻撃判定を入れられてないやつらの攻撃力を取得し、例外が出ている
+				//m_status.s_hp -= m_enemyAttackCol->GetAttack() - m_status.s_defense;
 
+				m_anim.s_hit = true;
+			}
+		}
 		break;
 	case ObjectTag::EnemySearch:
 #if _DEBUG
@@ -1226,6 +1265,43 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 	message += "と当たった\n";
 	printfDx(message.c_str());
 #endif
+}
+
+/// <summary>
+/// 防具を変える
+/// </summary>
+/// <param name="one">防具のナンバー指定</param>
+/// <param name="path">パス</param>
+void Player::ArmorChange(int one, std::string path)
+{
+	//一回だけ実行
+	if (!m_armorOne[one])
+	{
+		//メモリ解放
+		MV1DeleteModel(m_modelHandle);
+		//モデル読み込み
+		m_modelHandle = MV1LoadModel(path.c_str());
+
+		//モデルのサイズ設定
+		MV1SetScale(m_modelHandle, VGet(cModelSizeScale, cModelSizeScale, cModelSizeScale));
+
+		//待機アニメーション設定
+		m_nowAnimIdx = m_animIdx["Idle"];
+
+		ChangeAnim(m_nowAnimIdx, m_animOne[20], m_animOne);
+
+
+		m_armorOne[one] = true;
+
+	}
+	//他の配列をfalseにする
+	for (int i = 0; i < 10; i++)
+	{
+		if (i != one)
+		{
+			m_armorOne[i] = false;
+		}
+	}
 }
 
 void Player::SetModelPos()

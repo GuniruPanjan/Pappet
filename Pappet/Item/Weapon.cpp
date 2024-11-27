@@ -38,7 +38,8 @@ void Weapon::Init()
 	//•‚¢Œ•‰Šú‰»
 	if (m_fist.sw_equipment)
 	{
-
+		m_fist.sw_attack = 0.0f;
+		m_fist.sw_radius = 0.0f;
 	}
 	else if (m_black.sw_equipment)
 	{

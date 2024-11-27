@@ -236,7 +236,7 @@ void Camera::LockUpdate(Player& player, EnemyManager& enemy)
 /// </summary>
 void Camera::Draw()
 {
-	DrawFormatString(500, 100, 0xffffff, "%f %f %f", m_cameraTarget.x, m_cameraTarget.y, m_cameraTarget.z);
+	//DrawFormatString(500, 100, 0xffffff, "%f %f %f", m_cameraTarget.x, m_cameraTarget.y, m_cameraTarget.z);
 }
 
 /// <summary>

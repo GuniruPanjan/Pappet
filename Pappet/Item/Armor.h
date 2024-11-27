@@ -28,6 +28,10 @@ public:
 	bool GetCommon() { return m_common.sa_equipment; }
 	bool SetCommon(bool set) { return m_common.sa_equipment = set; }
 
+	//–hŒä—Í
+	float GetBodyDefence() { return m_body.sa_defense; }
+	float GetCommonDefence() { return m_common.sa_defense; }
+
 	//–h‹ï‚ÌƒpƒX
 	std::string GetPath() { return m_path; }
 

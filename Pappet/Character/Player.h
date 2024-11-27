@@ -54,6 +54,9 @@ public:
 	void OnCollideStay(const std::shared_ptr<Collidable>& collidable) override;
 	void OnTriggerEnter(const std::shared_ptr<Collidable>& collidable) override;
 
+	//装備関係の関数
+	void ArmorChange(int one, std::string path);
+
 	//プレイヤーが生きているかを取得
 	const bool IsGetPlayerDead() const { return m_anim.s_isDead; }
 
@@ -86,6 +89,8 @@ private:
 	std::shared_ptr<AttackObject> m_pAttack;         //攻撃判定
 	std::shared_ptr<PlayerSearchObject> m_pSearch;   //索敵判定
 
+	EnemyAttackObject* m_enemyAttackCol;    //敵の攻撃
+
 	XINPUT_STATE m_xpad;                //パッド入力
 	float m_cameraAngle;                //カメラ情報
 	float m_lockAngle;                  //ロックオンしたときのアングル
@@ -103,6 +108,7 @@ private:
 	//アニメーション用変数
 	int m_attackNumber;                 //現在の攻撃段階の代入
 	bool m_avoidanceNow;                //フレーム回避中の判断
+	bool m_shieldNow;                   //防御中の判断
 	bool m_animReverse;                 //アニメーションを逆再生させるための判定
 
 	//フレーム用変数
