@@ -240,7 +240,7 @@ void GameManager::Draw()
 	else if (m_pSetting->GetEquipment() && !m_pSetting->GetDecision())
 	{
 		m_pSetting->EquipmentDraw();
-		m_pUi->EquipmentDraw();
+		m_pUi->EquipmentDraw(*m_pWeapon, *m_pShield, *m_pArmor);
 	}
 	//アイテム画面
 	else if (m_pSetting->GetItem() && !m_pSetting->GetDecision())
@@ -325,17 +325,17 @@ void GameManager::EquipmentDraw()
 	//右装備
 	if (m_pSetting->GetSelect().right)
 	{
-		m_pUi->RightDraw();
+		m_pUi->RightDraw(*m_pWeapon);
 	}
 	//左装備
 	else if (m_pSetting->GetSelect().left)
 	{
-		m_pUi->LeftDraw();
+		m_pUi->LeftDraw(*m_pShield);
 	}
 	//防具
 	else if (m_pSetting->GetSelect().armor)
 	{
-		m_pUi->ArmorDraw();
+		m_pUi->ArmorDraw(*m_pArmor);
 	}
 }
 

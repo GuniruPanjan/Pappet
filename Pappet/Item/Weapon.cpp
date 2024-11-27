@@ -35,17 +35,13 @@ Weapon::~Weapon()
 /// </summary>
 void Weapon::Init()
 {
-	//黒い剣初期化
-	if (m_fist.sw_equipment)
-	{
-		m_fist.sw_attack = 0.0f;
-		m_fist.sw_radius = 0.0f;
-	}
-	else if (m_black.sw_equipment)
+	if (m_black.sw_equipment)
 	{
 		m_black.sw_attack = 30.0f;
 		m_black.sw_radius = 25.0f;
 		m_itemHandle = handle.GetModelHandle("Data/Weapon/Sword.mv1");
+
+		m_pos = VGet(-5.0f, 1.947f, -1.947f);
 	}
 }
 
@@ -60,6 +56,8 @@ void Weapon::Update(MATRIX mat)
 	m_frameIndex = MV1SearchFrame(m_itemHandle, "2:Sphere");
 	//フレームのポジション
 	m_framePos = MV1GetFramePosition(m_itemHandle, m_frameIndex);
+
+	m_pos = VAdd(m_framePos, m_pos);
 	//アタッチするモデルをフレームの座標を原点にするための平行移動行列を作成
 	m_transMatrix = MGetTranslate(VScale(m_pos, -1.0f));
 

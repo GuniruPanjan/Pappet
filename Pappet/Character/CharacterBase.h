@@ -46,6 +46,10 @@ protected:
 	bool UpdateAnim(int attachNo, int max, float startTime = 0.0f);
 	//アニメーションの変更
 	void ChangeAnim(int animIndex, bool& one, bool(&all)[30], float animSpeed = 0.5f, bool reverse = false, float resetTime = 0.0f);
+	//アニメーションのフレームブレンド変更
+	void FrameChangeAnim(int animIndex, bool& one, bool& two, int frame);
+	//アニメーションのフレームブレンド変更
+	void FrameEndAnim(int animIndex, bool& one, bool& two, int frame);
 	//アニメーションの未初期化
 	void NotInitAnim(bool init = false);
 
@@ -72,6 +76,7 @@ protected:
 	int m_equipAnimNo;        //一つ前のアニメーション
 	int m_nowAnimNo;          //現在のアニメーション
 	int m_prevAnimNo;         //変更前のアニメーション
+	int m_frameAnimNo;        //フレームだけを行うアニメーション
 	float m_animBlendRate;    //アニメーションの合成割合
 	bool m_animOne[ANIMATION_MAX];      //アニメーション関係をリセットするための判定
 	float m_nowFrame;         //アニメーションを進める時間

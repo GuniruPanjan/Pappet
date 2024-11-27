@@ -18,6 +18,7 @@ CharacterBase::CharacterBase(Priority priority, ObjectTag tag) :
 	m_equipAnimNo(-1),
 	m_nowAnimIdx(-1),
 	m_prevAnimNo(-1),
+	m_frameAnimNo(-1),
 	m_animBlendRate(1.0f),
 	m_nowFrame(0.0f),
 	m_animTime(0.5f),
@@ -151,6 +152,43 @@ void CharacterBase::ChangeAnim(int animIndex, bool& one, bool (&all)[30], float 
 		one = true;
 	}
 	
+}
+
+void CharacterBase::FrameChangeAnim(int animIndex, bool& one, bool& two, int frame)
+{
+	//一回だけ実行
+	if (one == false)
+	{
+		m_frameAnimNo = MV1AttachAnim(m_modelHandle, animIndex);
+		
+		one = true;
+	}
+
+	//フレームだけのアニメーション
+	MV1SetAttachAnimBlendRate(m_modelHandle, m_frameAnimNo, 0.0f);
+	//フレームだけアニメーション
+	MV1SetAttachAnimBlendRateToFrame(m_modelHandle, m_nowAnimNo, frame, 0.0f);
+	MV1SetAttachAnimBlendRateToFrame(m_modelHandle, m_frameAnimNo, frame, 1.0f);
+
+	//進めた時間に設定
+	MV1SetAttachAnimTime(m_modelHandle, m_frameAnimNo, m_nowFrame);
+
+	two = false;
+}
+
+void CharacterBase::FrameEndAnim(int animIndex, bool& one, bool& two, int frame)
+{
+	if (one || two)
+	{
+		MV1DetachAnim(m_modelHandle, animIndex);
+
+		//フレームだけアニメーション
+		MV1SetAttachAnimBlendRateToFrame(m_modelHandle, m_nowAnimNo, frame, 1.0f);
+		MV1SetAttachAnimBlendRateToFrame(m_modelHandle, m_frameAnimNo, frame, 0.0f);
+
+		one = false;
+		two = false;
+	}
 }
 
 /// <summary>

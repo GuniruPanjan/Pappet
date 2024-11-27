@@ -1,4 +1,8 @@
 #include "UI.h"
+#include "Item/Weapon.h"
+#include "Item/Shield.h"
+#include "Item/Armor.h"
+
 
 /// <summary>
 /// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
@@ -28,22 +32,48 @@ void UI::Init()
 /// ‘•”õ‚Ì•`‰æˆ—
 /// </summary>
 /// <param name="player"></param>
-void UI::EquipmentDraw()
+void UI::EquipmentDraw(Weapon& weapon, Shield& shield, Armor& armor)
 {
-	//Œ
-	DrawGraph(110, 310, m_fist, true);
-
-	//Œ
-	DrawGraph(310, 310, m_fist, true);
-
-	//—‡‘Ì
-	DrawGraph(565, 320, m_body, true);
+	//‰E•Ší
+	if (weapon.GetFist())
+	{
+		//Œ
+		DrawGraph(110, 310, m_fist, true);
+	}
+	else if (weapon.GetBlack())
+	{
+		//•‚¢Œ•
+		DrawGraph(140, 310, m_blackSword, true);
+	}
+	//¶•Ší
+	if (shield.GetFist())
+	{
+		//Œ
+		DrawGraph(310, 310, m_fist, true);
+	}
+	else if (shield.GetUgly())
+	{
+		//X‚¢‚
+		DrawGraph(335, 330, m_uglyShield, true);
+	}
+	//–h‹ï
+	if (armor.GetBody())
+	{
+		//—‡‘Ì
+		DrawGraph(565, 320, m_body, true);
+	}
+	else if (armor.GetCommon())
+	{
+		//•½–}‚È–h‹ï
+		DrawGraph(530, 320, m_commonArmor, true);
+	}
+	
 }
 
 /// <summary>
 /// ‰E•Ší•`‰æˆ—
 /// </summary>
-void UI::RightDraw()
+void UI::RightDraw(Weapon& weapon)
 {
 	//Œ
 	DrawGraph(70, 56, m_fist, true);
@@ -54,7 +84,7 @@ void UI::RightDraw()
 /// <summary>
 /// ¶•Ší•`‰æˆ—
 /// </summary>
-void UI::LeftDraw()
+void UI::LeftDraw(Shield& shield)
 {
 	//Œ
 	DrawGraph(70, 56, m_fist, true);
@@ -65,7 +95,7 @@ void UI::LeftDraw()
 /// <summary>
 /// –h‹ï•`‰æˆ—
 /// </summary>
-void UI::ArmorDraw()
+void UI::ArmorDraw(Armor& armor)
 {
 	//—‡
 	DrawGraph(120, 66, m_body, true);

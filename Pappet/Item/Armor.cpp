@@ -13,13 +13,8 @@ Armor::~Armor()
 /// </summary>
 void Armor::Init()
 {
-	//—‡‘Ì
-	if (m_body.sa_equipment)
-	{
-		m_body.sa_defense = 0.0f;
-	}
 	//•½–}‚È–h‹ï
-	else if (m_common.sa_equipment)
+	if (m_common.sa_equipment)
 	{
 		m_common.sa_defense = 30.0f;
 

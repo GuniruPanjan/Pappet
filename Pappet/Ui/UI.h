@@ -6,6 +6,9 @@ class Enemy;
 class Equipment;
 class Map;
 class ItemManager;
+class Weapon;
+class Shield;
+class Armor;
 
 /// <summary>
 /// UIŠÖŒW‚ÌƒNƒ‰ƒX
@@ -43,22 +46,22 @@ public:
 	/// <summary>
 	/// ‘•”õ‚Ì•`‰æˆ—
 	/// </summary>
-	void EquipmentDraw();
+	void EquipmentDraw(Weapon& weapon, Shield& shield, Armor& armor);
 
 	/// <summary>
 	/// ‰E•Ší•`‰æˆ—
 	/// </summary>
-	void RightDraw();
+	void RightDraw(Weapon& weapon);
 
 	/// <summary>
 	/// ¶•Ší•`‰æˆ—
 	/// </summary>
-	void LeftDraw();
+	void LeftDraw(Shield& shield);
 
 	/// <summary>
 	/// –h‹ï•`‰æˆ—
 	/// </summary>
-	void ArmorDraw();
+	void ArmorDraw(Armor& armor);
 
 	/// <summary>
 	/// €‚ñ‚¾‚Æ‚«‚Ì•`‰æ

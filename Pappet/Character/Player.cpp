@@ -56,6 +56,12 @@ namespace
 	//シングルトン
 	auto& handle = HandleManager::GetInstance();
 	auto& effect = EffectManager::GetInstance();
+
+
+	int cAnimIdx;
+
+	bool cOne = false;
+	bool cTwo = false;
 }
 
 Player::Player() :
@@ -471,7 +477,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 	//装備でのステータス上昇をプラスする
 	if (weapon.GetFist())
 	{
-		cEquipmentAttack = weapon.GetFistAttack();
+		cEquipmentAttack = 0.0f;
 	}
 	else if (weapon.GetBlack())
 	{
@@ -480,7 +486,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 
 	if (armor.GetBody())
 	{
-		m_status.s_defense = armor.GetBodyDefence();
+		m_status.s_defense = 0.0f;
 	}
 	else if (armor.GetCommon())
 	{
@@ -810,6 +816,9 @@ void Player::Action()
 			}
 
 			m_shieldNow = false;
+
+			FrameEndAnim(cAnimIdx, cOne, cTwo, m_moveAnimShieldFrameIndex);
+			
 		}
 	}
 	else
@@ -817,6 +826,9 @@ void Player::Action()
 		m_animChange.sa_enterShield = false;
 		m_animChange.sa_shieldIdle = false;
 		m_shieldNow = false;
+
+		FrameEndAnim(cAnimIdx, cOne, cTwo, m_moveAnimShieldFrameIndex);
+
 	}
 
 	//回復
@@ -1094,7 +1106,7 @@ void Player::WeaponAnimation(Shield& shield)
 					//キャラが動いているとき
 					else
 					{
-						//デタッチされているためフレームブレンドができない
+						
 					}
 					
 				}
@@ -1104,6 +1116,7 @@ void Player::WeaponAnimation(Shield& shield)
 					//キャラが動いていないとき
 					if (!m_anim.s_moveflag)
 					{
+						FrameEndAnim(cAnimIdx, cOne, cTwo, m_moveAnimShieldFrameIndex);
 						m_nowAnimIdx = m_animIdx["ShieldIdle"];
 						ChangeAnim(m_nowAnimIdx, m_animOne[17], m_animOne);
 						NotInitAnim(false);
@@ -1111,8 +1124,9 @@ void Player::WeaponAnimation(Shield& shield)
 					//キャラが動いているとき
 					else
 					{
-						//デタッチされているためフレームブレンドができない
-
+						
+						cAnimIdx = m_animIdx["ShieldTransition"];
+						FrameChangeAnim(cAnimIdx, cOne, cTwo, m_moveAnimShieldFrameIndex);
 					}
 					
 				}
@@ -1274,6 +1288,8 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 /// <param name="path">パス</param>
 void Player::ArmorChange(int one, std::string path)
 {
+	//防具を変えた時にアニメーションのバグが発生する
+
 	//一回だけ実行
 	if (!m_armorOne[one])
 	{

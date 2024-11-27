@@ -34,16 +34,13 @@ Shield::~Shield()
 /// </summary>
 void Shield::Init()
 {
-	//‚‚Ì‰Šú‰»
-	if (m_fist.ss_equipment)
-	{
-
-	}
-	else if (m_ugly.ss_equipment)
+	if (m_ugly.ss_equipment)
 	{
 		m_itemHandle = handle.GetModelHandle("Data/Weapon/Shield.mv1");
 		m_ugly.ss_cut = 90.0f;
 		m_ugly.ss_strength = 20.0f;
+
+		m_pos = VGet(0.0f, 0.0f, 7.787f);
 	}
 	
 }
