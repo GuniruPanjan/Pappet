@@ -27,7 +27,7 @@ public:
 	//終了
 	virtual void Finalize(std::shared_ptr<MyLibrary::Physics> physics);
 	//更新
-	virtual void Update(MyLibrary::LibVec3 playerPos, bool isChange) {};
+	virtual void Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChange) {};
 	//描画
 	virtual void Draw() {};
 	//終了処理
@@ -59,6 +59,10 @@ public:
 	const bool GetIsExist() const { return m_isExist; }
 	//HPを表示するための当たり判定を取得
 	const float GetRadius() const;
+	//プレイヤーに攻撃ができるか判定を取得
+	const bool GetPlayerHit() const { return m_isPlayerHit; }
+	//与えるダメージ取得
+	const float GetAttack() const { return m_status.s_attack; }
 
 	//レイキャストをするためにモデルハンドルを取得
 	const int GetModelHandle() const { return m_modelHandle; }
@@ -96,7 +100,9 @@ protected:
 	//索敵の更新処理
 	void TriggerUpdate();
 	//プレイヤーとの距離を測る処理と盾との距離を測る処理
-	void DistanceUpdate(MyLibrary::LibVec3 playerPos);
+	void DistanceUpdate(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos);
+	//プレイヤーに攻撃ができるか盾に攻撃ができるか
+	void AttackDistance();
 	//方向を向く処理
 	void AngleUpdate(MyLibrary::LibVec3 playerPos);
 	//移動をする処理
@@ -136,6 +142,7 @@ protected:
 	float m_moveTurning;         //時計周りに旋回する法線ベクトル
 	float m_moveReverseTurning;  //反時計周りに旋回する法線ベクトル
 	float m_difPSize;            //プレイヤーとの距離のサイズを入れる
+	float m_difSSize;            //盾との距離のサイズを入れる
 	float m_correctionAngle;     //補正を行うためのアングル
 
 	bool m_isDroped;             //コアをドロップしたかどうか
@@ -144,6 +151,7 @@ protected:
 	bool m_isBossDiscovery;      //ボス戦に入ったかどうか
 	bool m_isTarget;             //プレイヤーにターゲットされるかどうか
 	bool m_isBossDead;           //ボスが死んだ判定
+	bool m_isPlayerHit;          //プレイヤーに攻撃ができるか
 	bool m_isStayTarget = false; //プレイヤーの索敵に当たってるかどうか
 	bool m_isExitTarget = false; //プレイヤーの索敵から外れたかどうか
 	bool m_isEnterHit = false;   //プレイヤーの攻撃が当たっているかどうか
@@ -152,6 +160,7 @@ protected:
 	MyLibrary::LibVec3 m_centerPos;     //中心座標
 	VECTOR m_move;
 	VECTOR m_difPlayer;          //プレイヤーとの距離
+	VECTOR m_difShield;          //盾との距離
 
 	int m_I;
 

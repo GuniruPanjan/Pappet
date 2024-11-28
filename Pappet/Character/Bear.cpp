@@ -145,7 +145,7 @@ void Bear::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 /// </summary>
 /// <param name="playerPos"></param>
 /// <param name="isChase"></param>
-void Bear::Update(MyLibrary::LibVec3 playerPos, bool isChase)
+void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChase)
 {
 	//アニメーションの更新
 	if (!cDead)
@@ -160,7 +160,8 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, bool isChase)
 
 	UpdateAnimationBlend();
 
-	DistanceUpdate(playerPos);
+	DistanceUpdate(playerPos, shieldPos);
+	AttackDistance();
 
 	//移動処理
 	MoveUpdate();

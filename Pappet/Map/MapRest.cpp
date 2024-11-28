@@ -99,7 +99,7 @@ void MapRest::Init(std::shared_ptr<MyLibrary::Physics> physics)
 /// XVˆ—
 /// </summary>
 /// <returns></returns>
-std::shared_ptr<MapBase> MapRest::Update(bool warp, bool enter)
+std::shared_ptr<MapBase> MapRest::Update(bool warp, bool enter, bool Dead)
 {
 	if (warp)
 	{

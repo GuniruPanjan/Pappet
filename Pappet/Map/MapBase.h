@@ -23,7 +23,7 @@ public:
 	//終了
 	virtual void Finalize(std::shared_ptr<MyLibrary::Physics> physics);
 	//更新
-	virtual std::shared_ptr<MapBase> Update(bool warp, bool enter) = 0;
+	virtual std::shared_ptr<MapBase> Update(bool warp, bool enter, bool Dead) = 0;
 	//ワープ更新
 	virtual std::shared_ptr<MapBase> WarpUpdate(bool warp) = 0;
 	//当たったかの判定更新

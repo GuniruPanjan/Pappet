@@ -8,6 +8,7 @@ enum class ObjectTag
 	Attack,               //攻撃
 	EnemyAttack,          //プレイヤー以外の攻撃
 	Rect,                 //矩形
+	Shield,               //盾の当たり判定
 	Search,               //索敵
 	EnemySearch,          //プレイヤー以外の索敵範囲
 	Item,                 //アイテムの所得範囲

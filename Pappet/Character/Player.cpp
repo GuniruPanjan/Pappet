@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Manager/EffectManager.h"
 #include "Manager/HandleManager.h"
+#include "Manager/EnemyManager.h"
 #include "External/CsvLoad.h"
 #include "Item/Weapon.h"
 #include "Item/Shield.h"
@@ -44,12 +45,20 @@ namespace
 	float cMove = 0.0f;
 	//拳の攻撃範囲
 	constexpr float cFistAttackRadius = 18.0f;
+	//盾の幅
+	constexpr float cShieldWidth = 20.0f;
+	//盾の横
+	constexpr float cShieldHight = 60.0f;
+	//盾の奥行
+	constexpr float cShieldDepht = 10.0f;
 	//現在のアタックのナンバーを入れる
 	int cNowAttackNumber = 0;
 	//攻撃の終了判定
 	int cIsEndAttack = 0;
 	//装備の攻撃力所得
 	float cEquipmentAttack = 0.0f;
+	//敵からのダメージ取得
+	float cDamage = 0.0f;
 	//人形のモデルパス
 	constexpr const char* cPath = "Data/Player/PlayerModelPuppet.mv1";
 
@@ -85,11 +94,14 @@ Player::Player() :
 	m_lockAngle(0.0f),
 	m_avoidanceNow(false),
 	m_shieldNow(false),
+	m_shieldOne(false),
 	m_animReverse(false),
 	m_moveWeaponFrameMatrix(),
 	m_moveShieldFrameMatrix(),
 	m_rollMove(VGet(0.0f,0.0f,0.0f)),
-	m_moveVector(VGet(0.0f,0.0f,0.0f))
+	m_moveVector(VGet(0.0f,0.0f,0.0f)),
+	m_shieldPos(),
+	m_shieldSize()
 {
 
 	//カプセル型
@@ -118,6 +130,7 @@ Player::Player() :
 	m_animChange.sa_bossEnter = false;
 	m_animChange.sa_shieldIdle = false;
 	m_animChange.sa_enterShield = false;
+	m_animChange.sa_imapact = false;
 	
 	//エフェクト読み込み
 	effect.EffectLoad("Rest", "Data/Effect/Benediction.efkefc", 210, 10.0f);
@@ -164,7 +177,7 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, S
 	rigidbody.Init(false);
 	//rigidbody.SetPos(MyLibrary::LibVec3(485.0f, 12.0f, -800.0f));
 	// ↓色々試すための初期化位置
-	rigidbody.SetPos(MyLibrary::LibVec3(20.0f, 12.0f, 0.0f));
+	rigidbody.SetPos(MyLibrary::LibVec3(40.0f, 12.0f, 0.0f));
 	rigidbody.SetNextPos(rigidbody.GetPos());
 	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
 	m_collisionPos = rigidbody.GetPos();
@@ -185,6 +198,10 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, S
 
 	m_pSearch = std::make_shared<PlayerSearchObject>(cSearchRadius);
 	m_pSearch->Init(m_pPhysics, rigidbody.GetPos());
+
+	m_shieldSize = MyLibrary::LibVec3::Size(cShieldWidth, cShieldHight, cShieldDepht);
+
+	m_pShield = std::make_shared<ShieldObject>(cShieldWidth, cShieldHight, cShieldDepht);
 
 	//待機アニメーション設定
 	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
@@ -235,7 +252,7 @@ void Player::Finalize()
 	Collidable::Finalize(m_pPhysics);
 }
 
-void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
+void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, float damage)
 {
 
 	//アニメーションで移動しているフレームの番号を検索する
@@ -291,7 +308,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 	float SetAngleX = 0.0f;
 	float SetAngleY = 0.0f;
 
-	if (!m_anim.s_isDead && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery && !m_anim.s_hit && !m_animChange.sa_bossEnter)
+	if (!m_anim.s_isDead && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery && !m_anim.s_hit && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact)
 	{
 		GetJoypadAnalogInput(&analogX, &analogY, DX_INPUT_PAD1);
 
@@ -422,7 +439,8 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 		}
 	}
 
-	
+	//敵の攻撃力取得
+	cDamage = damage;
 
 	//プレイヤーが生きている時だけ
 	if (!m_anim.s_isDead)
@@ -431,7 +449,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 		if (!m_menuOpen)
 		{
 			//アクションをできなくする
-			if (!m_animChange.sa_avoidance && !m_anim.s_hit && !m_animChange.sa_recovery && !m_animChange.sa_bossEnter)
+			if (!m_animChange.sa_avoidance && !m_anim.s_hit && !m_animChange.sa_recovery && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact)
 			{
 				Action();
 			}
@@ -492,13 +510,65 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 	{
 		m_status.s_defense = armor.GetCommonDefence();
 	}
-	
 
-	//判定の更新
+	//判定のポジション更新
 	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
 	MyLibrary::LibVec3 attackPos = MyLibrary::LibVec3(rigidbody.GetPos().x + sinf(m_angle) * -25.0f, rigidbody.GetPos().y + 15.0f, rigidbody.GetPos().z - cosf(m_angle) * 25.0f);
+	m_shieldPos = MyLibrary::LibVec3(rigidbody.GetPos().x + sinf(m_angle) * -15.0f, rigidbody.GetPos().y + 25.0f, rigidbody.GetPos().z - cosf(m_angle) * 15.0f);
+
+	//sinでX軸のwidthのサイズを出す
+	if (sinf(m_angle) > 0)
+	{
+		m_shieldSize.width = 30.0f + sinf(m_angle) * -15.0f;
+	}
+	else if (sinf(m_angle) < 0)
+	{
+		m_shieldSize.width = 30.0f - sinf(m_angle) * -15.0f;
+	}
+
+	//cosでZ軸のdepthサイズを出す
+	if (cosf(m_angle) > 0)
+	{
+		m_shieldSize.depth = 30.0f + cosf(m_angle) * -15.0f;
+	}
+	else if (cosf(m_angle) < 0)
+	{
+		m_shieldSize.depth = 30.0f - cosf(m_angle) * -15.0f;
+	}
+	
+	//盾の判定
+	if (m_shieldNow)
+	{
+		if (!m_shieldOne)
+		{
+			m_pShield->Init(m_pPhysics, m_shieldPos);
+
+			m_shieldOne = true;
+		}
+
+		//盾受けした時
+		if (m_pShield->GetIsStay())
+		{
+			m_animChange.sa_imapact = true;
+		}
+	}
+	else
+	{
+		m_pShield->CollisionEnd();
+		m_shieldOne = false;
+	}
+
+	//盾受け終了
+	if (m_animChange.sa_imapact && m_isAnimationFinish)
+	{
+		m_animChange.sa_imapact = false;
+	}
+
+
+	//判定の更新
 	m_pSearch->Update(centerPos);
 	m_pAttack->Update(attackPos);
+	m_pShield->Update(m_shieldPos, m_shieldSize);
 
 	//怯み中
 	if (m_anim.s_hit)
@@ -640,6 +710,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor)
 		//攻撃終了
 		cIsEndAttack = 0;
 	}
+
 
 	//回復する
 	if (!m_isAnimationFinish && m_animChange.sa_recovery)
@@ -906,7 +977,7 @@ void Player::NotWeaponAnimation()
 {
 	//攻撃が当たってない時
 	//ボス部屋に入っていない時
-	if (!m_anim.s_hit && !m_animChange.sa_bossEnter)
+	if (!m_anim.s_hit && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact)
 	{
 		//走り
 		if (m_animChange.sa_dashMove && m_anim.s_moveflag)
@@ -970,7 +1041,7 @@ void Player::AllAnimation()
 	{
 		//攻撃が当たった時
 		//ボス部屋に入った時
-		if (m_anim.s_hit && !m_animChange.sa_bossEnter)
+		if (m_anim.s_hit && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact)
 		{
 			m_nowAnimIdx = m_animIdx["Hit"];
 			ChangeAnim(m_nowAnimIdx, m_animOne[5], m_animOne);
@@ -979,7 +1050,7 @@ void Player::AllAnimation()
 		}
 		//攻撃が当たってないとき
 		//ボス部屋に入った時
-		else if (!m_anim.s_hit && !m_animChange.sa_bossEnter)
+		else if (!m_anim.s_hit && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact)
 		{
 			//動いてない時
 			if (!m_anim.s_moveflag && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery && 
@@ -1029,7 +1100,7 @@ void Player::AllAnimation()
 			}
 		}
 		//ボス部屋入り口に入るとき
-		else if (m_animChange.sa_bossEnter && !m_anim.s_hit)
+		else if (m_animChange.sa_bossEnter && !m_anim.s_hit && !m_animChange.sa_imapact)
 		{
 			m_nowAnimIdx = m_animIdx["BossEnter"];
 			ChangeAnim(m_nowAnimIdx, m_animOne[12], m_animOne);
@@ -1044,19 +1115,26 @@ void Player::AllAnimation()
 void Player::WeaponAnimation(Shield& shield)
 {
 	//とりあえず
-	m_animChange.sa_imapact = false;
+	//m_animChange.sa_imapact = false;
 
 	//プレイヤーが生きている時だけ
 	if (!m_anim.s_isDead)
 	{
+		//盾受けしたとき
+		if (m_animChange.sa_imapact)
+		{
+			m_nowAnimIdx = m_animIdx["ShieldImpact"];
+			ChangeAnim(m_nowAnimIdx, m_animOne[13], m_animOne);
+			NotInitAnim(true);
+		}
 		//攻撃が当たってない時盾受けしていないとき
-		if (!m_anim.s_hit && !m_animChange.sa_imapact)
+		else if (!m_anim.s_hit && !m_animChange.sa_imapact)
 		{
 			//走り
 			if (m_animChange.sa_dashMove && m_anim.s_moveflag)
 			{
 				m_nowAnimIdx = m_animIdx["ShieldRun"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[13], m_animOne);
+				ChangeAnim(m_nowAnimIdx, m_animOne[14], m_animOne);
 				NotInitAnim(false);
 			}
 			//歩き
@@ -1066,7 +1144,7 @@ void Player::WeaponAnimation(Shield& shield)
 				if (!m_lockonTarget)
 				{
 					m_nowAnimIdx = m_animIdx["ShieldWalk"];
-					ChangeAnim(m_nowAnimIdx, m_animOne[14], m_animOne);
+					ChangeAnim(m_nowAnimIdx, m_animOne[15], m_animOne);
 					NotInitAnim(false);
 				}
 				//ターゲットしているとき
@@ -1076,7 +1154,7 @@ void Player::WeaponAnimation(Shield& shield)
 					if (cAnX < -500 || cAnX > 500)
 					{
 						m_nowAnimIdx = m_animIdx["ShieldSideWalk"];
-						ChangeAnim(m_nowAnimIdx, m_animOne[15], m_animOne, cAnimWalkTime, m_animReverse);
+						ChangeAnim(m_nowAnimIdx, m_animOne[16], m_animOne, cAnimWalkTime, m_animReverse);
 						NotInitAnim(false);
 
 					}
@@ -1084,7 +1162,7 @@ void Player::WeaponAnimation(Shield& shield)
 					else if (cAnX < 500 && cAnX > -500)
 					{
 						m_nowAnimIdx = m_animIdx["ShieldWalk"];
-						ChangeAnim(m_nowAnimIdx, m_animOne[14], m_animOne, cAnimWalkTime, m_animReverse, cAnimWalkReverseTimeInit);
+						ChangeAnim(m_nowAnimIdx, m_animOne[15], m_animOne, cAnimWalkTime, m_animReverse, cAnimWalkReverseTimeInit);
 						NotInitAnim(false);
 
 					}
@@ -1100,7 +1178,7 @@ void Player::WeaponAnimation(Shield& shield)
 					if (!m_anim.s_moveflag)
 					{
 						m_nowAnimIdx = m_animIdx["ShieldStart"];
-						ChangeAnim(m_nowAnimIdx, m_animOne[16], m_animOne, 1.0f);
+						ChangeAnim(m_nowAnimIdx, m_animOne[17], m_animOne, 1.0f);
 						NotInitAnim(true);
 					}
 					//キャラが動いているとき
@@ -1118,7 +1196,7 @@ void Player::WeaponAnimation(Shield& shield)
 					{
 						FrameEndAnim(cAnimIdx, cOne, cTwo, m_moveAnimShieldFrameIndex);
 						m_nowAnimIdx = m_animIdx["ShieldIdle"];
-						ChangeAnim(m_nowAnimIdx, m_animOne[17], m_animOne);
+						ChangeAnim(m_nowAnimIdx, m_animOne[18], m_animOne);
 						NotInitAnim(false);
 					}
 					//キャラが動いているとき
@@ -1145,7 +1223,10 @@ void Player::Draw(Armor& armor)
 	m_collisionPos = rigidbody.GetPos();
 
 #if true
-	DrawFormatString(200, 100, 0xffffff, "HP : %f", m_status.s_hp);
+	DrawFormatString(200, 100, 0xffffff, "HP : %f LevelHp : %d", m_status.s_hp, m_levelStatus.sl_hp);
+	DrawFormatString(200, 150, 0xffffff, "Stamina : %f LevelStamina : %d", m_status.s_stamina, m_levelStatus.sl_stamina);
+	DrawFormatString(200, 200, 0xffffff, "Muscle : %f LevelMuscle : %d", m_status.s_muscle, m_levelStatus.sl_muscle);
+	DrawFormatString(200, 250, 0xffffff, "Skill : %f LevelSkill : %d", m_status.s_skill, m_levelStatus.sl_skill);
 #endif
 #if false
 	DrawFormatString(0, 400, 0xffffff, "m_nowAnim : %d", m_nowAnimIdx);
@@ -1245,10 +1326,10 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 		if (m_status.s_hp > 0.0f)
 		{
 			//回避中とヒット中とボス部屋に入っている時は攻撃が当たらない
-			if (!m_avoidanceNow && !m_anim.s_hit && !m_animChange.sa_bossEnter)
+			if (!m_avoidanceNow && !m_anim.s_hit && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact)
 			{
 				//おそらく敵が配列のため攻撃判定を入れられてないやつらの攻撃力を取得し、例外が出ている
-				//m_status.s_hp -= m_enemyAttackCol->GetAttack() - m_status.s_defense;
+				m_status.s_hp -= cDamage - m_status.s_defense;
 
 				m_anim.s_hit = true;
 			}

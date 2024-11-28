@@ -95,6 +95,7 @@ void MyLibrary::Physics::Update()
 	for (auto& item : m_collidables)
 	{
 		auto pos = item->rigidbody.GetPos();
+		auto size = item->rigidbody.GetSize();
 		auto velocity = item->rigidbody.GetVelocity();
 
 		//重力を利用する設定なら、重力を追加
@@ -140,7 +141,7 @@ void MyLibrary::Physics::Update()
 			else if (kind == CollidableData::Kind::Rect)
 			{
 				auto rectData = dynamic_cast<MyLibrary::CollidableDataRect*> (collider.get());
-				auto size = rectData->m_size;
+				//auto size = rectData->m_size;
 				MyLibrary::DebugDraw::AddDrawRect(pos, size, kBeforeColor);
 				MyLibrary::DebugDraw::AddDrawRect(pos, size, kBeforePlanColor);
 			}
@@ -438,9 +439,13 @@ bool MyLibrary::Physics::IsCollide(const Rigidbody& rigidA, const Rigidbody& rig
 		vec.y = fabs(vec.y);
 		vec.z = fabs(vec.z);
 
-		float trw = colB->m_radius + (colA->m_size.width * 0.5f);
-		float trh = colB->m_radius + (colA->m_size.height * 0.5f);
-		float trd = colB->m_radius + (colA->m_size.depth * 0.5f);
+		//float trw = colB->m_radius + (colA->m_size.width * 0.5f);
+		//float trh = colB->m_radius + (colA->m_size.height * 0.5f);
+		//float trd = colB->m_radius + (colA->m_size.depth * 0.5f);
+
+		float trw = colB->m_radius + (rigidA.GetSize().width * 0.5f);
+		float trh = colB->m_radius + (rigidA.GetSize().height * 0.5f);
+		float trd = colB->m_radius + (rigidA.GetSize().depth * 0.5f);
 
 		//各成分の判定
 		bool isHitX = vec.x < trw;
@@ -464,9 +469,13 @@ bool MyLibrary::Physics::IsCollide(const Rigidbody& rigidA, const Rigidbody& rig
 		vec.y = fabs(vec.y);
 		vec.z = fabs(vec.z);
 
-		float trw = colB->m_radius + (colA->m_size.width * 0.5f);
-		float trh = colB->m_radius + (colA->m_size.height * 0.5f);
-		float trd = colB->m_radius + (colA->m_size.depth * 0.5f);
+		//float trw = colB->m_radius + (colA->m_size.width * 0.5f);
+		//float trh = colB->m_radius + (colA->m_size.height * 0.5f);
+		//float trd = colB->m_radius + (colA->m_size.depth * 0.5f);
+
+		float trw = colB->m_radius + (rigidA.GetSize().width * 0.5f);
+		float trh = colB->m_radius + (rigidA.GetSize().height * 0.5f);
+		float trd = colB->m_radius + (rigidA.GetSize().depth * 0.5f);
 
 		//各成分の判定
 		bool isHitX = vec.x < trw;

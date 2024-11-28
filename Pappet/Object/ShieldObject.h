@@ -1,12 +1,12 @@
 #pragma once
 #include "ObjectBase.h"
-class RectObjectTrigger : public ObjectBase
+class ShieldObject : public ObjectBase
 {
 public:
-	RectObjectTrigger(float width, float hight, float depth);
-	~RectObjectTrigger();
+	ShieldObject(float width, float hight, float depth);
+	~ShieldObject();
 
-	void Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnter = false);
+	void Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnemy = false);
 	void Update(MyLibrary::LibVec3 pos, MyLibrary::LibVec3::Size size);
 
 	void OnCollideEnter(const std::shared_ptr<Collidable>& collidable) {};
@@ -28,7 +28,7 @@ public:
 private:
 	std::shared_ptr<MyLibrary::Physics> m_pPhysics;
 
-	bool m_isEnter = false;
+	bool m_isEnemy = false;
 	bool m_isTriggerEnter = false;
 	bool m_isTriggerStay = false;
 	bool m_isTriggerExit = false;

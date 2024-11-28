@@ -4,6 +4,7 @@
 class Weapon;
 class Shield;
 class Armor;
+class EnemyManager;
 
 class Player : public CharacterBase
 {
@@ -40,7 +41,7 @@ public:
 	void Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, Shield& shield, Armor& armor);
 	void GameInit(std::shared_ptr<MyLibrary::Physics> physics);
 	void Finalize();
-	void Update(Weapon& weapon, Shield& shield, Armor& armor);
+	void Update(Weapon& weapon, Shield& shield, Armor& armor, float damage);
 	void Action();
 	void WarpMap();
 	void NotWeaponAnimation();
@@ -82,14 +83,19 @@ public:
 	bool GetBossStart() { return m_animChange.sa_bossEnter; }
 
 	const MyLibrary::LibVec3 GetPos() const { return rigidbody.GetPos(); }
+	const MyLibrary::LibVec3 GetShieldPos() const { return m_shieldPos; }
 
 private:
 	void SetModelPos();
 private:
 	std::shared_ptr<AttackObject> m_pAttack;         //攻撃判定
 	std::shared_ptr<PlayerSearchObject> m_pSearch;   //索敵判定
+	std::shared_ptr<ShieldObject> m_pShield;    //盾の判定
 
 	EnemyAttackObject* m_enemyAttackCol;    //敵の攻撃
+
+	MyLibrary::LibVec3 m_shieldPos;
+	MyLibrary::LibVec3::Size m_shieldSize;
 
 	XINPUT_STATE m_xpad;                //パッド入力
 	float m_cameraAngle;                //カメラ情報
@@ -103,6 +109,7 @@ private:
 	bool m_lockonTarget;                //ターゲット判定
 	bool m_warp;                        //マップをワープするための判定
 	bool m_bossStart;                   //ボス部屋に入るための判定
+	bool m_shieldOne;                   //盾の判定初期化
 	bool m_armorOne[10];                //防具の初期化(適当に作っておく)
 
 	//アニメーション用変数

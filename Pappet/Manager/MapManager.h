@@ -19,7 +19,7 @@ public:
 	//初期化処理
 	void Init(std::shared_ptr<MyLibrary::Physics> physics);
 	//更新処理
-	void Update(std::shared_ptr<MyLibrary::Physics> physics, bool warp, bool enter);
+	void Update(std::shared_ptr<MyLibrary::Physics> physics, bool warp, bool enter, bool Dead);
 	//ワープの更新処理
 	void WarpUpdate(std::shared_ptr<MyLibrary::Physics> physics, bool warp);
 	//当たったかの判定処理

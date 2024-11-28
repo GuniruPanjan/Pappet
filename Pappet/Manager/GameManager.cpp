@@ -83,7 +83,7 @@ void GameManager::Update()
 	{
 		m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
-		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor);
+		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, m_pEnemy->GetEnemyDamage());
 		//ロックオンしてない時
 		if (!m_pPlayer->GetLock())
 		{
@@ -95,7 +95,7 @@ void GameManager::Update()
 			m_pCamera->LockUpdate(*m_pPlayer, *m_pEnemy);
 		}
 
-		m_pEnemy->Update(m_pPhysics, this, m_pPlayer->GetPos(), m_pCamera->GetDirection(), !m_pPlayer->IsGetPlayerDead(), m_init);
+		m_pEnemy->Update(m_pPhysics, this, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->GetShieldPos(), !m_pPlayer->IsGetPlayerDead(), m_init);
 
 		m_pMap->JudgeUpdate();
 
@@ -119,7 +119,7 @@ void GameManager::Update()
 			}
 		}
 
-		m_pMap->Update(m_pPhysics, m_pPlayer->GetWarp(), m_pPlayer->GetBossStart());
+		m_pMap->Update(m_pPhysics, m_pPlayer->GetWarp(), m_pPlayer->GetBossStart(), m_pEnemy->GetBossDead());
 
 		//メニューを開く
 		if (m_pPlayer->GetMenu() && !m_pSetting->GetEquipment() && !m_pSetting->GetItem())

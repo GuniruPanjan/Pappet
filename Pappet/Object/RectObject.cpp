@@ -26,9 +26,10 @@ void RectObject::Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::Li
 	rigidbody.SetPos(pos);
 }
 
-void RectObject::Update(MyLibrary::LibVec3 pos)
+void RectObject::Update(MyLibrary::LibVec3 pos, MyLibrary::LibVec3::Size size)
 {
 	rigidbody.SetPos(pos);
+	rigidbody.SetSize(size);
 }
 
 void RectObject::Finalize(const std::shared_ptr<MyLibrary::Physics> physics)

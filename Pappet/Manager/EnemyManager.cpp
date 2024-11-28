@@ -15,7 +15,8 @@ namespace
 EnemyManager::EnemyManager() :
 	m_stageName(""),
 	m_frontEnemyHp(0),
-	m_frontEnemyMaxHp(0)
+	m_frontEnemyMaxHp(0),
+	m_damage(0.0f)
 {
 }
 
@@ -119,7 +120,7 @@ void EnemyManager::GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameMan
 /// <param name="playerPos">プレイヤーポジション</param>
 /// <param name="playerDir">プレイヤーの方向</param>
 /// <param name="isPlayerChase">プレイヤーを発見したかどうか</param>
-void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, bool isPlayerChase, bool init)
+void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, MyLibrary::LibVec3 shieldPos, bool isPlayerChase, bool init)
 {
 	m_enemyPos.clear();
 	m_enemyTarget.clear();
@@ -156,11 +157,12 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 		for (auto& enemy : m_pEnemys)
 		{
 			//更新
-			enemy->Update(playerPos, isPlayerChase);
+			enemy->Update(playerPos, shieldPos, isPlayerChase);
 
 			m_enemyPos.emplace_back(enemy->GetPos());
 			m_enemyTarget.emplace_back(enemy->GetTarget());
 
+			m_damage = enemy->GetAttack();
 		}
 	}
 	

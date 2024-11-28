@@ -1,8 +1,8 @@
-#include "RectObjectTrigger.h"
+#include "ShieldObject.h"
 
-RectObjectTrigger::RectObjectTrigger(float width, float hight, float depth) :
-    ObjectBase(Priority::Static, ObjectTag::Rect),
-    m_isEnter(false),
+ShieldObject::ShieldObject(float width, float hight, float depth) :
+    ObjectBase(Priority::Static, ObjectTag::Shield),
+    m_isEnemy(false),
     m_isTriggerEnter(false),
     m_isTriggerStay(false),
     m_isTriggerExit(false),
@@ -14,16 +14,17 @@ RectObjectTrigger::RectObjectTrigger(float width, float hight, float depth) :
     rectCol->m_size = MyLibrary::LibVec3::Size(width, hight, depth);
 }
 
-RectObjectTrigger::~RectObjectTrigger()
+
+ShieldObject::~ShieldObject()
 {
 }
 
-void RectObjectTrigger::Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnter)
+void ShieldObject::Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos, bool isEnemy)
 {
     m_isCollisionOn = true;
 
     m_pPhysics = physics;
-    m_isEnter = isEnter;
+    m_isEnemy = isEnemy;
 
     Collidable::Init(m_pPhysics);
 
@@ -31,20 +32,19 @@ void RectObjectTrigger::Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibr
     rigidbody.SetPos(pos);
 }
 
-void RectObjectTrigger::Update(MyLibrary::LibVec3 pos, MyLibrary::LibVec3::Size size)
+void ShieldObject::Update(MyLibrary::LibVec3 pos, MyLibrary::LibVec3::Size size)
 {
     m_isTriggerStay = false;
     rigidbody.SetPos(pos);
     rigidbody.SetSize(size);
 }
 
-void RectObjectTrigger::Finalize(const std::shared_ptr<MyLibrary::Physics> physics)
+void ShieldObject::Finalize(const std::shared_ptr<MyLibrary::Physics> physics)
 {
     Collidable::Finalize(physics);
-
 }
 
-void RectObjectTrigger::CollisionEnd()
+void ShieldObject::CollisionEnd()
 {
     if (m_isCollisionOn)
     {
@@ -53,13 +53,13 @@ void RectObjectTrigger::CollisionEnd()
     }
 }
 
-void RectObjectTrigger::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
+void ShieldObject::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 {
-    //アタッチしたオブジェクトがボス部屋入り口なら
-    if (m_isEnter)
+    //アタッチしたオブジェクトが敵なら
+    if (m_isEnemy)
     {
         auto tag = collidable->GetTag();
-        if (tag == ObjectTag::Player)
+        if (tag == ObjectTag::Attack)
         {
             m_isTriggerEnter = true;
         }
@@ -74,13 +74,13 @@ void RectObjectTrigger::OnTriggerEnter(const std::shared_ptr<Collidable>& collid
     }
 }
 
-void RectObjectTrigger::OnTriggerStay(const std::shared_ptr<Collidable>& collidable)
+void ShieldObject::OnTriggerStay(const std::shared_ptr<Collidable>& collidable)
 {
-    //アタッチしたオブジェクトがボス部屋入り口なら
-    if (m_isEnter)
+    //アタッチしたオブジェクトが敵なら
+    if (m_isEnemy)
     {
         auto tag = collidable->GetTag();
-        if (tag == ObjectTag::Player)
+        if (tag == ObjectTag::Attack)
         {
             m_isTriggerStay = true;
         }
@@ -95,13 +95,13 @@ void RectObjectTrigger::OnTriggerStay(const std::shared_ptr<Collidable>& collida
     }
 }
 
-void RectObjectTrigger::OnTriggerExit(const std::shared_ptr<Collidable>& collidable)
+void ShieldObject::OnTriggerExit(const std::shared_ptr<Collidable>& collidable)
 {
-    //アタッチしたオブジェクトがボス部屋入り口なら
-    if (m_isEnter)
+    //アタッチしたオブジェクトが敵なら
+    if (m_isEnemy)
     {
         auto tag = collidable->GetTag();
-        if (tag == ObjectTag::Player)
+        if (tag == ObjectTag::Attack)
         {
             m_isTriggerExit = true;
         }
@@ -116,23 +116,22 @@ void RectObjectTrigger::OnTriggerExit(const std::shared_ptr<Collidable>& collida
     }
 }
 
-bool RectObjectTrigger::GetIsTrigger()
+bool ShieldObject::GetIsTrigger()
 {
     return m_isTriggerEnter;
-
 }
 
-bool RectObjectTrigger::GetIsStay() const
+bool ShieldObject::GetIsStay() const
 {
     return m_isTriggerStay;
 }
 
-bool RectObjectTrigger::GetIsExit()
+bool ShieldObject::GetIsExit()
 {
     return m_isTriggerExit;
 }
 
-void RectObjectTrigger::IsTriggerReset()
+void ShieldObject::IsTriggerReset()
 {
     m_isTriggerEnter = false;
 }

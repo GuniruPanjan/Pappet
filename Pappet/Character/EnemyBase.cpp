@@ -29,14 +29,17 @@ EnemyBase::EnemyBase(Priority priority) :
 	m_moveReverseTurning(0.0f),
 	m_correctionAngle(0.0f),
 	m_difPSize(0.0f),
+	m_difSSize(0.0f),
 	m_move(VGet(0.0f,0.0f,0.0f)),
 	m_difPlayer(VGet(0.0f,0.0f,0.0f)),
+	m_difShield(VGet(0.0f,0.0f,0.0f)),
 	m_isExist(false),
 	m_isDroped(false),
 	m_isDiscovery(false),
 	m_isBossDiscovery(false),
 	m_isTarget(false),
 	m_isBossDead(false),
+	m_isPlayerHit(false),
 	m_isStayTarget(false),
 	m_isExitTarget(false),
 	m_isEnterHit(false),
@@ -381,13 +384,34 @@ void EnemyBase::TriggerUpdate()
 /// 距離を測る処理
 /// </summary>
 /// <param name="playerPos">プレイヤーのポジション</param>
-void EnemyBase::DistanceUpdate(MyLibrary::LibVec3 playerPos)
+void EnemyBase::DistanceUpdate(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos)
 {
 	//プレイヤーとの距離
 	m_difPlayer = VSub(playerPos.ConversionToVECTOR(), m_modelPos.ConversionToVECTOR());
+	//盾との距離
+	m_difShield = VSub(shieldPos.ConversionToVECTOR(), m_modelPos.ConversionToVECTOR());
 
 	//プレイヤーとの距離のサイズ
 	m_difPSize = VSize(m_difPlayer);
+	//盾との距離のサイズ
+	m_difSSize = VSize(m_difShield);
+}
+
+/// <summary>
+/// プレイヤーに攻撃できるか盾に攻撃できるか
+/// </summary>
+void EnemyBase::AttackDistance()
+{
+	//盾よりプレイヤーの方が近かったら
+	if (m_difPSize < m_difSSize)
+	{
+		m_isPlayerHit = true;
+	}
+	//プレイヤーより盾の方が近かったら
+	else
+	{
+		m_isPlayerHit = false;
+	}
 }
 
 /// <summary>

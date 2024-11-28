@@ -40,7 +40,7 @@ public:
 	//ゲームの仕様上での初期化
 	void GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, bool init = false);
 	//更新
-	void Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, bool isPlayerChase, bool init = false);
+	void Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, MyLibrary::LibVec3 shieldPos, bool isPlayerChase, bool init = false);
 	//描画
 	void Draw();
 	//終了処理
@@ -54,6 +54,10 @@ public:
 	const std::list<MyLibrary::LibVec3> GetEnemyPos() const { return m_enemyPos; }
 	//敵のターゲットを返す
 	const std::list<bool> GetEnemyTarget() const { return m_enemyTarget; }
+	//敵がプレイヤーに攻撃できるかを返す
+	const std::list<bool> GetEnemyAttackHit() const { return m_enemyAttackHit; }
+	//与えるダメージ取得
+	const float GetEnemyDamage() const { return m_damage; }
 	//プレイヤーが入ったかを判断する
 	bool SetBossRoom(bool set);
 	//ボスが死んだかの判定
@@ -87,6 +91,11 @@ private:
 	std::list<MyLibrary::LibVec3> m_enemyPos;
 	//敵のターゲット判定
 	std::list<bool> m_enemyTarget;
+	//敵がプレイヤーに攻撃できるか判定
+	std::list<bool> m_enemyAttackHit;
+
+	//敵の攻撃力取得用
+	float m_damage;
 
 };
 

@@ -39,9 +39,9 @@ void MapManager::Init(std::shared_ptr<MyLibrary::Physics> physics)
 /// <summary>
 /// 更新処理
 /// </summary>
-void MapManager::Update(std::shared_ptr<MyLibrary::Physics> physics, bool warp, bool enter)
+void MapManager::Update(std::shared_ptr<MyLibrary::Physics> physics, bool warp, bool enter, bool Dead)
 {
-	std::shared_ptr<MapBase> pNext = m_pMap->Update(warp, enter);
+	std::shared_ptr<MapBase> pNext = m_pMap->Update(warp, enter, Dead);
 	//if (pNext != m_pMap)
 	//{
 	//	//現在のマップの終了処理

@@ -105,15 +105,18 @@ void MapFirst::Init(std::shared_ptr<MyLibrary::Physics> physics)
 /// 更新処理
 /// </summary>
 /// <returns>現在のマップ</returns>
-std::shared_ptr<MapBase> MapFirst::Update(bool warp, bool enter)
+std::shared_ptr<MapBase> MapFirst::Update(bool warp, bool enter, bool Dead)
 {
+	MyLibrary::LibVec3::Size size = MyLibrary::LibVec3::Size(m_width, m_hight, m_depth);
+	MyLibrary::LibVec3::Size triggerSize = MyLibrary::LibVec3::Size(cBossWidth, cBossHight, cBossDepth);
+
 	m_pSearch->Update(m_mapRestPos);
 	m_pBossRoom->Update(m_mapBossRoomPos);
-	m_pRect->Update(m_mapBossEnterPos);
+	m_pRect->Update(m_mapBossEnterPos, size);
 	m_pCore->Update(m_mapCoreCollisionePos);
-	m_pRectTrigger->Update(m_mapBossEnterTriggerPos);
+	m_pRectTrigger->Update(m_mapBossEnterTriggerPos, triggerSize);
 
-	if (enter)
+	if (enter || Dead)
 	{
 		//一回だけ実行
 		if (!cOne)

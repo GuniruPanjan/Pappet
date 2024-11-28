@@ -21,6 +21,8 @@ namespace MyLibrary
 
 		//現在座標を取得
 		const LibVec3& GetPos() const { return m_pos; }
+		//大きさを取得
+		const LibVec3::Size& GetSize() const { return m_size; }
 		//移動予定座標
 		const LibVec3& GetNextPos() const { return m_nextPos; }
 		//向きを所得
@@ -49,6 +51,8 @@ namespace MyLibrary
 		void SetNextPos(const LibVec3& set) { m_nextPos = set; }
 		//ベクターを設定
 		void SetVec(const LibVec3& set) { m_vec = set; }
+		//大きさを設定
+		void SetSize(const LibVec3::Size set) { m_size = set; }
 		//向きを設定
 		void SetVelocity(LibVec3 set, float mul = 1.0f);
 		//移動速度を設定
@@ -61,7 +65,8 @@ namespace MyLibrary
 		LibVec3 m_nextPos;
 		//ベクター
 		LibVec3 m_vec;
-
+		//大きさ
+		LibVec3::Size m_size;
 		//向き
 		LibVec3 m_dir;
 		//移動速度
