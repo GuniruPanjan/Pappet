@@ -5,6 +5,7 @@ class Weapon;
 class Shield;
 class Armor;
 class EnemyManager;
+class CoreManager;
 
 class Player : public CharacterBase
 {
@@ -41,7 +42,7 @@ public:
 	void Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, Shield& shield, Armor& armor);
 	void GameInit(std::shared_ptr<MyLibrary::Physics> physics);
 	void Finalize();
-	void Update(Weapon& weapon, Shield& shield, Armor& armor, float damage);
+	void Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core);
 	void Action();
 	void WarpMap();
 	void NotWeaponAnimation();
@@ -82,6 +83,9 @@ public:
 	bool SetBossStart(bool set) { return m_bossStart = set; }
 	bool GetBossStart() { return m_animChange.sa_bossEnter; }
 
+	//死亡関係
+	bool GetDead() { return m_deadReset; }
+
 	const MyLibrary::LibVec3 GetPos() const { return rigidbody.GetPos(); }
 	const MyLibrary::LibVec3 GetShieldPos() const { return m_shieldPos; }
 
@@ -92,7 +96,7 @@ private:
 	std::shared_ptr<PlayerSearchObject> m_pSearch;   //索敵判定
 	std::shared_ptr<ShieldObject> m_pShield;    //盾の判定
 
-	EnemyAttackObject* m_enemyAttackCol;    //敵の攻撃
+	EnemyAttackObject* m_pEnemyAttackCol;    //敵の攻撃
 
 	MyLibrary::LibVec3 m_shieldPos;
 	MyLibrary::LibVec3::Size m_shieldSize;
@@ -111,12 +115,14 @@ private:
 	bool m_bossStart;                   //ボス部屋に入るための判定
 	bool m_shieldOne;                   //盾の判定初期化
 	bool m_armorOne[10];                //防具の初期化(適当に作っておく)
+	bool m_staminaBreak;                //スタミナ切れの状態
 
 	//アニメーション用変数
 	int m_attackNumber;                 //現在の攻撃段階の代入
 	bool m_avoidanceNow;                //フレーム回避中の判断
 	bool m_shieldNow;                   //防御中の判断
 	bool m_animReverse;                 //アニメーションを逆再生させるための判定
+	bool m_deadReset;                   //死亡完了した判定
 
 	//フレーム用変数
 	int m_moveAnimFrameIndex;           //アニメーションで移動しているフレームの番号を検索する変数

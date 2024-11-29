@@ -23,6 +23,7 @@ namespace
 /// </summary>
 GameManager::GameManager() :
 	m_nowMap(eMapName::FirstMap),
+	m_deadInit(false),
 	m_init(false),
 	m_title(false)
 {
@@ -53,6 +54,8 @@ void GameManager::Init()
 	m_pEnemy->Init(m_pMap->GetStageName());
 	m_pNpc->Init(m_pPhysics);
 	m_pSetting->Init();
+	m_pUi->Init();
+	m_pCore->Init();
 }
 
 /// <summary>
@@ -71,6 +74,7 @@ void GameManager::GameInit()
 	m_pEnemy->Init(m_pMap->GetStageName());
 	m_pNpc->Init(m_pPhysics);
 	m_pSetting->Init();
+	m_pUi->Init();
 }
 
 /// <summary>
@@ -83,7 +87,7 @@ void GameManager::Update()
 	{
 		m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
-		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, m_pEnemy->GetEnemyDamage());
+		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, *m_pEnemy, *m_pCore);
 		//ƒƒbƒNƒIƒ“‚µ‚Ä‚È‚¢Žž
 		if (!m_pPlayer->GetLock())
 		{
@@ -95,7 +99,7 @@ void GameManager::Update()
 			m_pCamera->LockUpdate(*m_pPlayer, *m_pEnemy);
 		}
 
-		m_pEnemy->Update(m_pPhysics, this, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->GetShieldPos(), !m_pPlayer->IsGetPlayerDead(), m_init);
+		m_pEnemy->Update(m_pPhysics, this, *m_pCore, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->GetShieldPos(), !m_pPlayer->IsGetPlayerDead(), m_init);
 
 		m_pMap->JudgeUpdate();
 
@@ -160,6 +164,25 @@ void GameManager::Update()
 				m_pSetting->MenuChange();
 			}
 			
+		}
+
+		//Ž€–S‚µ‚½ê‡
+		if (m_pUi->GetReset())
+		{
+			//ˆê‰ñ‚¾‚¯ŽÀs
+			if (m_deadInit == true)
+			{
+				m_pPlayer->GameInit(m_pPhysics);
+				m_pEnemy->GameInit(m_pPhysics, this, m_deadInit);
+				m_pMap->TriggerReset();
+				m_pUi->Init();
+
+				m_deadInit = false;
+			}
+		}
+		else
+		{
+			m_deadInit = true;
 		}
 
 		//‹x‘§‚µ‚½ê‡
@@ -263,6 +286,11 @@ void GameManager::Draw()
 		}
 	}
 
+
+	if (m_pPlayer->GetDead())
+	{
+		m_pUi->DiedDraw();
+	}
 }
 
 /// <summary>

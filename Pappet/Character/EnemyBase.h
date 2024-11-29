@@ -52,9 +52,12 @@ public:
 	//ダメージを食らったかどうか
 	bool GetIsHit();
 	//死亡時に落とすコア取得
-	int GetDropCore();
+	int GetDropCore() { return m_status.s_core; };
 	//死亡しているかどうかを取得
 	bool GetIsDead() const { return m_anim.s_isDead; }
+	//一回だけ実行するため
+	bool SetOne(bool set) { return m_deadOne = set; }
+	bool GetOne() const { return m_deadOne; }
 	//存在しているかどうかを取得
 	const bool GetIsExist() const { return m_isExist; }
 	//HPを表示するための当たり判定を取得
@@ -62,7 +65,7 @@ public:
 	//プレイヤーに攻撃ができるか判定を取得
 	const bool GetPlayerHit() const { return m_isPlayerHit; }
 	//与えるダメージ取得
-	const float GetAttack() const { return m_status.s_attack; }
+	const float GetAttack() const { return m_pAttack->GetAttack(); }
 
 	//レイキャストをするためにモデルハンドルを取得
 	const int GetModelHandle() const { return m_modelHandle; }
@@ -95,6 +98,8 @@ protected:
 	void InitSearch(float radius, float y);
 	//攻撃判定の初期化
 	void InitAttack(float radius);
+	//攻撃力の初期化
+	void InitAttackDamage(float attack);
 	//攻撃判定をする当たり判定を作成
 	void InitAttackUpdate(float attack);
 	//索敵の更新処理
@@ -136,7 +141,6 @@ protected:
 	AttackObject* m_col;
 
 	int m_randomAction;       //ランダムに行動するための変数
-	int m_dropCore;              //死亡時にドロップするコア
 
 	float m_hpRadius;            //HPバーを表示する当たり判定の半径
 	float m_moveTurning;         //時計周りに旋回する法線ベクトル
@@ -151,6 +155,7 @@ protected:
 	bool m_isBossDiscovery;      //ボス戦に入ったかどうか
 	bool m_isTarget;             //プレイヤーにターゲットされるかどうか
 	bool m_isBossDead;           //ボスが死んだ判定
+	bool m_deadOne;              //死亡したら一回だけ行う判定
 	bool m_isPlayerHit;          //プレイヤーに攻撃ができるか
 	bool m_isStayTarget = false; //プレイヤーの索敵に当たってるかどうか
 	bool m_isExitTarget = false; //プレイヤーの索敵から外れたかどうか

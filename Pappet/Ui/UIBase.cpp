@@ -15,11 +15,15 @@ UIBase::UIBase()
 	m_itemBox = MyLoadGraph("Data/UI/ƒAƒCƒeƒ€‰æ–ÊUI.png", 1, 1);
 	m_selectEquipment = MyLoadGraph("Data/UI/‘•”õ‘I‘ğ‰æ–ÊUI.png", 1, 1);
 
+	//‘•”õŠÖŒW
 	m_blackSword = MyLoadGraph("Data/UI/•‚¢Œ•UI.png", 3, 3);
 	m_fist = MyLoadGraph("Data/UI/ŒUI.png", 3, 3);
 	m_body = MyLoadGraph("Data/UI/—‡‘ÌUI.png", 3, 3);
 	m_uglyShield = MyLoadGraph("Data/UI/X‚¢‚UI.png", 4, 4);
 	m_commonArmor = MyLoadGraph("Data/UI/•½–}‚ÈŠZUI.png", 3, 3);
+
+	//UIŠÖŒW
+	m_dead = MyLoadGraph("Data/UI/YOUDIEDGraph.png", 1, 1);
 }
 
 /// <summary>
@@ -41,6 +45,7 @@ UIBase::~UIBase()
 	DeleteGraph(m_body);
 	DeleteGraph(m_uglyShield);
 	DeleteGraph(m_commonArmor);
+	DeleteGraph(m_dead);
 }
 
 /// <summary>

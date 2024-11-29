@@ -60,6 +60,8 @@ void CsvLoad::StatusLoad(CharacterBase::Status& data, const char* charaName)
 		//1 : ‘Ì—Í
 		//2 : ƒXƒ^ƒ~ƒi
 		//3 : UŒ‚—Í
+		//4 : UŒ‚—Í1
+		//5 : UŒ‚—Í2
 		//4 : ‹Ø—Í
 		//5 : ‹Z—Ê
 		//6 : –hŒä—Í
@@ -73,6 +75,8 @@ void CsvLoad::StatusLoad(CharacterBase::Status& data, const char* charaName)
 			data.s_hp = std::stoi(strConmaBuf[DataLoad::CsvStatus::hp]);
 			data.s_stamina = std::stoi(strConmaBuf[DataLoad::CsvStatus::stamina]);
 			data.s_attack = std::stoi(strConmaBuf[DataLoad::CsvStatus::attack]);
+			data.s_attack1 = std::stoi(strConmaBuf[DataLoad::CsvStatus::attack1]);
+			data.s_attack2 = std::stoi(strConmaBuf[DataLoad::CsvStatus::attack2]);
 			data.s_muscle = std::stoi(strConmaBuf[DataLoad::CsvStatus::muscle]);
 			data.s_skill = std::stoi(strConmaBuf[DataLoad::CsvStatus::skill]);
 			data.s_defense = std::stoi(strConmaBuf[DataLoad::CsvStatus::defense]);

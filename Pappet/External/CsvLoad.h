@@ -13,6 +13,8 @@ namespace DataLoad
 		hp,        //‘Ì—Í
 		stamina,   //ƒXƒ^ƒ~ƒi
 		attack,    //UŒ‚—Í
+		attack1,   //UŒ‚—Í2
+		attack2,   //UŒ‚—Í3
 		muscle,    //‹Ø—Í
 		skill,     //‹Z—Ê
 		defense,   //–hŒä—Í

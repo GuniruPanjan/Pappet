@@ -73,6 +73,9 @@ public:
 	/// </summary>
 	void End();
 
+	//死亡してリセットする
+	bool GetReset() { return m_deadReset; }
+
 private:
 	unsigned int m_hpColor = 0xff0000;    //HPカラー
 	unsigned int m_staminaColor = 0x00ff00;       //スタミナカラー
@@ -109,6 +112,14 @@ private:
 	//float m_enemyBossHpPosY3;
 	//float m_enemyBossHpPosY4;
 	//const char* m_enemyBossName;
+
+	//死亡の画像透過アルファ値
+	int m_deadBack;
+	int m_deadA;
+
+	//死亡時のゲームリセット
+	int m_waitResetTime;
+	bool m_deadReset;
 
 	//装備画面から戻る
 	bool m_equipmentReturn;

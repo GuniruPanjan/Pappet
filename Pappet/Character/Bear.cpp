@@ -27,6 +27,8 @@ namespace
 	//攻撃範囲3
 	constexpr float cAttackRadius3 = 130.0f;
 
+
+	bool cOne = false;
 }
 
 /// <summary>
@@ -100,6 +102,9 @@ void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::P
 	cDead = false;
 
 	m_status.s_hp = 1.0f;
+
+	cOne = false;
+	m_deadOne = false;
 }
 
 /// <summary>
@@ -138,6 +143,9 @@ void Bear::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 	m_anim.s_isDead = false;
 	cDead = false;
 
+	cOne = false;
+	m_deadOne = false;
+
 }
 
 /// <summary>
@@ -168,6 +176,20 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bo
 
 	//ターゲット状態
 	TargetNow();
+
+	//攻撃していないとき
+	if (!m_anim.s_attack)
+	{
+		if (!cOne)
+		{
+			InitAttack(0.0f);
+			InitAttackDamage(0.0f);
+
+			cOne = true;
+		}
+		
+	}
+
 	//攻撃を受けた時
 	if (m_isEnterHit)
 	{
@@ -178,8 +200,6 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bo
 	{
 		Action(playerPos, isChase);
 	}
-
-
 
 	TriggerUpdate();
 	HitTriggerUpdate();
@@ -199,6 +219,7 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bo
 		Death();
 		cDead = true;
 		m_isBossDead = true;
+		m_deadOne = true;
 	}
 	else
 	{
@@ -333,7 +354,7 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 
 			AttackUpdate("Attack1", 3);
 			//攻撃力
-			m_status.s_attack = 30.0f;
+			//m_status.s_attack = 30.0f;
 		}
 		//ランダム行動で1が出たら
 		else if (m_randomAction == 1)
@@ -343,7 +364,7 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 
 			AttackUpdate("Attack2", 4);
 			//攻撃力
-			m_status.s_attack = 50.0f;
+			//m_status.s_attack = 50.0f;
 
 		}
 		//ランダム行動で2が出たら
@@ -354,7 +375,7 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 
 			AttackUpdate("Attack3", 5);
 			//攻撃力
-			m_status.s_attack = 80.0f;
+			//m_status.s_attack = 80.0f;
 		}
 
 		m_moveVec = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
@@ -371,6 +392,8 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 			{
 				//攻撃の初期化
 				InitAttack(cAttackRadius1);
+
+				InitAttackDamage(m_status.s_attack);
 			}
 			else if (m_nowFrame > 5.0f)
 			{
@@ -399,6 +422,8 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 			{
 				//攻撃の初期化
 				InitAttack(cAttackRadius2);
+
+				InitAttackDamage(m_status.s_attack1);
 			}
 			else if (m_nowFrame > 5.0f)
 			{
@@ -415,7 +440,7 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 			//アニメーションフレーム宙に攻撃判定を出す
 			else if (m_nowFrame == 38.0f)
 			{
-				InitAttackUpdate(m_status.s_attack);
+				InitAttackUpdate(m_status.s_attack1);
 			}
 			else if (m_nowFrame >= 45.0f)
 			{
@@ -431,6 +456,8 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 			{
 				//攻撃の初期化
 				InitAttack(cAttackRadius3);
+
+				InitAttackDamage(m_status.s_attack2);
 			}
 			else if (m_nowFrame > 5.0f)
 			{
@@ -442,7 +469,7 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 			//アニメーションフレーム中に攻撃判定を出す
 			if (m_nowFrame == 58.0f)
 			{
-				InitAttackUpdate(m_status.s_attack);
+				InitAttackUpdate(m_status.s_attack2);
 			}
 			else if (m_nowFrame >= 68.0f)
 			{
@@ -485,6 +512,11 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 		
 	}
 
+	if (!m_anim.s_attack)
+	{
+		InitAttackDamage(0.0f);
+	}
+
 }
 
 /// <summary>
@@ -498,6 +530,9 @@ void Bear::Draw()
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
 	//モデルの描画
 	MV1DrawModel(m_modelHandle);
+
+	DrawFormatString(200, 400, 0xffffff, "m_playerHit : %d", m_isPlayerHit);
+
 #if false
 	DrawFormatString(200, 300, 0xffffff, "m_angle : %f", m_angle);
 	DrawFormatString(200, 350, 0xffffff, "m_correctionAngle : %f", m_correctionAngle);

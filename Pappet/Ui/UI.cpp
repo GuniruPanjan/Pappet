@@ -3,7 +3,6 @@
 #include "Item/Shield.h"
 #include "Item/Armor.h"
 
-
 /// <summary>
 /// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 /// </summary>
@@ -26,6 +25,10 @@ UI::~UI()
 /// <param name="enemy"></param>
 void UI::Init()
 {
+	m_deadBack = 0;
+	m_deadA = 0;
+	m_waitResetTime = 0;
+	m_deadReset = false;
 }
 
 /// <summary>
@@ -101,6 +104,47 @@ void UI::ArmorDraw(Armor& armor)
 	DrawGraph(120, 66, m_body, true);
 	//•½–}‚ÈŠZ
 	DrawGraph(85, 220, m_commonArmor, true);
+}
+
+/// <summary>
+/// €–S•`‰æˆ—
+/// </summary>
+void UI::DiedDraw()
+{
+	//€–S‚Ì”wŒi‚Ì“§‰ß
+	if (m_deadBack < 150)
+	{
+		m_deadBack++;
+	}
+	//€–S‚Ì•¶š‚Ì“§‰ß
+	if (m_deadA < 255)
+	{
+		m_deadA++;
+
+		m_waitResetTime = 0;
+	}
+	else if (m_deadA >= 255)
+	{
+		if (m_waitResetTime <= 30)
+		{
+			m_waitResetTime++;
+		}
+		else
+		{
+			m_deadReset = true;
+		}
+	}
+
+	//”wŒi‚ÌF‚ğ”–‚­‚·‚é
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_deadBack);
+	DrawBox(0, 100, 2000, 400, 0x000000, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	//€–S‚Ì•¶š‚ğo‚·
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_deadA);
+	DrawGraph(-150, -100, m_dead, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 }
 
 /// <summary>

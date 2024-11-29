@@ -2,6 +2,7 @@
 #include "Manager/EffectManager.h"
 #include "Manager/HandleManager.h"
 #include "Manager/EnemyManager.h"
+#include "Manager/CoreManager.h"
 #include "External/CsvLoad.h"
 #include "Item/Weapon.h"
 #include "Item/Shield.h"
@@ -71,6 +72,8 @@ namespace
 
 	bool cOne = false;
 	bool cTwo = false;
+
+	bool cHit = false;
 }
 
 Player::Player() :
@@ -96,6 +99,7 @@ Player::Player() :
 	m_shieldNow(false),
 	m_shieldOne(false),
 	m_animReverse(false),
+	m_deadReset(false),
 	m_moveWeaponFrameMatrix(),
 	m_moveShieldFrameMatrix(),
 	m_rollMove(VGet(0.0f,0.0f,0.0f)),
@@ -139,7 +143,6 @@ Player::Player() :
 
 	//モデル読み込み
 	m_modelHandle = handle.GetModelHandle(cPath);
-
 
 	//モデルのサイズ設定
 	MV1SetScale(m_modelHandle, VGet(cModelSizeScale, cModelSizeScale, cModelSizeScale));
@@ -203,12 +206,16 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, S
 
 	m_pShield = std::make_shared<ShieldObject>(cShieldWidth, cShieldHight, cShieldDepht);
 
+	//m_pEnemyAttackCol = std::make_shared<EnemyAttackObject>();
+
 	//待機アニメーション設定
 	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
 	m_nowAnimIdx = m_animIdx["Idle"];
 
 	//移動距離
 	cMove = 0.5f;
+
+	m_staminaBreak = false;
 
 	//装備初期化
 	weapon.SetFist(true);
@@ -245,15 +252,21 @@ void Player::GameInit(std::shared_ptr<MyLibrary::Physics> physics)
 	SetModelPos();
 	MV1SetPosition(m_modelHandle, m_modelPos.ConversionToVECTOR());
 
+	m_deadReset = false;
+	m_staminaBreak = false;
+
 }
 
 void Player::Finalize()
 {
 	Collidable::Finalize(m_pPhysics);
+	m_pSearch->Finalize(m_pPhysics);
 }
 
-void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, float damage)
+void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core)
 {
+	//とりあえずやっとく
+	m_status.s_core = core.GetCore();
 
 	//アニメーションで移動しているフレームの番号を検索する
 	m_moveAnimFrameIndex = MV1SearchFrame(m_modelHandle, "mixamorig:Hips");
@@ -296,9 +309,16 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, float damage)
 			m_nowAnimIdx = m_animIdx["Death"];
 
 			ChangeAnim(m_nowAnimIdx, m_animOne[0], m_animOne);
+			m_lockonTarget = false;
 
 			Finalize();
 		}
+	}
+
+	//死亡アニメーションが終了したら
+	if (m_anim.s_isDead && m_nowFrame >= 68.0f)
+	{
+		m_deadReset = true;
 	}
 
 	//アナログスティックを使って移動
@@ -439,17 +459,56 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, float damage)
 		}
 	}
 
-	//敵の攻撃力取得
-	cDamage = damage;
-
 	//プレイヤーが生きている時だけ
 	if (!m_anim.s_isDead)
 	{
+		//盾の判定
+		if (m_shieldNow)
+		{
+			if (!m_shieldOne)
+			{
+				m_pShield->Init(m_pPhysics, m_shieldPos);
+
+				m_shieldOne = true;
+			}
+
+			for (auto enemy : enemy.GetEnemyAttackHit())
+			{
+				if (!enemy)
+				{
+					//盾受けした時
+					if (m_pShield->GetIsStay())
+					{
+						m_animChange.sa_imapact = true;
+					}
+				}
+			}
+
+		}
+		else
+		{
+			m_pShield->CollisionEnd();
+			m_shieldOne = false;
+		}
+
+		//ダメージを食らう処理
+		if (cHit)
+		{
+			for (auto damage : enemy.GetEnemyDamage())
+			{
+				m_status.s_hp -= damage - (m_status.s_defense / 10);
+			}
+
+			cHit = false;
+		}
+
+
 		//メニューを開いている間はアクションできない
 		if (!m_menuOpen)
 		{
 			//アクションをできなくする
-			if (!m_animChange.sa_avoidance && !m_anim.s_hit && !m_animChange.sa_recovery && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact)
+			if (!m_animChange.sa_avoidance && !m_anim.s_hit && !m_animChange.sa_recovery && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact
+				&& !m_staminaBreak)
 			{
 				Action();
 			}
@@ -481,9 +540,16 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, float damage)
 		
 	}
 
-
-	//アニメーションの更新
-	m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
+	if (!m_anim.s_isDead)
+	{
+		//アニメーションの更新
+		m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
+	}
+	//死亡したときのアニメーション更新
+	else if (m_anim.s_isDead && m_nowFrame <= 68.0f)
+	{
+		m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
+	}
 
 	//プレイヤーのポジションを入れる
 	SetModelPos();
@@ -511,6 +577,24 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, float damage)
 		m_status.s_defense = armor.GetCommonDefence();
 	}
 
+	//スタミナ回復
+	if (m_status.s_stamina < 100.0f && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_dashMove)
+	{
+		m_status.s_stamina += 0.3f;
+	}
+
+	//スタミナ切れ
+	if (m_status.s_stamina <= 0.0f)
+	{
+		m_staminaBreak = true;
+		m_animChange.sa_dashMove = false;
+		m_status.s_speed = cWalkSpeed;
+	}
+	else if (m_status.s_stamina >= 50.0f)
+	{
+		m_staminaBreak = false;
+	}
+
 	//判定のポジション更新
 	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
 	MyLibrary::LibVec3 attackPos = MyLibrary::LibVec3(rigidbody.GetPos().x + sinf(m_angle) * -25.0f, rigidbody.GetPos().y + 15.0f, rigidbody.GetPos().z - cosf(m_angle) * 25.0f);
@@ -534,28 +618,6 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, float damage)
 	else if (cosf(m_angle) < 0)
 	{
 		m_shieldSize.depth = 30.0f - cosf(m_angle) * -15.0f;
-	}
-	
-	//盾の判定
-	if (m_shieldNow)
-	{
-		if (!m_shieldOne)
-		{
-			m_pShield->Init(m_pPhysics, m_shieldPos);
-
-			m_shieldOne = true;
-		}
-
-		//盾受けした時
-		if (m_pShield->GetIsStay())
-		{
-			m_animChange.sa_imapact = true;
-		}
-	}
-	else
-	{
-		m_pShield->CollisionEnd();
-		m_shieldOne = false;
 	}
 
 	//盾受け終了
@@ -581,6 +643,12 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, float damage)
 	if (m_anim.s_hit && m_isAnimationFinish)
 	{
 		m_anim.s_hit = false;
+	}
+
+	//走った時のスタミナ消費
+	if (m_animChange.sa_dashMove)
+	{
+		m_status.s_stamina -= 0.1f;
 	}
 
 	//回避行動中
@@ -626,6 +694,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, float damage)
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 25.0f)
 			{
+				m_status.s_stamina -= 25.0f;
 				m_pAttack->Init(m_pPhysics);
 			}
 			else if (m_nowFrame >= 35.0f && m_nowFrame < 40.0f)
@@ -651,6 +720,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, float damage)
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 55.0f)
 			{
+				m_status.s_stamina -= 25.0f;
 				m_pAttack->Init(m_pPhysics);
 			}
 			else if (m_nowFrame >= 65.0f && m_nowFrame < 70.0f)
@@ -675,6 +745,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, float damage)
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 85.0f)
 			{
+				m_status.s_stamina -= 25.0f;
 				m_pAttack->Init(m_pPhysics);
 			}
 			else if (m_nowFrame >= 95.0f && m_nowFrame < 110.0f)
@@ -789,7 +860,7 @@ void Player::Action()
 	if (m_xpad.Buttons[12] == 1 && !m_anim.s_attack)
 	{
 		//ダッシュ
-		if (cAbutton > 50)
+		if (cAbutton > 30)
 		{
 			m_animChange.sa_avoidance = false;
 
@@ -799,7 +870,7 @@ void Player::Action()
 			m_status.s_speed = cDashSpeed;
 		}
 
-		if (cAbutton < 51)
+		if (cAbutton < 31)
 		{
 			cAbutton++;
 		}
@@ -810,50 +881,62 @@ void Player::Action()
 
 		m_status.s_speed = cWalkSpeed;
 
-		//回避
-		//離した瞬間
-		if (cAbutton > 0 && cAbutton < 30 && m_animChange.sa_avoidance == false)
+		//回避に必要なスタミナがある場合
+		if (m_status.s_stamina >= 20)
 		{
-			m_animChange.sa_avoidance = true;
+			//回避
+		    //離した瞬間
+			if (cAbutton > 0 && cAbutton < 30 && m_animChange.sa_avoidance == false)
+			{
+				m_status.s_stamina -= 20;
+
+				m_animChange.sa_avoidance = true;
+			}
 		}
+		
 
 		cAbutton = 0;
 	}
 
-	//攻撃
-	//Rボタンを押すことで攻撃
-	if (m_xpad.Buttons[9] == 1)
+	//攻撃に必要なスタミナがある場合
+	if (m_status.s_stamina >= 25)
 	{
-		cRbutton++;
-
-		//一回だけ反応するようにする
-		if (cRbutton == 1)
+		//攻撃
+	    //Rボタンを押すことで攻撃
+		if (m_xpad.Buttons[9] == 1)
 		{
-			m_anim.s_attack = true;
+			cRbutton++;
 
-			//追加攻撃受付
-			if (cAddAttackTime <= 30 && cAddAttackTime > 0)
+			//一回だけ反応するようにする
+			if (cRbutton == 1)
 			{
-				//二段階目の攻撃
-				if (cNowAttackNumber == 1)
-				{
-					m_attackNumber = 1;
-				}
-				//三段階目の攻撃
-				else if (cNowAttackNumber == 2)
-				{
-					m_attackNumber = 2;
-				}
-			}
+				m_anim.s_attack = true;
 
-			//追加攻撃時間を初期化
-			cAddAttackTime = 40;
+				//追加攻撃受付
+				if (cAddAttackTime <= 30 && cAddAttackTime > 0)
+				{
+					//二段階目の攻撃
+					if (cNowAttackNumber == 1)
+					{
+						m_attackNumber = 1;
+					}
+					//三段階目の攻撃
+					else if (cNowAttackNumber == 2)
+					{
+						m_attackNumber = 2;
+					}
+				}
+
+				//追加攻撃時間を初期化
+				cAddAttackTime = 40;
+			}
+		}
+		else
+		{
+			cRbutton = 0;
 		}
 	}
-	else
-	{
-		cRbutton = 0;
-	}
+	
 	//追加攻撃受付時間を減らす
 	if (cAddAttackTime <= 40 && cAddAttackTime > 0 && --cAddAttackTime > -1);
 
@@ -1225,8 +1308,9 @@ void Player::Draw(Armor& armor)
 #if true
 	DrawFormatString(200, 100, 0xffffff, "HP : %f LevelHp : %d", m_status.s_hp, m_levelStatus.sl_hp);
 	DrawFormatString(200, 150, 0xffffff, "Stamina : %f LevelStamina : %d", m_status.s_stamina, m_levelStatus.sl_stamina);
-	DrawFormatString(200, 200, 0xffffff, "Muscle : %f LevelMuscle : %d", m_status.s_muscle, m_levelStatus.sl_muscle);
-	DrawFormatString(200, 250, 0xffffff, "Skill : %f LevelSkill : %d", m_status.s_skill, m_levelStatus.sl_skill);
+	DrawFormatString(200, 200, 0xffffff, "Muscle : %d LevelMuscle : %d", m_status.s_muscle, m_levelStatus.sl_muscle);
+	DrawFormatString(200, 250, 0xffffff, "Skill : %d LevelSkill : %d", m_status.s_skill, m_levelStatus.sl_skill);
+	DrawFormatString(200, 300, 0xffffff, "Core : %d", m_status.s_core);
 #endif
 #if false
 	DrawFormatString(0, 400, 0xffffff, "m_nowAnim : %d", m_nowAnimIdx);
@@ -1328,8 +1412,7 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 			//回避中とヒット中とボス部屋に入っている時は攻撃が当たらない
 			if (!m_avoidanceNow && !m_anim.s_hit && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact)
 			{
-				//おそらく敵が配列のため攻撃判定を入れられてないやつらの攻撃力を取得し、例外が出ている
-				m_status.s_hp -= cDamage - m_status.s_defense;
+				cHit = true;
 
 				m_anim.s_hit = true;
 			}

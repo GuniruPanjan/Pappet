@@ -3,10 +3,13 @@
 #include "Character/Bear.h"
 #include "External/CsvLoad.h"
 #include "GameManager.h"
+#include "Manager/CoreManager.h"
 
 namespace
 {
 	int cI = 0;
+
+	int cEnemy = 0;
 }
 
 /// <summary>
@@ -15,9 +18,9 @@ namespace
 EnemyManager::EnemyManager() :
 	m_stageName(""),
 	m_frontEnemyHp(0),
-	m_frontEnemyMaxHp(0),
-	m_damage(0.0f)
+	m_frontEnemyMaxHp(0)
 {
+	
 }
 
 /// <summary>
@@ -30,6 +33,9 @@ EnemyManager::~EnemyManager()
 	m_pGenerateInfo.clear();
 	m_enemyPos.clear();
 	m_enemyTarget.clear();
+	m_damage.clear();
+	m_enemyAttackHit.clear();
+	m_dropCore.clear();
 }
 
 /// <summary>
@@ -120,12 +126,15 @@ void EnemyManager::GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameMan
 /// <param name="playerPos">プレイヤーポジション</param>
 /// <param name="playerDir">プレイヤーの方向</param>
 /// <param name="isPlayerChase">プレイヤーを発見したかどうか</param>
-void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, MyLibrary::LibVec3 shieldPos, bool isPlayerChase, bool init)
+void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, CoreManager& core, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, MyLibrary::LibVec3 shieldPos, bool isPlayerChase, bool init)
 {
 	m_enemyPos.clear();
 	m_enemyTarget.clear();
+	m_damage.clear();
+	m_enemyAttackHit.clear();
+	m_dropCore.clear();
+	cEnemy = 0;
 
-	//ここがおかしい
 	//今のマップがどのマップか取得する
 	auto thisMapName = gameManager->GetThisMapName();
 
@@ -156,13 +165,32 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 		//敵の更新する
 		for (auto& enemy : m_pEnemys)
 		{
+			
+
 			//更新
 			enemy->Update(playerPos, shieldPos, isPlayerChase);
 
 			m_enemyPos.emplace_back(enemy->GetPos());
 			m_enemyTarget.emplace_back(enemy->GetTarget());
+			m_damage.emplace_back(enemy->GetAttack());
+			m_enemyAttackHit.emplace_back(enemy->GetPlayerHit());
+			m_dropCore.emplace_back(enemy->GetDropCore());
 
-			m_damage = enemy->GetAttack();
+			if (enemy->GetIsDead())
+			{
+				//一回だけ行う
+				if (enemy->GetOne())
+				{
+					cEnemy++;
+
+					//コア取得
+					core.Core(enemy->GetDropCore());
+
+
+					enemy->SetOne(false);
+				}
+			}
+			
 		}
 	}
 	
@@ -178,6 +206,8 @@ void EnemyManager::Draw()
 	{
 		enemy->Draw();
 	}
+
+	DrawFormatString(200, 500, 0xffffff, "%d", cEnemy);
 }
 
 /// <summary>

@@ -23,7 +23,6 @@ namespace
 EnemyBase::EnemyBase(Priority priority) :
 	CharacterBase(priority, ObjectTag::Enemy),
 	m_randomAction(0),
-	m_dropCore(0),
 	m_hpRadius(0.0f),
 	m_moveTurning(0.0f),
 	m_moveReverseTurning(0.0f),
@@ -39,6 +38,7 @@ EnemyBase::EnemyBase(Priority priority) :
 	m_isBossDiscovery(false),
 	m_isTarget(false),
 	m_isBossDead(false),
+	m_deadOne(false),
 	m_isPlayerHit(false),
 	m_isStayTarget(false),
 	m_isExitTarget(false),
@@ -248,12 +248,6 @@ bool EnemyBase::GetIsHit()
 	return log;
 }
 
-int EnemyBase::GetDropCore()
-{
-	m_isDroped = true;
-	return m_dropCore;
-}
-
 const float EnemyBase::GetRadius() const
 {
 	//もし半径0(索敵範囲なし)ならとりあえずの値を返す
@@ -298,7 +292,6 @@ void EnemyBase::LoadData(std::string name)
 {
 	CsvLoad::GetInstance().AnimDataLoad(name, m_animIdx);
 	CsvLoad::GetInstance().StatusLoad(m_status, name.c_str());
-	m_dropCore = m_status.s_core;
 }
 
 /// <summary>
@@ -366,12 +359,20 @@ void EnemyBase::InitAttack(float radius)
 }
 
 /// <summary>
+/// ダメージの初期化
+/// </summary>
+/// <param name="attack"></param>
+void EnemyBase::InitAttackDamage(float attack)
+{
+	m_pAttack->SetAttack(attack);
+}
+
+/// <summary>
 /// 攻撃判定を初期化する
 /// </summary>
 /// <param name="attack">攻撃力</param>
 void EnemyBase::InitAttackUpdate(float attack)
 {
-	m_pAttack->SetAttack(attack);
 	m_pAttack->Init(m_pPhysics);
 }
 
@@ -405,11 +406,13 @@ void EnemyBase::AttackDistance()
 	//盾よりプレイヤーの方が近かったら
 	if (m_difPSize < m_difSSize)
 	{
+		//プレイヤー「に攻撃が当たる
 		m_isPlayerHit = true;
 	}
 	//プレイヤーより盾の方が近かったら
 	else
 	{
+		//盾に攻撃が当たる
 		m_isPlayerHit = false;
 	}
 }

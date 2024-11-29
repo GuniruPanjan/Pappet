@@ -45,6 +45,9 @@ protected:
 	int m_uglyShield;     //X‚¢‚‚Ì‰æ‘œŠi”[•Ï”
 	int m_commonArmor;    //•½–}‚ÈŠZ‰æ‘œŠi”[•Ï”
 
+	//UI‚Ì‰æ‘œ
+	int m_dead;           //€–S‚Ì‰æ‘œŠi”[•Ï”
+
 	//ƒXƒ}[ƒgƒ|ƒCƒ“ƒ^
 	std::shared_ptr<SEManager> pse = std::make_shared<SEManager>();
 };

@@ -83,7 +83,8 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 
 	//索敵判定をする当たり判定を作成
 	InitSearch(cSearchRadius, 0.0f);
-	InitAttack(cAttackRadius);
+	InitAttack(0.0f);
+	InitAttackDamage(0.0f);
 
 	//モデルのサイズ設定
 	MV1SetScale(m_modelHandle, VGet(cModelSize, cModelSize, cModelSize));
@@ -97,6 +98,7 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 	//死をfalseにする
 	m_anim.s_isDead = false;
 	cDead = false;
+	m_deadOne = false;
 }
 
 /// <summary>
@@ -114,7 +116,8 @@ void Immortal::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLi
 
 	//索敵判定をする当たり判定を作成
 	InitSearch(cSearchRadius, 0.0f);
-	InitAttack(cAttackRadius);
+	InitAttack(0.0f);
+	InitAttackDamage(0.0f);
 
 	//中心座標の設定
 	CalculationCenterPos(1.0f, cModelSize);
@@ -135,7 +138,7 @@ void Immortal::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLi
 
 	m_anim.s_isDead = false;
 	cDead = false;
-
+	m_deadOne = false;
 }
 
 /// <summary>
@@ -231,6 +234,7 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos
 
 		Death();
 		cDead = true;
+		m_deadOne = true;
 	}
 }
 
@@ -312,7 +316,13 @@ void Immortal::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 				m_move = VGet(0.0f, 0.0f, 0.0f);
 
 				AttackUpdate("Attack1", 5);
+				
 
+				if (m_nowFrame == 5)
+				{
+					InitAttack(cAttackRadius);
+					InitAttackDamage(m_status.s_attack);
+				}
 				//アニメーションフレーム中に攻撃判定を出す
 				if (m_nowFrame == 22)
 				{
@@ -320,8 +330,7 @@ void Immortal::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 				}
 				else if (m_nowFrame >= 35.0f)
 				{
-					m_pAttack->GetAttack();
-
+					InitAttackDamage(0.0f);
 					//判定をリセット
 					m_pAttack->CollisionEnd();
 				}

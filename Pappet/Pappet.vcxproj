@@ -160,6 +160,7 @@
     <ClCompile Include="Library\Physics.cpp" />
     <ClCompile Include="Library\Rigidbody.cpp" />
     <ClCompile Include="Manager\BgmManager.cpp" />
+    <ClCompile Include="Manager\CoreManager.cpp" />
     <ClCompile Include="Manager\EffectManager.cpp" />
     <ClCompile Include="Manager\EnemyManager.cpp" />
     <ClCompile Include="Manager\GameManager.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="Library\Physics.h" />
     <ClInclude Include="Library\Rigidbody.h" />
     <ClInclude Include="Manager\BgmManager.h" />
+    <ClInclude Include="Manager\CoreManager.h" />
     <ClInclude Include="Manager\EffectManager.h" />
     <ClInclude Include="Manager\EnemyManager.h" />
     <ClInclude Include="Manager\GameManager.h" />

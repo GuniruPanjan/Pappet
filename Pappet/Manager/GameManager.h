@@ -5,6 +5,7 @@
 #include "Item/Weapon.h"
 #include "Item/Shield.h"
 #include "Item/Armor.h"
+#include "Manager/CoreManager.h"
 #include<memory>
 
 class Player;
@@ -69,12 +70,15 @@ private:
 	std::shared_ptr<Weapon> m_pWeapon = std::make_shared<Weapon>();
 	std::shared_ptr<Shield> m_pShield = std::make_shared<Shield>();
 	std::shared_ptr<Armor> m_pArmor = std::make_shared<Armor>();
+	std::shared_ptr<CoreManager> m_pCore = std::make_shared<CoreManager>();
 
 	//現在のマップ
 	eMapName m_nowMap;
 	//ステージ名
 	//std::string m_stageName;
-	
+
+	//死亡で初期化する
+	bool m_deadInit;
 	//初期化する
 	bool m_init;
 	//タイトルに戻る

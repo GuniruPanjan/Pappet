@@ -19,6 +19,8 @@ public:
 		float s_hp;          //‘Ì—Í
 		float s_stamina;     //ƒXƒ^ƒ~ƒi
 		float s_attack;      //UŒ‚—Í
+		float s_attack1;     //UŒ‚—Í2
+		float s_attack2;     //UŒ‚—Í
 		int s_muscle;        //‹Ø—Í
 		int s_skill;         //‹Z—Ê
 		float s_defense;     //–hŒä—Í

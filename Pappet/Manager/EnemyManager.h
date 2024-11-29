@@ -9,6 +9,7 @@ class EnemyBase;
 class GameManager;
 class Immortal;
 class Bear;
+class CoreManager;
 
 /// <summary>
 /// 敵を管理するクラス
@@ -40,7 +41,7 @@ public:
 	//ゲームの仕様上での初期化
 	void GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, bool init = false);
 	//更新
-	void Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, MyLibrary::LibVec3 shieldPos, bool isPlayerChase, bool init = false);
+	void Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, CoreManager& core, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, MyLibrary::LibVec3 shieldPos, bool isPlayerChase, bool init = false);
 	//描画
 	void Draw();
 	//終了処理
@@ -57,7 +58,9 @@ public:
 	//敵がプレイヤーに攻撃できるかを返す
 	const std::list<bool> GetEnemyAttackHit() const { return m_enemyAttackHit; }
 	//与えるダメージ取得
-	const float GetEnemyDamage() const { return m_damage; }
+	const std::list<float> GetEnemyDamage() const { return m_damage; }
+	//コア取得
+	const std::list<int> GetDropCore() const { return m_dropCore; }
 	//プレイヤーが入ったかを判断する
 	bool SetBossRoom(bool set);
 	//ボスが死んだかの判定
@@ -93,9 +96,9 @@ private:
 	std::list<bool> m_enemyTarget;
 	//敵がプレイヤーに攻撃できるか判定
 	std::list<bool> m_enemyAttackHit;
-
 	//敵の攻撃力取得用
-	float m_damage;
-
+	std::list<float> m_damage;
+	//コア取得
+	std::list<int> m_dropCore;
 };
 
