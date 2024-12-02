@@ -80,6 +80,7 @@ Player::Player() :
 	CharacterBase(Collidable::Priority::Low, ObjectTag::Player),
 	m_xpad(),
 	m_attackNumber(0),
+	m_mapNow(0),
 	m_updateX(0.0f),
 	m_updateY(0.0f),
 	m_updateZ(0.0f),
@@ -994,7 +995,7 @@ void Player::Action()
 	
 	//休息
 	//休息できたら
-	if (m_restTouch)
+	if (m_restTouch && m_mapNow != 0)
 	{
 		//初期化位置更新
 		m_updateX = m_modelPos.x;
@@ -1015,6 +1016,17 @@ void Player::Action()
 	else
 	{
 		m_rest = false;
+	}
+
+	//レベルを上げられる休息
+	//マップで分ける
+	if (m_restTouch && m_mapNow == 0)
+	{
+		//Yボタンが押されたら
+		if (m_xpad.Buttons[15] == 1)
+		{
+			
+		}
 	}
 
 	//ボスの部屋に入る
@@ -1306,6 +1318,9 @@ void Player::Draw(Armor& armor)
 	m_collisionPos = rigidbody.GetPos();
 
 #if true
+	DrawFormatString(200, 600, 0xffffff, "colPosx : %f", m_collisionPos.x);
+	DrawFormatString(200, 700, 0xffffff, "colPosy : %f", m_collisionPos.y);
+	DrawFormatString(200, 800, 0xffffff, "colPosz : %f", m_collisionPos.z);
 	DrawFormatString(200, 100, 0xffffff, "HP : %f LevelHp : %d", m_status.s_hp, m_levelStatus.sl_hp);
 	DrawFormatString(200, 150, 0xffffff, "Stamina : %f LevelStamina : %d", m_status.s_stamina, m_levelStatus.sl_stamina);
 	DrawFormatString(200, 200, 0xffffff, "Muscle : %d LevelMuscle : %d", m_status.s_muscle, m_levelStatus.sl_muscle);
@@ -1315,9 +1330,6 @@ void Player::Draw(Armor& armor)
 #if false
 	DrawFormatString(0, 400, 0xffffff, "m_nowAnim : %d", m_nowAnimIdx);
 	DrawFormatString(0, 500, 0xffffff, "m_nowSpeed : %f", m_nowFrame);
-	DrawFormatString(0, 600, 0xffffff, "colPosx : %f", m_collisionPos.x);
-	DrawFormatString(0, 700, 0xffffff, "colPosy : %f", m_collisionPos.y);
-	DrawFormatString(0, 800, 0xffffff, "colPosz : %f", m_collisionPos.z);
 	DrawFormatString(200, 100, 0xffffff, "m_blend : %f", m_animBlendRate);
 	DrawFormatString(200, 200, 0xffffff, "addattacktime : %d", cAddAttackTime);
 	DrawFormatString(200, 300, 0xffffff, "avoidancemove : %f", cAvoidanceMove);

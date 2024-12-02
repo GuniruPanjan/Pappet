@@ -71,6 +71,9 @@ public:
 	bool GetMenu() { return m_menuOpen; }
 	bool SetMenu(bool set) { return m_menuOpen = set; }
 
+	//マップ関係
+	int SetMapNow(int set) { return m_mapNow = set; }
+
 	//休息関係
 	bool GetRest() { return m_rest; }
 	bool SetRest(bool set) { return m_restTouch = set; }
@@ -102,6 +105,7 @@ private:
 	MyLibrary::LibVec3::Size m_shieldSize;
 
 	XINPUT_STATE m_xpad;                //パッド入力
+	int m_mapNow;                       //現在のマップ
 	float m_cameraAngle;                //カメラ情報
 	float m_lockAngle;                  //ロックオンしたときのアングル
 	float m_updateX;                    //休息したときの初期化位置X

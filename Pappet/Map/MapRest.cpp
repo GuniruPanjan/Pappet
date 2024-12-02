@@ -73,7 +73,7 @@ void MapRest::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	m_mapCollisionPos = VGet(-220.0f, -40.0f, 395.0f);
 	//m_mapCollisionPos = VGet(0.0f, 0.0f, 0.0f);
 	m_mapCorePos = VGet(0.0f, 0.0f, 0.0f);
-	m_mapRestPos = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
+	m_mapRestPos = MyLibrary::LibVec3(-180.0f, 0.0f, -200.0f);
 	m_mapBossRoomPos = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
 	m_mapBossEnterPos = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
 	m_mapCoreCollisionePos = MyLibrary::LibVec3(m_mapCorePos.x, 0.0f, m_mapCorePos.z);

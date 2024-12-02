@@ -521,6 +521,7 @@ void EnemyBase::Death()
 	if (!m_anim.s_isDead)
 	{
 		m_anim.s_isDead = true;
+		m_deadOne = true;
 		EnemyBase::Finalize(m_pPhysics);
 
 		m_nowAnimIdx = m_animIdx["Death"];

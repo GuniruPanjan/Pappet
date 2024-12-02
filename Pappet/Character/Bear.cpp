@@ -145,7 +145,6 @@ void Bear::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 
 	cOne = false;
 	m_deadOne = false;
-
 }
 
 /// <summary>
@@ -219,7 +218,6 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bo
 		Death();
 		cDead = true;
 		m_isBossDead = true;
-		m_deadOne = true;
 	}
 	else
 	{

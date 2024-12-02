@@ -233,8 +233,8 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos
 		m_anim.s_moveflag = false;
 
 		Death();
+
 		cDead = true;
-		m_deadOne = true;
 	}
 }
 

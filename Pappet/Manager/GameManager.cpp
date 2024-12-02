@@ -50,6 +50,7 @@ void GameManager::Init()
 	//pCamera->Init();
 
 	m_pPlayer->Init(m_pPhysics, *m_pWeapon, *m_pShield, *m_pArmor);
+	m_pPlayer->SetMapNow(FirstMap);
 	m_pEnemy = std::make_shared<EnemyManager>();
 	m_pEnemy->Init(m_pMap->GetStageName());
 	m_pNpc->Init(m_pPhysics);
@@ -303,11 +304,13 @@ void GameManager::ChangeStage(const char* stageName)
 	if (stageName == "stageRest")
 	{
 		m_nowMap = eMapName::RestMap;
+		m_pPlayer->SetMapNow(RestMap);
 	}
 	//ƒ}ƒbƒv1‚¾‚Á‚½ê‡
 	else if (stageName == "stage1")
 	{
 		m_nowMap == eMapName::FirstMap;
+		m_pPlayer->SetMapNow(FirstMap);
 	}
 }
 

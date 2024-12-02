@@ -133,7 +133,6 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 	m_damage.clear();
 	m_enemyAttackHit.clear();
 	m_dropCore.clear();
-	cEnemy = 0;
 
 	//今のマップがどのマップか取得する
 	auto thisMapName = gameManager->GetThisMapName();
