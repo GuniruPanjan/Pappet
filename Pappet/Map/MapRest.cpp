@@ -75,9 +75,9 @@ void MapRest::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	m_mapCorePos = VGet(0.0f, 0.0f, 0.0f);
 	m_mapRestPos = MyLibrary::LibVec3(-180.0f, 0.0f, -200.0f);
 	m_mapBossRoomPos = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
-	m_mapBossEnterPos = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
-	m_mapCoreCollisionePos = MyLibrary::LibVec3(m_mapCorePos.x, 0.0f, m_mapCorePos.z);
-	m_mapBossEnterTriggerPos = MyLibrary::LibVec3(10.0f, 50.0f, 0.0f);
+	m_mapBossEnterPos = MyLibrary::LibVec3(0.0f, 1000.0f, 0.0f);
+	m_mapCoreCollisionePos = MyLibrary::LibVec3(m_mapCorePos.x, 1000.0f, m_mapCorePos.z);
+	m_mapBossEnterTriggerPos = MyLibrary::LibVec3(10.0f, 1000.0f, 0.0f);
 
 	//ƒ‰ƒCƒgŠÖŒW
 	ChangeLightTypeDir(VGet(-1.0f, 0.0f, 0.0f));
@@ -101,6 +101,8 @@ void MapRest::Init(std::shared_ptr<MyLibrary::Physics> physics)
 /// <returns></returns>
 std::shared_ptr<MapBase> MapRest::Update(bool warp, bool enter, bool Dead)
 {
+	m_pSearch->Update(m_mapRestPos);
+
 	if (warp)
 	{
 

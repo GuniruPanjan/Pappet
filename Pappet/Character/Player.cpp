@@ -87,6 +87,7 @@ Player::Player() :
 	m_menuOpen(false),
 	m_restTouch(false),
 	m_rest(false),
+	m_bigRest(false),
 	m_lockonTarget(false),
 	m_warp(false),
 	m_bossStart(false),
@@ -170,7 +171,7 @@ Player::~Player()
 /// 初期化処理
 /// </summary>
 /// <param name="physics">物理クラスのポインタ</param>
-void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, Shield& shield, Armor& armor)
+void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, Shield& shield, Armor& armor, bool anim)
 {
 	m_pPhysics = physics;
 
@@ -207,11 +208,13 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, S
 
 	m_pShield = std::make_shared<ShieldObject>(cShieldWidth, cShieldHight, cShieldDepht);
 
-	//m_pEnemyAttackCol = std::make_shared<EnemyAttackObject>();
-
-	//待機アニメーション設定
-	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
-	m_nowAnimIdx = m_animIdx["Idle"];
+	if (anim)
+	{
+		//待機アニメーション設定
+		m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
+		m_nowAnimIdx = m_animIdx["Idle"];
+	}
+	
 
 	//移動距離
 	cMove = 0.5f;
@@ -268,6 +271,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 {
 	//とりあえずやっとく
 	m_status.s_core = core.GetCore();
+	m_levelStatus.sl_all = m_levelStatus.sl_hp + m_levelStatus.sl_muscle + m_levelStatus.sl_skill + m_levelStatus.sl_stamina;
 
 	//アニメーションで移動しているフレームの番号を検索する
 	m_moveAnimFrameIndex = MV1SearchFrame(m_modelHandle, "mixamorig:Hips");
@@ -329,7 +333,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	float SetAngleX = 0.0f;
 	float SetAngleY = 0.0f;
 
-	if (!m_anim.s_isDead && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery && !m_anim.s_hit && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact)
+	if (!m_anim.s_isDead && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery && !m_anim.s_hit && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact && !m_rest)
 	{
 		GetJoypadAnalogInput(&analogX, &analogY, DX_INPUT_PAD1);
 
@@ -509,7 +513,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		{
 			//アクションをできなくする
 			if (!m_animChange.sa_avoidance && !m_anim.s_hit && !m_animChange.sa_recovery && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact
-				&& !m_staminaBreak)
+				&& !m_staminaBreak && !m_rest)
 			{
 				Action();
 			}
@@ -581,7 +585,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	//スタミナ回復
 	if (m_status.s_stamina < 100.0f && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_dashMove)
 	{
-		m_status.s_stamina += 0.3f;
+		m_status.s_stamina += 0.5f;
 	}
 
 	//スタミナ切れ
@@ -1007,13 +1011,8 @@ void Player::Action()
 		{
 			m_rest = true;
 		}
-		//押されていなかったら
-		else
-		{
-			m_rest = false;
-		}
 	}
-	else
+	else if(m_mapNow != 0)
 	{
 		m_rest = false;
 	}
@@ -1022,11 +1021,22 @@ void Player::Action()
 	//マップで分ける
 	if (m_restTouch && m_mapNow == 0)
 	{
+		//初期化位置更新
+		m_updateX = m_modelPos.x;
+		m_updateY = m_modelPos.y;
+		m_updateZ = m_modelPos.z;
+
 		//Yボタンが押されたら
 		if (m_xpad.Buttons[15] == 1)
 		{
-			
+			m_rest = true;
+			m_bigRest = true;
 		}
+	}
+	else if(m_mapNow == 0)
+	{
+		m_rest = false;
+		m_bigRest = false;
 	}
 
 	//ボスの部屋に入る

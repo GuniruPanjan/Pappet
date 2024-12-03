@@ -49,7 +49,7 @@ void GameManager::Init()
 	m_pMap->Init(m_pPhysics);
 	//pCamera->Init();
 
-	m_pPlayer->Init(m_pPhysics, *m_pWeapon, *m_pShield, *m_pArmor);
+	m_pPlayer->Init(m_pPhysics, *m_pWeapon, *m_pShield, *m_pArmor, true);
 	m_pPlayer->SetMapNow(FirstMap);
 	m_pEnemy = std::make_shared<EnemyManager>();
 	m_pEnemy->Init(m_pMap->GetStageName());
@@ -71,7 +71,7 @@ void GameManager::GameInit()
 
 	m_pMap->Init(m_pPhysics);
 
-	m_pPlayer->Init(m_pPhysics, *m_pWeapon, *m_pShield, *m_pArmor);
+	m_pPlayer->Init(m_pPhysics, *m_pWeapon, *m_pShield, *m_pArmor, false);
 	m_pEnemy->Init(m_pMap->GetStageName());
 	m_pNpc->Init(m_pPhysics);
 	m_pSetting->Init();
@@ -189,15 +189,33 @@ void GameManager::Update()
 		//‹x‘§‚µ‚½ê‡
 		if (m_pPlayer->GetRest())
 		{
-			//ˆê‰ñ‚¾‚¯ŽÀs
-			if (m_init == true)
+			//ƒŒƒxƒ‹ƒAƒbƒvˆ—
+			if (m_pSetting->GetLevel())
 			{
-				m_pPlayer->GameInit(m_pPhysics);
-				m_pEnemy->GameInit(m_pPhysics, this, m_init);
-				m_pMap->TriggerReset();
-
-				m_init = false;
+				m_pSetting->LevelUpdate(*m_pPlayer);
 			}
+			//‹x‘§ˆ—
+			else
+			{
+				//ˆê‰ñ‚¾‚¯ŽÀs
+				if (m_init == true)
+				{
+					m_pPlayer->GameInit(m_pPhysics);
+
+					//‹x‘§’n“_ˆÈŠO‚¾‚Æ‰Šú‰»
+					if (m_nowMap != 0)
+					{
+						m_pEnemy->GameInit(m_pPhysics, this, m_init);
+					}
+
+					m_pMap->TriggerReset();
+
+					m_init = false;
+				}
+
+				m_pSetting->RestUpdate(*m_pPlayer);
+			}
+
 		}
 		else
 		{
@@ -284,6 +302,19 @@ void GameManager::Draw()
 		if (!m_pSetting->GetDecision())
 		{
 			m_pSetting->MenuChangeDraw();
+		}
+	}
+
+	//‹x‘§‰æ–Ê•`‰æ
+	if (m_pPlayer->GetRest())
+	{
+		if (m_pSetting->GetLevel())
+		{
+			m_pSetting->LevelUpDraw(*m_pPlayer);
+		}
+		else
+		{
+			m_pSetting->RestDraw(m_pPlayer->GetBigRest());
 		}
 	}
 

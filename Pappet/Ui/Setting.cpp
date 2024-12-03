@@ -4,6 +4,7 @@
 #include "Item/Shield.h"
 #include "Item/Weapon.h"
 #include "Item/Armor.h"
+#include "Character/Player.h"
 
 namespace
 {
@@ -13,6 +14,9 @@ namespace
 
 	//a値をいじる変数
 	int cBlenda = 10;  
+
+	//画像の倍率
+	float cGraphSize = 1.0f;
 
 	//間違って押さないようにする
 	int cWaitTime = 0;
@@ -57,6 +61,8 @@ Setting::Setting() :
 	m_black(0),
 	m_white(0),
 	m_back(0),
+	m_selectX(0),
+	m_selectY(0),
 	m_blackPal(0),
 	m_whitePal(0),
 	m_button(0),
@@ -76,18 +82,16 @@ Setting::Setting() :
 	m_blend(false),
 	m_returnMenu(true),
 	m_titleMenu(false),
+	m_statusLevel(false),
 	m_xpad()
 {
-	for (int i = 0; i < 3; i++)
-	{
-		m_menuSelect[i] = 0;
-		m_menuColor[i] = 0;
-	}
 
 	for (int i = 0; i < 5; i++)
 	{
 		m_brightColor[i] = 0;
 		m_volumeColor[i] = 0;
+		m_menuSelect[i] = 0;
+		m_menuColor[i] = 0;
 	}
 }
 
@@ -432,6 +436,190 @@ void Setting::EquipmentUpdate()
 		cWaitTime++;
 	}
 
+}
+
+/// <summary>
+/// 休息の更新処理
+/// </summary>
+void Setting::RestUpdate(Player& player)
+{
+	//パッド入力所得
+	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
+
+	//上
+	if (m_xpad.Buttons[0] == 1)
+	{
+		m_button++;
+	}
+	//下
+	else if (m_xpad.Buttons[1] == 1)
+	{
+		m_button--;
+	}
+	else
+	{
+		//初期化
+		m_button = 0;
+
+		m_one = false;
+	}
+
+
+	//普通の休息だった場合
+	if (!player.GetBigRest())
+	{
+		pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Nine);
+
+		if (cWaitTime >= 10)
+		{
+			//Aボタンが押されたら
+			if (m_xpad.Buttons[12] == 1)
+			{
+				PlaySoundMem(pse->GetButtonSE(), DX_PLAYTYPE_BACK, true);
+
+				//転送
+				if (selectDecision == 9)
+				{
+					//まだマップがないから実装しない
+				}
+				//休息をやめる
+				if (selectDecision == 10)
+				{
+					player.SetNotRest(false);
+				}
+
+				//リセット
+				cWaitTime = 0;
+			}
+		}
+		else
+		{
+			cWaitTime++;
+		}
+		
+	}
+	//レベルを上げられる休息だった場合
+	else
+	{
+		pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Eight);
+
+		if (cWaitTime >= 10)
+		{
+			//Aボタンが押されたら
+			if (m_xpad.Buttons[12] == 1)
+			{
+				PlaySoundMem(pse->GetButtonSE(), DX_PLAYTYPE_BACK, true);
+
+				//レベルを上げる
+				if (selectDecision == 8)
+				{
+					m_statusLevel = true;
+				}
+				//転送
+				if (selectDecision == 9)
+				{
+					//まだマップがないから実装しない
+
+				}
+				//休息をやめる
+				if (selectDecision == 10)
+				{
+					player.SetNotRest(false);
+				}
+
+				//リセット
+				cWaitTime = 0;
+			}
+		}
+		else
+		{
+			cWaitTime++;
+		}
+		
+	}
+
+	
+}
+
+/// <summary>
+/// レベルアップ処理
+/// </summary>
+/// <param name="player"></param>
+void Setting::LevelUpdate(Player& player)
+{
+	//パッド入力所得
+	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
+
+	//上
+	if (m_xpad.Buttons[0] == 1)
+	{
+		m_button++;
+	}
+	//下
+	else if (m_xpad.Buttons[1] == 1)
+	{
+		m_button--;
+	}
+	else
+	{
+		//初期化
+		m_button = 0;
+
+		m_one = false;
+	}
+
+	pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Six);
+
+	if (cWaitTime >= 10)
+	{
+		//Bボタンが押されたら
+		if (m_xpad.Buttons[13] == 1)
+		{
+			//ステータスレベル画面を閉じる
+			m_statusLevel = false;
+
+			cWaitTime = 0;
+		}
+		
+		LevelUp(player.GetHPLevel(), pselect->Six);   //HP
+		LevelUp(player.GetStaminaLevel(), pselect->Seven); //Stamina
+		LevelUp(player.GetMuscleLevel(), pselect->Eight); //Muscle
+		LevelUp(player.GetSkillLevel(), pselect->Nine);  //Skill
+		
+		
+		//Aボタンが押されたら
+		if (m_xpad.Buttons[12] == 1)
+		{
+			if (selectDecision == 10)
+			{
+				m_statusLevel = false;
+
+				cWaitTime = 0;
+			}
+		}
+
+	}
+	else
+	{
+		cWaitTime++;
+	}
+}
+
+void Setting::LevelUp(int level, int now)
+{
+	if (pselect->NowSelect == now)
+	{
+		//左(レベルを戻す)
+		if (m_xpad.Buttons[2] == 1)
+		{
+			int a = 1;
+		}
+		//右(レベルを上げる)
+		else if (m_xpad.Buttons[3] == 1)
+		{
+			int a = 1;
+		}
+	}
 }
 
 /// <summary>
@@ -891,6 +1079,182 @@ void Setting::EquipmentDraw()
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
 	DrawBox(m_equipmentColorPos.oneX, m_equipmentColorPos.oneY, m_equipmentColorPos.secondX, m_equipmentColorPos.secondY, 0x000fff, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}
+
+/// <summary>
+/// 休息画面
+/// </summary>
+void Setting::RestDraw(bool rest)
+{
+	DrawRotaGraph(300, 450, 1.5f, DX_PI_F / 2, m_rest, true);
+
+	m_selectX = 130;
+
+	DrawGraph(m_selectX, m_selectY, m_selectUi, true);
+
+	//普通の休息
+	if (!rest)
+	{
+		if (pselect->NowSelect == pselect->Nine)
+		{
+			m_selectY = 255;
+
+			m_menuColor[0] = 0x000000;
+			m_menuColor[1] = 0xffffff;
+		}
+		else if (pselect->NowSelect == pselect->Ten)
+		{
+			m_selectY = 355;
+
+			m_menuColor[0] = 0xffffff;
+			m_menuColor[1] = 0x000000;
+		}
+
+		//フォントのサイズ変更
+		SetFontSize(60);
+
+		DrawString(150, 50, "普通の休息", 0xffffff);
+
+		//フォントのサイズ変更
+		SetFontSize(40);
+
+		DrawString(150, 300, "転送", m_menuColor[0]);
+		DrawString(150, 400, "立ち去る", m_menuColor[1]);
+	}
+	//レベル上げられる休息
+	else
+	{
+		if (pselect->NowSelect == pselect->Eight)
+		{
+			m_selectY = 255;
+
+			m_menuColor[0] = 0x000000;
+			m_menuColor[1] = 0xffffff;
+			m_menuColor[2] = 0xffffff;
+		}
+		else if (pselect->NowSelect == pselect->Nine)
+		{
+			m_selectY = 355;
+
+			m_menuColor[0] = 0xffffff;
+			m_menuColor[1] = 0x000000;
+			m_menuColor[2] = 0xffffff;
+		}
+		else if (pselect->NowSelect == pselect->Ten)
+		{
+			m_selectY = 455;
+
+			m_menuColor[0] = 0xffffff;
+			m_menuColor[1] = 0xffffff;
+			m_menuColor[2] = 0x000000;
+		}
+
+		//フォントのサイズ変更
+		SetFontSize(60);
+
+		DrawString(150, 50, "魂器", 0xffffff);
+
+		//フォントのサイズ変更
+		SetFontSize(40);
+
+		DrawString(150, 300, "レベル上げ", m_menuColor[0]);
+		DrawString(150, 400, "転送", m_menuColor[1]);
+		DrawString(150, 500, "立ち去る", m_menuColor[2]);
+	}
+}
+
+/// <summary>
+/// レベルアップ描画
+/// </summary>
+/// <param name="player"></param>
+void Setting::LevelUpDraw(Player& player)
+{
+
+	DrawGraph(-50, 0, m_levelUp, true);
+	DrawRotaGraph(m_selectX, m_selectY, cGraphSize, DX_PI_F, m_selectUi, true);
+
+	if (pselect->NowSelect == pselect->Six)
+	{
+		m_selectX = 335;
+		m_selectY = 540;
+		cGraphSize = 1.0f;
+
+		m_menuColor[0] = 0x000000;
+		m_menuColor[1] = 0xffffff;
+		m_menuColor[2] = 0xffffff;
+		m_menuColor[3] = 0xffffff;
+		m_menuColor[4] = 0xffffff;
+	}
+	else if (pselect->NowSelect == pselect->Seven)
+	{
+		m_selectX = 335;
+		m_selectY = 635;
+		cGraphSize = 1.0f;
+
+		m_menuColor[0] = 0xffffff;
+		m_menuColor[1] = 0x000000;
+		m_menuColor[2] = 0xffffff;
+		m_menuColor[3] = 0xffffff;
+		m_menuColor[4] = 0xffffff;
+	}
+	else if (pselect->NowSelect == pselect->Eight)
+	{
+		m_selectX = 335;
+		m_selectY = 730;
+		cGraphSize = 1.0f;
+
+		m_menuColor[0] = 0xffffff;
+		m_menuColor[1] = 0xffffff;
+		m_menuColor[2] = 0x000000;
+		m_menuColor[3] = 0xffffff;
+		m_menuColor[4] = 0xffffff;
+	}
+	else if (pselect->NowSelect == pselect->Nine)
+	{
+		m_selectX = 335;
+		m_selectY = 825;
+		cGraphSize = 1.0f;
+
+		m_menuColor[0] = 0xffffff;
+		m_menuColor[1] = 0xffffff;
+		m_menuColor[2] = 0xffffff;
+		m_menuColor[3] = 0x000000;
+		m_menuColor[4] = 0xffffff;
+	}
+	else if (pselect->NowSelect == pselect->Ten)
+	{
+		m_selectX = 815;
+		m_selectY = 930;
+		cGraphSize = 1.3f;
+
+		m_menuColor[0] = 0xffffff;
+		m_menuColor[1] = 0xffffff;
+		m_menuColor[2] = 0xffffff;
+		m_menuColor[3] = 0xffffff;
+		m_menuColor[4] = 0x000000;
+	}
+
+
+	//フォントのサイズ変更
+	SetFontSize(40);
+
+	DrawFormatString(90, 150, 0xffffff, "レベル      %d", player.GetLevel());
+	DrawFormatString(90, 250, 0xffffff, "所持ソウル  %d", player.GetCore());
+	DrawFormatString(90, 300, 0xffffff, "必要ソウル  %d", 0);
+
+	//左の変数がレベル上げる前のレベルで右の変数がレベルを上げた後のレベル
+	DrawFormatString(230, 520, m_menuColor[0], "%d   →   %d", player.GetHPLevel(), player.GetHPLevel());
+	DrawFormatString(230, 615, m_menuColor[1], "%d   →   %d", player.GetStaminaLevel(), player.GetStaminaLevel());
+	DrawFormatString(230, 710, m_menuColor[2], "%d   →   %d", player.GetMuscleLevel(), player.GetMuscleLevel());
+	DrawFormatString(230, 805, m_menuColor[3], "%d   →   %d", player.GetSkillLevel(), player.GetSkillLevel());
+
+	//フォントのサイズ変更
+	SetFontSize(60);
+
+	DrawString(750, 900, "決定", m_menuColor[4]);
+
+	//フォントのサイズ変更
+	SetFontSize(40);
 }
 
 /// <summary>

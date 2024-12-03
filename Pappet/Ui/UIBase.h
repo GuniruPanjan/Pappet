@@ -34,9 +34,13 @@ protected:
 	int m_sword;          //Œ•‚Ì‰æ‘œŠi”[•Ï”
 	int m_eqSword;        //‘•”õ‚ÌŒ•‰æ‘œŠi”[•Ï”
 	int m_eqShield;       //‘•”õ‚Ì‚‰æ‘œŠi”[•Ï”
+
+	//UI‰æ–Ê
 	int m_equipment;      //‘•”õ‰æ–ÊŠi”[•Ï”
 	int m_itemBox;        //ƒAƒCƒeƒ€‰æ–ÊŠi”[•Ï”
 	int m_selectEquipment;//‘•”õ‘I‘ğ‰æ–ÊŠi”[•Ï”
+	int m_rest;           //‹x‘§‘I‘ğ‰æ–ÊŠi”[•Ï”
+	int m_levelUp;        //ƒŒƒxƒ‹ƒAƒbƒv‰æ–ÊŠi”[•Ï”
 
 	//ƒAƒCƒeƒ€‚Ì‰æ‘œ
 	int m_blackSword;     //•‚¢Œ•‚Ì‰æ‘œŠi”[•Ï”
@@ -47,6 +51,7 @@ protected:
 
 	//UI‚Ì‰æ‘œ
 	int m_dead;           //€–S‚Ì‰æ‘œŠi”[•Ï”
+	int m_selectUi;       //‘I‘ğ‚Ì‰æ‘œŠi”[•Ï”
 
 	//ƒXƒ}[ƒgƒ|ƒCƒ“ƒ^
 	std::shared_ptr<SEManager> pse = std::make_shared<SEManager>();

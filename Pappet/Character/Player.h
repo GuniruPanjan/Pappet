@@ -39,7 +39,7 @@ public:
 	Player();
 	virtual ~Player();
 
-	void Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, Shield& shield, Armor& armor);
+	void Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, Shield& shield, Armor& armor, bool anim);
 	void GameInit(std::shared_ptr<MyLibrary::Physics> physics);
 	void Finalize();
 	void Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core);
@@ -76,7 +76,9 @@ public:
 
 	//休息関係
 	bool GetRest() { return m_rest; }
+	bool GetBigRest() { return m_bigRest; }
 	bool SetRest(bool set) { return m_restTouch = set; }
+	bool SetNotRest(bool set) { return m_rest = set; }
 
 	//ワープ関係
 	bool SetWarp(bool set) { return m_warp = set; }
@@ -88,6 +90,14 @@ public:
 
 	//死亡関係
 	bool GetDead() { return m_deadReset; }
+
+	//アイテムなどのゲームでの変数関係
+	int GetLevel() { return m_levelStatus.sl_all; }
+	int GetCore() { return m_status.s_core; }
+	int GetHPLevel() { return m_levelStatus.sl_hp; }
+	int GetStaminaLevel() { return m_levelStatus.sl_stamina; }
+	int GetMuscleLevel() { return m_levelStatus.sl_muscle; }
+	int GetSkillLevel() { return m_levelStatus.sl_skill; }
 
 	const MyLibrary::LibVec3 GetPos() const { return rigidbody.GetPos(); }
 	const MyLibrary::LibVec3 GetShieldPos() const { return m_shieldPos; }
@@ -114,6 +124,7 @@ private:
 	bool m_menuOpen;                    //メニューを開く判定
 	bool m_restTouch;                   //休息できるかの判定
 	bool m_rest;                        //休息判定
+	bool m_bigRest;                     //レベルが上げられる休息判定
 	bool m_lockonTarget;                //ターゲット判定
 	bool m_warp;                        //マップをワープするための判定
 	bool m_bossStart;                   //ボス部屋に入るための判定

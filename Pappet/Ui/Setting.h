@@ -8,6 +8,7 @@ class SelectManager;
 class Shield;
 class Weapon;
 class Armor;
+class Player;
 
 /// <summary>
 /// 設定処理用のクラス
@@ -66,6 +67,21 @@ public:
 	/// 装備の更新処理
 	/// </summary>
 	void EquipmentUpdate();
+
+	/// <summary>
+	/// 休息の更新処理
+	/// </summary>
+	void RestUpdate(Player& player);
+
+	/// <summary>
+	/// レベルアップ処理
+	/// </summary>
+	void LevelUpdate(Player& player);
+
+	/// <summary>
+	/// レベルアップ処理2
+	/// </summary>
+	void LevelUp(int level, int now);
 
 	/// <summary>
 	/// アイテムボックス更新処理
@@ -134,6 +150,16 @@ public:
 	void EquipmentDraw();
 
 	/// <summary>
+	/// 休息の描画処理
+	/// </summary>
+	void RestDraw(bool rest);
+
+	/// <summary>
+	/// レベルアップ描画
+	/// </summary>
+	void LevelUpDraw(Player& player);
+
+	/// <summary>
 	/// アイテムボックス描画処理
 	/// </summary>
 	void ItemBoxDraw();
@@ -194,6 +220,11 @@ public:
 	bool Setitem(bool re) { return m_itemMenu = re; }
 
 	/// <summary>
+	/// ステータスのレベルUp画面を開く判定
+	/// </summary>
+	bool GetLevel() { return m_statusLevel; }
+
+	/// <summary>
 	/// 装備を選択する画面遷移判定を取る
 	/// </summary>
 	/// <returns></returns>
@@ -225,32 +256,35 @@ public:
 	bool GetTitle() { return m_titleMenu; }
 
 private:
-	int m_black;        //黒い画像格納変数
-	int m_white;        //白い画像格納変数
-	int m_back;         //黒い画像格納変数
-	XINPUT_STATE m_xpad;  //パッド入力
-	int m_menuSelect[3];    //メニュー選択 
-	int m_blackPal;      //黒い画像のアルファ値保存
-	int m_whitePal;      //白い画像のアルファ値保存
-	int m_button;    //押した時間を得る
-	int m_thumb;     //押した時間を得る
-	int m_waitTime;    //入力を待つための時間
+	int m_black;              //黒い画像格納変数
+	int m_white;              //白い画像格納変数
+	int m_back;               //黒い画像格納変数
+	XINPUT_STATE m_xpad;      //パッド入力
+	int m_menuSelect[5];      //メニュー選択 
+	int m_selectX;            //選択画像のX座標
+	int m_selectY;            //選択画像のY座標
+	int m_blackPal;           //黒い画像のアルファ値保存
+	int m_whitePal;           //白い画像のアルファ値保存
+	int m_button;             //押した時間を得る
+	int m_thumb;              //押した時間を得る
+	int m_waitTime;           //入力を待つための時間
 	int m_brightnessColor;    //明るさの色
-	int m_bgmColor;          //音量の色
-	int m_returnColor;       //戻るの色
-	int m_brightColor[5];    //明るさ選択の色
-	int m_volumeColor[5];    //音量選択の色
-	int m_menuColor[3];      //メニューの色
-	bool m_one;      //単発入力
-	bool m_settingScene;    //設定するための画面を呼ぶ変数
-	bool m_brightness;      //明るさ設定
-	bool m_volume;          //音量設定
+	int m_bgmColor;           //音量の色
+	int m_returnColor;        //戻るの色
+	int m_brightColor[5];     //明るさ選択の色
+	int m_volumeColor[5];     //音量選択の色
+	int m_menuColor[5];       //メニューの色
+	bool m_one;               //単発入力
+	bool m_settingScene;      //設定するための画面を呼ぶ変数
+	bool m_brightness;        //明るさ設定
+	bool m_volume;            //音量設定
 	int m_volumeSize;         //音量
 	bool m_equipmentMenu;     //装備メニュー
 	bool m_itemMenu;          //アイテムボックスメニュー
 	bool m_decisionEquipment; //装備選択画面
 	bool m_returnMenu;        //戻るメニュー
 	bool m_titleMenu;         //タイトルメニュー
+	bool m_statusLevel;       //ステータスを開く判定
 	bool m_blend;             //ブレンド判定
 
 	//選んだ装備

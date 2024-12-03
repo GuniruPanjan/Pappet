@@ -11,11 +11,11 @@ UIBase::UIBase()
 	m_sword = MyLoadGraph("Data/UI/SwordUI.png", 3, 3);
 	m_eqSword = MyLoadGraph("Data/UI/SwordUI.png", 7, 7);
 	m_eqShield = MyLoadGraph("Data/UI/Shield.png", 7, 7);
+
+	//装備関係
 	m_equipment = MyLoadGraph("Data/UI/装備画面UI.png", 1, 1);
 	m_itemBox = MyLoadGraph("Data/UI/アイテム画面UI.png", 1, 1);
 	m_selectEquipment = MyLoadGraph("Data/UI/装備選択画面UI.png", 1, 1);
-
-	//装備関係
 	m_blackSword = MyLoadGraph("Data/UI/黒い剣UI.png", 3, 3);
 	m_fist = MyLoadGraph("Data/UI/拳UI.png", 3, 3);
 	m_body = MyLoadGraph("Data/UI/裸体UI.png", 3, 3);
@@ -23,7 +23,10 @@ UIBase::UIBase()
 	m_commonArmor = MyLoadGraph("Data/UI/平凡な鎧UI.png", 3, 3);
 
 	//UI関係
+	m_rest = MyLoadGraph("Data/UI/四角の白い長方形の囲い.png", 1, 1);
 	m_dead = MyLoadGraph("Data/UI/YOUDIEDGraph.png", 1, 1);
+	m_selectUi = MyLoadGraph("Data/UI/選択UI.png", 2, 2);
+	m_levelUp = MyLoadGraph("Data/UI/レベルステータスUI.png", 1, 1);
 }
 
 /// <summary>
@@ -46,6 +49,9 @@ UIBase::~UIBase()
 	DeleteGraph(m_uglyShield);
 	DeleteGraph(m_commonArmor);
 	DeleteGraph(m_dead);
+	DeleteGraph(m_rest);
+	DeleteGraph(m_selectUi);
+	DeleteGraph(m_levelUp);
 }
 
 /// <summary>
