@@ -99,6 +99,8 @@ void MapFirst::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	InitCore(cCoreRadius, m_mapCoreCollisionePos);
 	//ボス部屋の判定初期化
 	InitBossEnter(cBossWidth, cBossHight, cBossDepth, m_mapBossEnterTriggerPos);
+
+	cOne = false;
 }
 
 /// <summary>
@@ -137,11 +139,6 @@ std::shared_ptr<MapBase> MapFirst::Update(bool warp, bool enter, bool Dead)
 
 			cOne = false;
 		}
-	}
-
-	if (warp)
-	{
-		//return std::make_shared<MapRest>();
 	}
 
 	return shared_from_this();   //自身のポインタ

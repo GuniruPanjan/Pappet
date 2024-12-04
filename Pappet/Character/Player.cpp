@@ -583,7 +583,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	}
 
 	//スタミナ回復
-	if (m_status.s_stamina < 100.0f && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_dashMove)
+	if (m_status.s_stamina < ms_maxStatus.sm_stamina && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_dashMove)
 	{
 		m_status.s_stamina += 0.5f;
 	}
@@ -791,7 +791,11 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	//回復する
 	if (!m_isAnimationFinish && m_animChange.sa_recovery)
 	{
+		//HPの最大値を超えないように回復する
+		if (ms_maxStatus.sm_hp)
+		{
 
+		}
 	}
 	//回復終了
 	else if (m_isAnimationFinish && m_animChange.sa_recovery)
@@ -1504,6 +1508,25 @@ void Player::ArmorChange(int one, std::string path)
 			m_armorOne[i] = false;
 		}
 	}
+}
+
+/// <summary>
+/// レベルアップによるステータス上昇
+/// </summary>
+void Player::ChangeStatus()
+{
+	CsvLoad::GetInstance().StatusLoad(m_status, "Player");
+
+	//とりあえず適当に補正しておく
+	m_status.s_hp = m_status.s_hp + (m_levelStatus.sl_hp * 30);
+	m_status.s_stamina = m_status.s_stamina + (m_levelStatus.sl_stamina * 10);
+
+	//これでいい
+	m_status.s_muscle = m_levelStatus.sl_muscle;
+	m_status.s_skill = m_levelStatus.sl_skill;
+	//ステータスの最大値を入れる
+	ms_maxStatus.sm_hp = m_status.s_hp;
+	ms_maxStatus.sm_stamina = m_status.s_stamina;
 }
 
 void Player::SetModelPos()

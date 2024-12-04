@@ -1,5 +1,5 @@
 #include "CoreManager.h"
-#include "Manager/EnemyManager.h"
+#include "Character/Player.h"
 
 /// <summary>
 /// コンストラクタ
@@ -21,7 +21,7 @@ CoreManager::~CoreManager()
 /// </summary>
 void CoreManager::Init()
 {
-	m_core = 0.0f;
+	//m_core = 0.0f;
 }
 
 /// <summary>
@@ -38,4 +38,15 @@ void CoreManager::DeadUpdate()
 
 void CoreManager::End()
 {
+}
+
+/// <summary>
+/// レベル上げに必要なコア
+/// </summary>
+/// <param name="player"></param>
+/// <returns></returns>
+int CoreManager::NeedCore(int level)
+{
+	//必要なソウルの計算は100 * (レベル数)　+ 100 * (レベル数 - 1) * (レベル数) / 2で行く
+	return 100 * level + 100 * ((level - 1) * (level / 2));
 }

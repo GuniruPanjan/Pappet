@@ -1,4 +1,5 @@
 #include "MapRest.h"
+#include "MapFirst.h"
 
 namespace
 {
@@ -72,11 +73,11 @@ void MapRest::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	m_mapPos = VGet(-200.0f, -25.0f, 0.0f);
 	m_mapCollisionPos = VGet(-220.0f, -40.0f, 395.0f);
 	//m_mapCollisionPos = VGet(0.0f, 0.0f, 0.0f);
-	m_mapCorePos = VGet(0.0f, 0.0f, 0.0f);
+	m_mapCorePos = VGet(-910.0f, 0.0f, 380.0f);
 	m_mapRestPos = MyLibrary::LibVec3(-180.0f, 0.0f, -200.0f);
 	m_mapBossRoomPos = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
 	m_mapBossEnterPos = MyLibrary::LibVec3(0.0f, 1000.0f, 0.0f);
-	m_mapCoreCollisionePos = MyLibrary::LibVec3(m_mapCorePos.x, 1000.0f, m_mapCorePos.z);
+	m_mapCoreCollisionePos = MyLibrary::LibVec3(m_mapCorePos.x, 0.0f, m_mapCorePos.z);
 	m_mapBossEnterTriggerPos = MyLibrary::LibVec3(10.0f, 1000.0f, 0.0f);
 
 	//ライト関係
@@ -103,11 +104,6 @@ std::shared_ptr<MapBase> MapRest::Update(bool warp, bool enter, bool Dead)
 {
 	m_pSearch->Update(m_mapRestPos);
 
-	if (warp)
-	{
-
-	}
-
 	return shared_from_this();  //自身のポインタ
 }
 
@@ -120,7 +116,7 @@ std::shared_ptr<MapBase> MapRest::WarpUpdate(bool warp)
 {
 	if (warp)
 	{
-
+		return std::make_shared<MapFirst>();
 	}
 
 	return shared_from_this();  //自身のポインタ

@@ -57,6 +57,7 @@ void GameManager::Init()
 	m_pSetting->Init();
 	m_pUi->Init();
 	m_pCore->Init();
+	m_pPlayer->ChangeStatus();
 }
 
 /// <summary>
@@ -76,6 +77,7 @@ void GameManager::GameInit()
 	m_pNpc->Init(m_pPhysics);
 	m_pSetting->Init();
 	m_pUi->Init();
+	m_pPlayer->ChangeStatus();
 }
 
 /// <summary>
@@ -192,7 +194,9 @@ void GameManager::Update()
 			//レベルアップ処理
 			if (m_pSetting->GetLevel())
 			{
-				m_pSetting->LevelUpdate(*m_pPlayer);
+				m_pSetting->LevelUpdate(*m_pPlayer, *m_pCore);
+				m_pPlayer->ChangeStatus();
+
 			}
 			//休息処理
 			else
@@ -201,6 +205,7 @@ void GameManager::Update()
 				if (m_init == true)
 				{
 					m_pPlayer->GameInit(m_pPhysics);
+					m_pPlayer->ChangeStatus();
 
 					//休息地点以外だと初期化
 					if (m_nowMap != 0)
@@ -213,7 +218,7 @@ void GameManager::Update()
 					m_init = false;
 				}
 
-				m_pSetting->RestUpdate(*m_pPlayer);
+				m_pSetting->RestUpdate(*m_pPlayer, *m_pCore);
 			}
 
 		}
@@ -310,7 +315,7 @@ void GameManager::Draw()
 	{
 		if (m_pSetting->GetLevel())
 		{
-			m_pSetting->LevelUpDraw(*m_pPlayer);
+			m_pSetting->LevelUpDraw(*m_pPlayer, *m_pCore);
 		}
 		else
 		{

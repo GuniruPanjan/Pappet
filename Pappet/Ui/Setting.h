@@ -9,6 +9,7 @@ class Shield;
 class Weapon;
 class Armor;
 class Player;
+class CoreManager;
 
 /// <summary>
 /// 設定処理用のクラス
@@ -31,6 +32,16 @@ public:
 		bool left = false;
 		bool armor = false;
 	};
+
+	//レベルを上げた結果格納する構造体
+	struct LevelUp
+	{
+		int sl_all;
+		int sl_hp;
+		int sl_stamina;
+		int sl_muscle;
+		int sl_skill;
+	}ms_levelUP;
 
 public:
 	/// <summary>
@@ -71,17 +82,17 @@ public:
 	/// <summary>
 	/// 休息の更新処理
 	/// </summary>
-	void RestUpdate(Player& player);
+	void RestUpdate(Player& player, CoreManager& core);
 
 	/// <summary>
 	/// レベルアップ処理
 	/// </summary>
-	void LevelUpdate(Player& player);
+	void LevelUpdate(Player& player, CoreManager& core);
 
 	/// <summary>
 	/// レベルアップ処理2
 	/// </summary>
-	void LevelUp(int level, int now);
+	void LevelUp(CoreManager& core, int origin, int& level, int now);
 
 	/// <summary>
 	/// アイテムボックス更新処理
@@ -157,7 +168,7 @@ public:
 	/// <summary>
 	/// レベルアップ描画
 	/// </summary>
-	void LevelUpDraw(Player& player);
+	void LevelUpDraw(Player& player, CoreManager& core);
 
 	/// <summary>
 	/// アイテムボックス描画処理
@@ -274,6 +285,7 @@ private:
 	int m_brightColor[5];     //明るさ選択の色
 	int m_volumeColor[5];     //音量選択の色
 	int m_menuColor[5];       //メニューの色
+	int m_core;               //表記用にコアを取得する
 	bool m_one;               //単発入力
 	bool m_settingScene;      //設定するための画面を呼ぶ変数
 	bool m_brightness;        //明るさ設定
@@ -286,6 +298,7 @@ private:
 	bool m_titleMenu;         //タイトルメニュー
 	bool m_statusLevel;       //ステータスを開く判定
 	bool m_blend;             //ブレンド判定
+	bool m_up;                //レベルが上げられるかの判定
 
 	//選んだ装備
 	SelectEquipment m_select;

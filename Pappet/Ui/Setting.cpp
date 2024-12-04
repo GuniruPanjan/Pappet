@@ -5,6 +5,7 @@
 #include "Item/Weapon.h"
 #include "Item/Armor.h"
 #include "Character/Player.h"
+#include "Manager/CoreManager.h"
 
 namespace
 {
@@ -20,6 +21,8 @@ namespace
 
 	//間違って押さないようにする
 	int cWaitTime = 0;
+	//連続で押さないようにする
+	int cPush = 0;
 
 	//変更する変数
 	constexpr int cEquipmentOneX = 630;
@@ -83,6 +86,7 @@ Setting::Setting() :
 	m_returnMenu(true),
 	m_titleMenu(false),
 	m_statusLevel(false),
+	m_up(false),
 	m_xpad()
 {
 
@@ -441,7 +445,7 @@ void Setting::EquipmentUpdate()
 /// <summary>
 /// 休息の更新処理
 /// </summary>
-void Setting::RestUpdate(Player& player)
+void Setting::RestUpdate(Player& player, CoreManager& core)
 {
 	//パッド入力所得
 	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
@@ -514,6 +518,14 @@ void Setting::RestUpdate(Player& player)
 				if (selectDecision == 8)
 				{
 					m_statusLevel = true;
+
+					ms_levelUP.sl_hp = player.GetHPLevel();
+					ms_levelUP.sl_stamina = player.GetStaminaLevel();
+					ms_levelUP.sl_muscle = player.GetMuscleLevel();
+					ms_levelUP.sl_skill = player.GetSkillLevel();
+
+					m_core = core.GetCore();
+
 				}
 				//転送
 				if (selectDecision == 9)
@@ -545,8 +557,11 @@ void Setting::RestUpdate(Player& player)
 /// レベルアップ処理
 /// </summary>
 /// <param name="player"></param>
-void Setting::LevelUpdate(Player& player)
+void Setting::LevelUpdate(Player& player, CoreManager& core)
 {
+
+	ms_levelUP.sl_all = ms_levelUP.sl_hp + ms_levelUP.sl_muscle + ms_levelUP.sl_skill + ms_levelUP.sl_stamina;
+
 	//パッド入力所得
 	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
 
@@ -570,6 +585,16 @@ void Setting::LevelUpdate(Player& player)
 
 	pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Six);
 
+	//必要コアより多かったらレベルが上げられる
+	if (core.NeedCore(ms_levelUP.sl_all) <= m_core)
+	{
+		m_up = true;
+	}
+	else
+	{
+		m_up = false;
+	}
+
 	if (cWaitTime >= 10)
 	{
 		//Bボタンが押されたら
@@ -581,18 +606,26 @@ void Setting::LevelUpdate(Player& player)
 			cWaitTime = 0;
 		}
 		
-		LevelUp(player.GetHPLevel(), pselect->Six);   //HP
-		LevelUp(player.GetStaminaLevel(), pselect->Seven); //Stamina
-		LevelUp(player.GetMuscleLevel(), pselect->Eight); //Muscle
-		LevelUp(player.GetSkillLevel(), pselect->Nine);  //Skill
+		LevelUp(core, player.GetHPLevel(), ms_levelUP.sl_hp, pselect->Six);   //HP
+		LevelUp(core, player.GetStaminaLevel(), ms_levelUP.sl_stamina, pselect->Seven); //Stamina
+		LevelUp(core, player.GetMuscleLevel(), ms_levelUP.sl_muscle, pselect->Eight); //Muscle
+		LevelUp(core, player.GetSkillLevel(), ms_levelUP.sl_skill, pselect->Nine);  //Skill
 		
 		
 		//Aボタンが押されたら
 		if (m_xpad.Buttons[12] == 1)
 		{
+			//上げたレベルとコアを決定する
 			if (selectDecision == 10)
 			{
 				m_statusLevel = false;
+
+				player.SetHPLevel(ms_levelUP.sl_hp);
+				player.SetStaminaLevel(ms_levelUP.sl_stamina);
+				player.SetMuscleLevel(ms_levelUP.sl_muscle);
+				player.SetSkillLevel(ms_levelUP.sl_skill);
+
+				core.SetCore(m_core);
 
 				cWaitTime = 0;
 			}
@@ -605,21 +638,45 @@ void Setting::LevelUpdate(Player& player)
 	}
 }
 
-void Setting::LevelUp(int level, int now)
+void Setting::LevelUp(CoreManager& core, int origin, int& level, int now)
 {
-	if (pselect->NowSelect == now)
+	if (cPush >= 30)
 	{
-		//左(レベルを戻す)
-		if (m_xpad.Buttons[2] == 1)
+		if (pselect->NowSelect == now)
 		{
-			int a = 1;
-		}
-		//右(レベルを上げる)
-		else if (m_xpad.Buttons[3] == 1)
-		{
-			int a = 1;
+			//左(レベルを戻す)
+			if (m_xpad.Buttons[2] == 1)
+			{
+				//レベルが高かったら戻せる
+				if (origin < level)
+				{
+					m_core += core.NeedCore(ms_levelUP.sl_all - 1);
+
+					level--;
+				}
+
+				cPush = 0;
+			}
+			//右(レベルを上げる)
+			else if (m_xpad.Buttons[3] == 1)
+			{
+				//レベルを上げることが可能なら
+				if (m_up)
+				{
+					m_core -= core.NeedCore(ms_levelUP.sl_all);
+
+					level++;
+				}
+
+				cPush = 0;
+			}
 		}
 	}
+	else
+	{
+		cPush++;
+	}
+	
 }
 
 /// <summary>
@@ -1167,7 +1224,7 @@ void Setting::RestDraw(bool rest)
 /// レベルアップ描画
 /// </summary>
 /// <param name="player"></param>
-void Setting::LevelUpDraw(Player& player)
+void Setting::LevelUpDraw(Player& playe, CoreManager& core)
 {
 
 	DrawGraph(-50, 0, m_levelUp, true);
@@ -1238,15 +1295,15 @@ void Setting::LevelUpDraw(Player& player)
 	//フォントのサイズ変更
 	SetFontSize(40);
 
-	DrawFormatString(90, 150, 0xffffff, "レベル      %d", player.GetLevel());
-	DrawFormatString(90, 250, 0xffffff, "所持ソウル  %d", player.GetCore());
-	DrawFormatString(90, 300, 0xffffff, "必要ソウル  %d", 0);
+	DrawFormatString(90, 150, 0xffffff, "レベル      %d", ms_levelUP.sl_all);
+	DrawFormatString(90, 250, 0xffffff, "所持ソウル  %d", m_core);
+	DrawFormatString(90, 300, 0xffffff, "必要ソウル  %d", core.NeedCore(ms_levelUP.sl_all));
 
 	//左の変数がレベル上げる前のレベルで右の変数がレベルを上げた後のレベル
-	DrawFormatString(230, 520, m_menuColor[0], "%d   →   %d", player.GetHPLevel(), player.GetHPLevel());
-	DrawFormatString(230, 615, m_menuColor[1], "%d   →   %d", player.GetStaminaLevel(), player.GetStaminaLevel());
-	DrawFormatString(230, 710, m_menuColor[2], "%d   →   %d", player.GetMuscleLevel(), player.GetMuscleLevel());
-	DrawFormatString(230, 805, m_menuColor[3], "%d   →   %d", player.GetSkillLevel(), player.GetSkillLevel());
+	DrawFormatString(270, 520, m_menuColor[0], "%d", ms_levelUP.sl_hp);
+	DrawFormatString(270, 615, m_menuColor[1], "%d", ms_levelUP.sl_stamina);
+	DrawFormatString(270, 710, m_menuColor[2], "%d", ms_levelUP.sl_muscle);
+	DrawFormatString(270, 805, m_menuColor[3], "%d", ms_levelUP.sl_skill);
 
 	//フォントのサイズ変更
 	SetFontSize(60);

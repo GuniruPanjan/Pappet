@@ -21,6 +21,14 @@ public:
 
 	}m_levelStatus;
 
+	//ステータスのマックス値
+	struct MaxStatus
+	{
+		int sm_hp;         //体力のマックス
+		int sm_stamina;    //スタミナのマックス
+
+	}ms_maxStatus;
+
 	//アニメーション関係の構造体
 	struct AnimationChange
 	{
@@ -58,6 +66,8 @@ public:
 
 	//装備関係の関数
 	void ArmorChange(int one, std::string path);
+	//レベル関係のステータス
+	void ChangeStatus();
 
 	//プレイヤーが生きているかを取得
 	const bool IsGetPlayerDead() const { return m_anim.s_isDead; }
@@ -94,10 +104,16 @@ public:
 	//アイテムなどのゲームでの変数関係
 	int GetLevel() { return m_levelStatus.sl_all; }
 	int GetCore() { return m_status.s_core; }
+	int SetUseCore(int core) { return m_status.s_core = m_status.s_core - core; }
+	int SetReturnCore(int core) { return m_status.s_core = m_status.s_core + core; }
 	int GetHPLevel() { return m_levelStatus.sl_hp; }
+	int SetHPLevel(int set) { return m_levelStatus.sl_hp = set; }
 	int GetStaminaLevel() { return m_levelStatus.sl_stamina; }
+	int SetStaminaLevel(int set) { return m_levelStatus.sl_stamina = set; }
 	int GetMuscleLevel() { return m_levelStatus.sl_muscle; }
+	int SetMuscleLevel(int set) { return m_levelStatus.sl_muscle = set; }
 	int GetSkillLevel() { return m_levelStatus.sl_skill; }
+	int SetSkillLevel(int set) { return m_levelStatus.sl_skill = set; }
 
 	const MyLibrary::LibVec3 GetPos() const { return rigidbody.GetPos(); }
 	const MyLibrary::LibVec3 GetShieldPos() const { return m_shieldPos; }
