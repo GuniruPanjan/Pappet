@@ -1,5 +1,7 @@
 #pragma once
 #include "DxLib.h"
+#include "Library/MyLibrary.h"
+#include "Object/SearchObject.h"
 
 /// <summary>
 /// アイテムの親クラス
@@ -45,7 +47,22 @@ public:
 	//デストラクタ
 	virtual ~ItemBase() {};
 
+	//マップアイテムとしての初期化処理
+	void ItemInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics) {};
+	//マップアイテムとしての削除処理
+	void ItemFinalize(std::shared_ptr<MyLibrary::Physics> physics);
+	//マップアイテムとしての更新処理
+	void ItemUpdate() {};
+	//マップアイテムとしての終了処理
+	void ItemEnd();
+
 protected:
+	//当たり判定を作成
+	void InitSearch(MyLibrary::LibVec3 pos, float radius);
+
+protected:
+	std::shared_ptr<SearchObject> m_pSearch;     //索敵判定
+
 	//アイテムの効果
 	int m_itemUse;
 	//アイテムのハンドル
@@ -60,4 +77,8 @@ protected:
 	MATRIX m_transMatrix;
 	//モデルの合成行列
 	MATRIX m_mixMatrix;
+
+	std::shared_ptr<MyLibrary::Physics> m_pPhysics;
+
+	MyLibrary::LibVec3 m_centerPos;              //中心座標
 };

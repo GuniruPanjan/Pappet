@@ -28,7 +28,9 @@ CharacterBase::CharacterBase(Priority priority, ObjectTag tag) :
 	m_angle(0.0f),
 	m_animSpeed(0.0f),
 	m_attackRadius(0.0f),
-	m_searchRadius(0.0f)
+	m_searchRadius(0.0f),
+	m_heel(0),
+	m_maxHeel(0)
 {
 	for (int i = 0; i < ANIMATION_MAX; i++)
 	{

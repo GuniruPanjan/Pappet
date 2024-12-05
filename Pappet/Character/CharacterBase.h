@@ -94,6 +94,8 @@ protected:
 	float m_angle;            //ƒLƒƒƒ‰‚ÌƒAƒ“ƒOƒ‹
 	float m_attackRadius;     //UŒ‚‚Ì“–‚½‚è”»’è
 	float m_searchRadius;     //õ“G‚Ì“–‚½‚è”»’è
+	int m_heel;               //HP‚É’Ç‰Á‚·‚é‰ñ•œ•ª
+	int m_maxHeel;            //HP‚ÌÅ‘å‰ñ•œ—Ê
 	
 };
 

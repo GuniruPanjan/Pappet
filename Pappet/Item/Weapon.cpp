@@ -3,6 +3,9 @@
 
 namespace
 {
+	//アイテム名
+	constexpr const char* cItemName = "Weapon";
+
 	//行列
 	constexpr float cWeaponMatrixY = 5.655f;
 	constexpr float cWeaponMatrixZ = 1.795f;
@@ -28,6 +31,18 @@ Weapon::~Weapon()
 
 	//メモリ解放
 	handle.Clear();
+}
+
+void Weapon::ItemInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics)
+{
+	//代入
+	m_pPhysics = physics;
+
+	InitSearch(MyLibrary::LibVec3(posX, posY, posZ), 80.0f);
+}
+
+void Weapon::ItemUpdate()
+{
 }
 
 /// <summary>

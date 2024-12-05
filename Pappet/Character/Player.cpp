@@ -214,7 +214,9 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, S
 		m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
 		m_nowAnimIdx = m_animIdx["Idle"];
 	}
-	
+
+	//HP‚ÌÅ‘å‰ñ•œ—Ê
+	m_maxHeel = 80;
 
 	//ˆÚ“®‹——£
 	cMove = 0.5f;
@@ -258,6 +260,9 @@ void Player::GameInit(std::shared_ptr<MyLibrary::Physics> physics)
 
 	m_deadReset = false;
 	m_staminaBreak = false;
+
+	//HP‚ÌÅ‘å‰ñ•œ—Ê
+	m_maxHeel = 80;
 
 }
 
@@ -792,15 +797,19 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	if (!m_isAnimationFinish && m_animChange.sa_recovery)
 	{
 		//HP‚ÌÅ‘å’l‚ğ’´‚¦‚È‚¢‚æ‚¤‚É‰ñ•œ‚·‚é
-		if (ms_maxStatus.sm_hp)
+		if (ms_maxStatus.sm_hp > m_status.s_hp && m_heel < m_maxHeel)
 		{
+			m_heel++;
 
+			m_status.s_hp++;
 		}
 	}
 	//‰ñ•œI—¹
 	else if (m_isAnimationFinish && m_animChange.sa_recovery)
 	{
 		m_animChange.sa_recovery = false;
+
+		m_heel = 0;
 	}
 
 	

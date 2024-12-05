@@ -3,6 +3,9 @@
 
 namespace
 {
+	//アイテム名
+	constexpr const char* cItemName = "Shield";
+
 	//武器の行列
 	constexpr float cShieldMatrixY = 3.142f;
 	constexpr float cShieldMatrixZ = 0.0f;
@@ -27,6 +30,18 @@ Shield::~Shield()
 	MV1DeleteModel(m_itemHandle);
 
 	handle.Clear();
+}
+
+void Shield::ItemInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics)
+{
+	//代入
+	m_pPhysics = physics;
+
+	InitSearch(MyLibrary::LibVec3(posX, posY, posZ), 80.0f);
+}
+
+void Shield::ItemUpdate()
+{
 }
 
 /// <summary>
