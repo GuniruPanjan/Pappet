@@ -208,3 +208,52 @@ void CsvLoad::AnimDataLoad(std::string charaName, std::map<std::string, int>& an
 	return;
 }
 
+/// <summary>
+/// アイテム情報ロード
+/// </summary>
+/// <param name="stageName">ステージの名前</param>
+/// <param name="pItemInfo"></param>
+void CsvLoad::ItemDataLoad(const char* stageName, std::list<std::shared_ptr<ItemManager::ItemGenerateInfo>>& pGenerateInfo)
+{
+	//一時保存用string
+	std::string strBuf;
+	//カンマ分け一時保存用string
+	std::vector<std::string> strConmaBuf;
+
+	std::string csvName = cFrontPathName + stageName + "Item" + cBackPathName;
+
+	//ファイル読み込み
+	std::ifstream ifs(csvName);
+	if (!ifs)
+	{
+		assert(false);
+		return;
+	}
+
+	//最初は対応表情報が入っているだけなので無視する
+	std::getline(ifs, strBuf);
+
+	while (getline(ifs, strBuf))
+	{
+		//所得した文字列をカンマ区切りの配列(情報群)にする
+		strConmaBuf = Split(strBuf, ',');
+
+		//0 : 生成するアイテムのID
+		//1 : 生成されるマップ
+		//2 : X座標
+		//3 : Y座標
+		//4 : Z座標
+
+		std::shared_ptr<ItemManager::ItemGenerateInfo> add = std::make_shared<ItemManager::ItemGenerateInfo>();
+		add->itemName = strConmaBuf[DataLoad::CsvItemStage::ID];
+		add->mapNumber = std::stoi(strConmaBuf[DataLoad::CsvItemStage::map]);
+		add->posX = std::stoi(strConmaBuf[DataLoad::CsvItemStage::x]);
+		add->posY = std::stoi(strConmaBuf[DataLoad::CsvItemStage::y]);
+		add->posZ = std::stoi(strConmaBuf[DataLoad::CsvItemStage::z]);
+
+		pGenerateInfo.emplace_back(add);
+	}
+
+	return;
+}
+

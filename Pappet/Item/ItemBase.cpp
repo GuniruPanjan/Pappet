@@ -17,6 +17,15 @@ void ItemBase::ItemEnd()
 }
 
 /// <summary>
+/// ƒAƒCƒeƒ€î•ñ‚ğ“Ç‚İ‚Ş
+/// </summary>
+/// <param name="name"></param>
+void ItemBase::LoadData(std::string name)
+{
+
+}
+
+/// <summary>
 /// õ“G”»’è‚ğ‚·‚é“–‚½‚è”»’è‚ğì¬
 /// </summary>
 /// <param name="pos"></param>

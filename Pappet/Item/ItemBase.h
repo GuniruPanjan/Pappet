@@ -2,6 +2,8 @@
 #include "DxLib.h"
 #include "Library/MyLibrary.h"
 #include "Object/SearchObject.h"
+#include <map>
+#include <string>
 
 /// <summary>
 /// アイテムの親クラス
@@ -57,6 +59,8 @@ public:
 	void ItemEnd();
 
 protected:
+	//アイテム情報を読み込む
+	void LoadData(std::string name);
 	//当たり判定を作成
 	void InitSearch(MyLibrary::LibVec3 pos, float radius);
 

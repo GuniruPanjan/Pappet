@@ -5,6 +5,7 @@
 #include <List>
 #include "Library/MyLibrary.h"
 
+class GameManager;
 class ItemBase;
 class Armor;
 class Shield;
@@ -15,7 +16,7 @@ class Weapon;
 /// </summary>
 class ItemManager
 {
-private:
+public:
 	//アイテムの構造体
 	struct Item
 	{
@@ -48,7 +49,7 @@ public:
 	//初期化処理
 	void Init(const char* stageName);
 	//更新処理
-	void Update(std::shared_ptr<MyLibrary::Physics> physics);
+	void Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager);
 
 	//描画処理
 	void Draw();
@@ -56,6 +57,9 @@ public:
 	//終了処理
 	void End();
 
+private:
+	//アイテムの生成
+	void CreateItem(float posX, float posY, float posZ, std::string name, std::shared_ptr<MyLibrary::Physics> physics);
 private:
 	//アイテムの管理
 	std::list<std::shared_ptr<ItemBase>> m_pItems;

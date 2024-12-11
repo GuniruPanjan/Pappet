@@ -1,6 +1,7 @@
 #pragma once
 #include "Character/CharacterBase.h"
 #include "Manager/EnemyManager.h"
+#include "Manager/ItemManager.h"
 #include <string>
 #include <memory>
 
@@ -30,6 +31,16 @@ namespace DataLoad
 		x,          //敵のX座標
 		y,          //敵のY座標
 		z,          //敵のZ座標
+	};
+
+	//アイテムの生成場所の列挙型
+	enum CsvItemStage : int
+	{
+		ID,         //アイテムのID
+		map,        //アイテムの出現マップ
+		x,          //アイテムのX座標
+		y,          //アイテムのY座標
+		z,          //アイテムのZ座標
 	};
 }
 
@@ -81,6 +92,9 @@ public:
 
 	//アニメーション情報ロード
 	void AnimDataLoad(std::string charaName, std::map<std::string, int>& anim);
+
+	//アイテム生成情報ロード
+	void ItemDataLoad(const char* stageName, std::list<std::shared_ptr<ItemManager::ItemGenerateInfo>>& pGenerateInfo);
 
 private:
 	//Singletonのポインタがプログラム起動時に一つ作られるようにする
