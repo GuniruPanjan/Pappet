@@ -150,6 +150,7 @@
     <ClCompile Include="Item\Armor.cpp" />
     <ClCompile Include="Item\ItemBase.cpp" />
     <ClCompile Include="Item\Shield.cpp" />
+    <ClCompile Include="Item\Tool.cpp" />
     <ClCompile Include="Item\Weapon.cpp" />
     <ClCompile Include="Library\Collidable.cpp" />
     <ClCompile Include="Library\CollidableData.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="Item\Armor.h" />
     <ClInclude Include="Item\ItemBase.h" />
     <ClInclude Include="Item\Shield.h" />
+    <ClInclude Include="Item\Tool.h" />
     <ClInclude Include="Item\Weapon.h" />
     <ClInclude Include="Library\Collidable.h" />
     <ClInclude Include="Library\CollidableData.h" />

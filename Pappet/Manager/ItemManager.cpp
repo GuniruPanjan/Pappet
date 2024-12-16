@@ -94,15 +94,19 @@ void ItemManager::End()
 /// <param name="physics">ï®óùÉ|ÉCÉìÉ^</param>
 void ItemManager::CreateItem(float posX, float posY, float posZ, std::string name, std::shared_ptr<MyLibrary::Physics> physics)
 {
-	if (name == "BlackSword")
+	if (name == "Weapon")
 	{
 
 	}
-	if (name == "Distorted")
+	if (name == "Shield")
 	{
 
 	}
-	if (name == "Rubbish")
+	if (name == "Armor")
+	{
+
+	}
+	if (name == "Tool")
 	{
 
 	}

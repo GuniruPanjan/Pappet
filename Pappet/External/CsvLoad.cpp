@@ -245,11 +245,11 @@ void CsvLoad::ItemDataLoad(const char* stageName, std::list<std::shared_ptr<Item
 		//4 : ZÀ•W
 
 		std::shared_ptr<ItemManager::ItemGenerateInfo> add = std::make_shared<ItemManager::ItemGenerateInfo>();
-		//add->itemName = strConmaBuf[DataLoad::CsvItemStage::ID];
-		//add->mapNumber = std::stoi(strConmaBuf[DataLoad::CsvItemStage::map]);
-		//add->posX = std::stoi(strConmaBuf[DataLoad::CsvItemStage::x]);
-		//add->posY = std::stoi(strConmaBuf[DataLoad::CsvItemStage::y]);
-		//add->posZ = std::stoi(strConmaBuf[DataLoad::CsvItemStage::z]);
+		add->itemName = strConmaBuf[DataLoad::CsvItemStage::ItemID];
+		add->mapNumber = std::stoi(strConmaBuf[DataLoad::CsvItemStage::Itemmap]);
+		add->posX = std::stoi(strConmaBuf[DataLoad::CsvItemStage::Itemx]);
+		add->posY = std::stoi(strConmaBuf[DataLoad::CsvItemStage::Itemy]);
+		add->posZ = std::stoi(strConmaBuf[DataLoad::CsvItemStage::Itemz]);
 
 		pGenerateInfo.emplace_back(add);
 	}

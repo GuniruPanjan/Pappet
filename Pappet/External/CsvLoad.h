@@ -34,14 +34,14 @@ namespace DataLoad
 	};
 
 	//アイテムの生成場所の列挙型
-	//enum CsvItemStage : int
-	//{
-	//	ID,         //アイテムのID
-	//	map,        //アイテムの出現マップ
-	//	x,          //アイテムのX座標
-	//	y,          //アイテムのY座標
-	//	z,          //アイテムのZ座標
-	//};
+	enum CsvItemStage : int
+	{
+		ItemID,         //アイテムのID
+		Itemmap,        //アイテムの出現マップ
+		Itemx,          //アイテムのX座標
+		Itemy,          //アイテムのY座標
+		Itemz,          //アイテムのZ座標
+	};
 }
 
 /// <summary>
