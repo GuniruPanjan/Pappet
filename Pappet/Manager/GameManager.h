@@ -6,6 +6,7 @@
 #include "Item/Shield.h"
 #include "Item/Armor.h"
 #include "Manager/CoreManager.h"
+#include "ItemManager.h"
 #include<memory>
 
 class Player;
@@ -71,6 +72,7 @@ private:
 	std::shared_ptr<Shield> m_pShield = std::make_shared<Shield>();
 	std::shared_ptr<Armor> m_pArmor = std::make_shared<Armor>();
 	std::shared_ptr<CoreManager> m_pCore = std::make_shared<CoreManager>();
+	std::shared_ptr<ItemManager> m_pItem;
 
 	//Œ»İ‚Ìƒ}ƒbƒv
 	eMapName m_nowMap;

@@ -53,6 +53,8 @@ void GameManager::Init()
 	m_pPlayer->SetMapNow(FirstMap);
 	m_pEnemy = std::make_shared<EnemyManager>();
 	m_pEnemy->Init(m_pMap->GetStageName());
+	m_pItem = std::make_shared<ItemManager>();
+	m_pItem->Init(m_pMap->GetStageName());
 	m_pNpc->Init(m_pPhysics);
 	m_pSetting->Init();
 	m_pUi->Init();
@@ -74,6 +76,7 @@ void GameManager::GameInit()
 
 	m_pPlayer->Init(m_pPhysics, *m_pWeapon, *m_pShield, *m_pArmor, false);
 	m_pEnemy->Init(m_pMap->GetStageName());
+	m_pItem->Init(m_pMap->GetStageName());
 	m_pNpc->Init(m_pPhysics);
 	m_pSetting->Init();
 	m_pUi->Init();
