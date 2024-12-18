@@ -39,6 +39,8 @@ public:
 		m_itemUse(0),
 		m_itemHandle(-1),
 		m_frameIndex(0),
+		m_itemPick(false),
+		m_isTaking(false),
 		m_framePos(VGet(0.0f,0.0f,0.0f)),
 		m_pos(VGet(0.0f,0.0f,0.0f)),
 		m_transMatrix(),
@@ -54,10 +56,14 @@ public:
 	//マップアイテムとしての削除処理
 	void ItemFinalize(std::shared_ptr<MyLibrary::Physics> physics);
 	//マップアイテムとしての更新処理
-	void ItemUpdate() {};
+	virtual void ItemUpdate() {};
 	//マップアイテムとしての終了処理
 	void ItemEnd();
 
+	//アイテムを拾えるかをの判定を返す
+	bool GetItemPick() { return m_itemPick; }
+	//アイテムを取得した時
+	bool SetItemPick(bool set) { return m_isTaking = set; }
 protected:
 	//アイテム情報を読み込む
 	void LoadData(std::string name);
@@ -73,6 +79,10 @@ protected:
 	int m_itemHandle;
 	//フレーム検索
 	int m_frameIndex;
+	//アイテムを取れるかの判定
+	bool m_itemPick;
+	//取られたかどうかの判定
+	bool m_isTaking;
 	//フレームポジション
 	VECTOR m_framePos;
 	//ポジション

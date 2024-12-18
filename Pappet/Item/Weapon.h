@@ -12,15 +12,14 @@ public:
 	//デストラクタ
 	virtual ~Weapon();
 
-	//マップアイテムとしての更新処理
-	void ItemUpdate();
-
 	//初期化
 	void Init();
 	//アイテムの初期化処理
 	void ItemInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics);
 	//更新処理
 	void Update(MATRIX mat);
+	//マップアイテムとしての更新処理
+	void ItemUpdate();
 	//描画処理
 	void Draw();
 	//終了処理

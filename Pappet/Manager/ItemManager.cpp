@@ -10,7 +10,9 @@
 /// コンストラクタ
 /// </summary>
 ItemManager::ItemManager():
-	m_stageName("")
+	m_stageName(""),
+	m_itemPick(false),
+	m_one(false)
 {
 }
 
@@ -84,7 +86,14 @@ void ItemManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManage
 		//マップのアイテムとして更新する
 		for (auto& item : m_pItems)
 		{
+			item->ItemUpdate();
 
+			if (!m_itemPick)
+			{
+				m_itemPick = item->GetItemPick();
+
+				//取得したやつを消す
+			}
 		}
 	}
 }
@@ -123,13 +132,13 @@ void ItemManager::CreateItem(float posX, float posY, float posZ, std::string nam
 	{
 		m_pshield = std::make_shared<Shield>();
 		m_pshield->ItemInit(posX, posY, posZ, physics);
-		m_pItems.emplace_back(m_pweapon);
+		m_pItems.emplace_back(m_pshield);
 	}
 	if (name == "Armor")
 	{
 		m_parmor = std::make_shared<Armor>();
 		m_parmor->ItemInit(posX, posY, posZ, physics);
-		m_pItems.emplace_back(m_pweapon);
+		m_pItems.emplace_back(m_parmor);
 	}
 	if (name == "Tool")
 	{

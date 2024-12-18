@@ -15,14 +15,6 @@ Armor::~Armor()
 }
 
 /// <summary>
-/// マップとしてのアイテム更新処理
-/// </summary>
-void Armor::ItemUpdate()
-{
-
-}
-
-/// <summary>
 /// 初期化
 /// </summary>
 void Armor::Init()
@@ -50,10 +42,35 @@ void Armor::ItemInit(float posX, float posY, float posZ, std::shared_ptr<MyLibra
 	m_pPhysics = physics;
 
 	InitSearch(MyLibrary::LibVec3(posX, posY, posZ), 80.0f);
+
+	m_centerPos = MyLibrary::LibVec3(posX, posY, posZ);
 }
 
 void Armor::Update()
 {
+}
+
+void Armor::ItemUpdate()
+{
+	//アイテムがまだ取られてない時の処理
+	if (!m_isTaking)
+	{
+		if (m_pSearch->GetIsStay())
+		{
+			m_itemPick = true;
+		}
+		else
+		{
+			m_itemPick = false;
+		}
+
+		m_pSearch->Update(m_centerPos);
+	}
+	//アイテムが取られた時の処理
+	else
+	{
+
+	}
 }
 
 void Armor::Draw()

@@ -115,6 +115,8 @@ void GameManager::Update()
 
 		//休息ができるか
 		m_pPlayer->SetRest(m_pMap->GetRest());
+		//アイテムを拾えるかどうか
+		m_pPlayer->SetItemPick(m_pItem->GetItemPick());
 		//ボス部屋に入ったか
 		m_pEnemy->SetBossRoom(m_pMap->GetBossRoom());
 

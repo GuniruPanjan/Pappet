@@ -41,6 +41,14 @@ namespace DataLoad
 		Itemx,          //アイテムのX座標
 		Itemy,          //アイテムのY座標
 		Itemz,          //アイテムのZ座標
+
+		//アイテム識別
+		ItemSmallCore,   //小型コア
+		ItemMediumCore,  //中型コア
+		ItemRubbish,     //ゴミ
+		ItemBlackSword,  //黒い剣
+		ItemDistorted,   //歪んだ盾
+		ItemArmorNormal, //普通の鎧
 	};
 }
 

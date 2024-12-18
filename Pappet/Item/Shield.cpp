@@ -32,10 +32,6 @@ Shield::~Shield()
 	handle.Clear();
 }
 
-void Shield::ItemUpdate()
-{
-}
-
 /// <summary>
 /// 初期化処理
 /// </summary>
@@ -65,6 +61,8 @@ void Shield::ItemInit(float posX, float posY, float posZ, std::shared_ptr<MyLibr
 	m_pPhysics = physics;
 
 	InitSearch(MyLibrary::LibVec3(posX, posY, posZ), 80.0f);
+
+	m_centerPos = MyLibrary::LibVec3(posX, posY, posZ);
 }
 
 /// <summary>
@@ -91,6 +89,30 @@ void Shield::Update(MATRIX mat)
 	m_mixMatrix = MMult(m_transMatrix, mat);
 
 	MV1SetMatrix(m_itemHandle, m_mixMatrix);
+}
+
+void Shield::ItemUpdate()
+{
+	//アイテムがまだ取られてない時の処理
+	if (!m_isTaking)
+	{
+		if (m_pSearch->GetIsStay())
+		{
+			m_itemPick = true;
+		}
+		else
+		{
+			m_itemPick = false;
+		}
+
+		m_pSearch->Update(m_centerPos);
+	}
+	//アイテムが取られた時の処理
+	else
+	{
+
+	}
+
 }
 
 /// <summary>

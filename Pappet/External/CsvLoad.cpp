@@ -243,6 +243,12 @@ void CsvLoad::ItemDataLoad(const char* stageName, std::list<std::shared_ptr<Item
 		//2 : XÀ•W
 		//3 : YÀ•W
 		//4 : ZÀ•W
+		//5 : ¬Œ^ƒRƒA
+		//6 : ’†Œ^ƒRƒA
+		//7 : ƒSƒ~
+		//8 : •‚¢Œ•
+		//9 : ˜c‚ñ‚¾‚
+		//10 : •’Ê‚ÌŠZ
 
 		std::shared_ptr<ItemManager::ItemGenerateInfo> add = std::make_shared<ItemManager::ItemGenerateInfo>();
 		add->itemName = strConmaBuf[DataLoad::CsvItemStage::ItemID];
@@ -250,6 +256,12 @@ void CsvLoad::ItemDataLoad(const char* stageName, std::list<std::shared_ptr<Item
 		add->posX = std::stoi(strConmaBuf[DataLoad::CsvItemStage::Itemx]);
 		add->posY = std::stoi(strConmaBuf[DataLoad::CsvItemStage::Itemy]);
 		add->posZ = std::stoi(strConmaBuf[DataLoad::CsvItemStage::Itemz]);
+		add->SmallCore = std::stoi(strConmaBuf[DataLoad::CsvItemStage::ItemSmallCore]);
+		add->MediumCore = std::stoi(strConmaBuf[DataLoad::CsvItemStage::ItemMediumCore]);
+		add->Rubbish = std::stoi(strConmaBuf[DataLoad::CsvItemStage::ItemRubbish]);
+		add->BlackSword = std::stoi(strConmaBuf[DataLoad::CsvItemStage::ItemBlackSword]);
+		add->Distorted = std::stoi(strConmaBuf[DataLoad::CsvItemStage::ItemDistorted]);
+		add->ArmorNormal = std::stoi(strConmaBuf[DataLoad::CsvItemStage::ItemArmorNormal]);
 
 		pGenerateInfo.emplace_back(add);
 	}

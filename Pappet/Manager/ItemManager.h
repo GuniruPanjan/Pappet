@@ -4,9 +4,9 @@
 #include <string>
 #include <List>
 #include "Library/MyLibrary.h"
+#include "Item/ItemBase.h"
 
 class GameManager;
-class ItemBase;
 class Armor;
 class Shield;
 class Weapon;
@@ -37,9 +37,16 @@ public:
 		int posX;                  //アイテムのX座標
 		int posY;                  //アイテムのY座標
 		int posZ;                  //アイテムのZ座標
+		
+		//アイテム識別
+		int SmallCore = 0;       //小型コア
+		int MediumCore = 0;      //中型コア
+		int Rubbish = 0;         //ゴミ
+		int BlackSword = 0;      //黒い剣
+		int Distorted = 0;       //歪んだ盾
+		int ArmorNormal = 0;     //普通の鎧
 
 		bool isCreated = false;    //生成済みかどうか
-		bool isTaking = false;     //取られたかどうか
 	};
 
 public:
@@ -58,6 +65,8 @@ public:
 	//終了処理
 	void End();
 
+	//アイテムを拾えるかを返す
+	bool GetItemPick() { return m_itemPick; }
 private:
 	//アイテムの生成
 	void CreateItem(float posX, float posY, float posZ, std::string name, std::shared_ptr<MyLibrary::Physics> physics);
@@ -77,6 +86,8 @@ private:
 
 	//ステージ毎のアイテムの生成数
 	std::unordered_map<int, int> m_itemGenerationCountPerOneMap;
+
+	bool m_itemPick;      //アイテムを取れるか
 
 };
 

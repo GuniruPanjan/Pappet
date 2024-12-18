@@ -339,7 +339,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	float SetAngleX = 0.0f;
 	float SetAngleY = 0.0f;
 
-	if (!m_anim.s_isDead && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery && !m_anim.s_hit && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact && !m_rest)
+	if (!m_anim.s_isDead && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery && !m_anim.s_hit && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact && !m_rest && !m_animChange.sa_taking)
 	{
 		GetJoypadAnalogInput(&analogX, &analogY, DX_INPUT_PAD1);
 
@@ -833,6 +833,16 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(-m_moveVector.x, prevVelocity.y, -m_moveVector.z);
 		rigidbody.SetVelocity(newVelocity);
 	}
+
+	//アイテム取得終了
+	if (m_animChange.sa_taking)
+	{
+		if (m_nowFrame >= 60.0f)
+		{
+			m_animChange.sa_taking = false;
+		}
+		
+	}
 }
 
 /// <summary>
@@ -1063,6 +1073,15 @@ void Player::Action()
 		}
 	}
 	
+	//アイテムを拾う
+	if (m_itemPick)
+	{
+		//Yボタンを押したら
+		if (m_xpad.Buttons[15] == 1)
+		{
+			m_animChange.sa_taking = true;
+		}
+	}
 
 
 	//メニューを開く
@@ -1173,7 +1192,7 @@ void Player::AllAnimation()
 		{
 			//動いてない時
 			if (!m_anim.s_moveflag && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery && 
-				!m_shieldNow)
+				!m_shieldNow && !m_animChange.sa_taking)
 			{
 				m_nowAnimIdx = m_animIdx["Idle"];
 				ChangeAnim(m_nowAnimIdx, m_animOne[6], m_animOne);

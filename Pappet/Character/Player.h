@@ -91,7 +91,7 @@ public:
 	bool SetNotRest(bool set) { return m_rest = set; }
 
 	//マップアイテム関係
-
+	bool SetItemPick(bool set) { return m_itemPick = set; }
 
 	//ワープ関係
 	bool SetWarp(bool set) { return m_warp = set; }
