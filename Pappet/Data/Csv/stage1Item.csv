@@ -1,4 +1,4 @@
 ﻿アイテムID,Map,X,Y,Z
-BlackSword,1,300,0,-360
-Distorted,1,700,0,-230
-Rubbish,1,700,0,200
+Weapon,1,300,0,-360
+Shield,1,700,0,-230
+Armor,1,700,0,200

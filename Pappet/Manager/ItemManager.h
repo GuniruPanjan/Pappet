@@ -10,6 +10,7 @@ class ItemBase;
 class Armor;
 class Shield;
 class Weapon;
+class Tool;
 
 /// <summary>
 /// アイテムを管理するクラス
@@ -69,6 +70,7 @@ private:
 	std::shared_ptr<Armor> m_parmor;
 	std::shared_ptr<Shield> m_pshield;
 	std::shared_ptr<Weapon> m_pweapon;
+	std::shared_ptr<Tool> m_ptool;
 
 	//ステージ名
 	const char* m_stageName;

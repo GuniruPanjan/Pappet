@@ -32,14 +32,6 @@ Shield::~Shield()
 	handle.Clear();
 }
 
-void Shield::ItemInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics)
-{
-	//代入
-	m_pPhysics = physics;
-
-	InitSearch(MyLibrary::LibVec3(posX, posY, posZ), 80.0f);
-}
-
 void Shield::ItemUpdate()
 {
 }
@@ -58,6 +50,21 @@ void Shield::Init()
 		m_pos = VGet(0.0f, 0.0f, 7.787f);
 	}
 	
+}
+
+/// <summary>
+/// マップアイテムとしての初期化処理
+/// </summary>
+/// <param name="posX"></param>
+/// <param name="posY"></param>
+/// <param name="posZ"></param>
+/// <param name="physics"></param>
+void Shield::ItemInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics)
+{
+	//代入
+	m_pPhysics = physics;
+
+	InitSearch(MyLibrary::LibVec3(posX, posY, posZ), 80.0f);
 }
 
 /// <summary>

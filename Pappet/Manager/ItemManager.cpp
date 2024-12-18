@@ -1,6 +1,10 @@
 #include "ItemManager.h"
 #include "GameManager.h"
 #include "External/CsvLoad.h"
+#include "Item/Weapon.h"
+#include "Item/Shield.h"
+#include "Item/Armor.h"
+#include "Item/Tool.h"
 
 /// <summary>
 /// コンストラクタ
@@ -63,9 +67,24 @@ void ItemManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManage
 			if (generate->mapNumber == thisMapName)
 			{
 				//生成済みでなければ
-				generate->isCreated = true;
-				CreateItem(generate->posX, generate->posY, generate->posZ, generate->itemName, physics);
+				if (!generate->isCreated)
+				{
+					generate->isCreated = true;
+					CreateItem(generate->posX, generate->posY, generate->posZ, generate->itemName, physics);
+				}
+				
 			}
+		}
+	}
+
+
+	//マップが0以外だと動かす
+	if (thisMapName != 0)
+	{
+		//マップのアイテムとして更新する
+		for (auto& item : m_pItems)
+		{
+
 		}
 	}
 }
@@ -96,18 +115,26 @@ void ItemManager::CreateItem(float posX, float posY, float posZ, std::string nam
 {
 	if (name == "Weapon")
 	{
-
+		m_pweapon = std::make_shared<Weapon>();
+		m_pweapon->ItemInit(posX, posY, posZ, physics);
+		m_pItems.emplace_back(m_pweapon);
 	}
 	if (name == "Shield")
 	{
-
+		m_pshield = std::make_shared<Shield>();
+		m_pshield->ItemInit(posX, posY, posZ, physics);
+		m_pItems.emplace_back(m_pweapon);
 	}
 	if (name == "Armor")
 	{
-
+		m_parmor = std::make_shared<Armor>();
+		m_parmor->ItemInit(posX, posY, posZ, physics);
+		m_pItems.emplace_back(m_pweapon);
 	}
 	if (name == "Tool")
 	{
-
+		//m_ptool = std::make_shared<Tool>();
+		//m_ptool->ItenInit(posX, posY, posZ, physics);
+		//m_pItems.emplace_back(m_pweapon);
 	}
 }

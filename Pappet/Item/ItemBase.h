@@ -50,7 +50,7 @@ public:
 	virtual ~ItemBase() {};
 
 	//マップアイテムとしての初期化処理
-	void ItemInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics) {};
+	virtual void ItemInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics) {};
 	//マップアイテムとしての削除処理
 	void ItemFinalize(std::shared_ptr<MyLibrary::Physics> physics);
 	//マップアイテムとしての更新処理

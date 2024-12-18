@@ -105,6 +105,7 @@ void GameManager::Update()
 			m_pCamera->LockUpdate(*m_pPlayer, *m_pEnemy);
 		}
 
+		m_pItem->Update(m_pPhysics, this);
 		m_pEnemy->Update(m_pPhysics, this, *m_pCore, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->GetShieldPos(), !m_pPlayer->IsGetPlayerDead(), m_init);
 
 		m_pMap->JudgeUpdate();

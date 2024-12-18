@@ -164,8 +164,6 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 		//敵の更新する
 		for (auto& enemy : m_pEnemys)
 		{
-			
-
 			//更新
 			enemy->Update(playerPos, shieldPos, isPlayerChase);
 

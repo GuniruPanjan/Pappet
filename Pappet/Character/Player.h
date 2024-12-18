@@ -90,6 +90,9 @@ public:
 	bool SetRest(bool set) { return m_restTouch = set; }
 	bool SetNotRest(bool set) { return m_rest = set; }
 
+	//マップアイテム関係
+
+
 	//ワープ関係
 	bool SetWarp(bool set) { return m_warp = set; }
 	bool GetWarp() { return m_warp; }
@@ -101,7 +104,7 @@ public:
 	//死亡関係
 	bool GetDead() { return m_deadReset; }
 
-	//アイテムなどのゲームでの変数関係
+	//アイテムなどのステータス関係
 	int GetLevel() { return m_levelStatus.sl_all; }
 	int GetCore() { return m_status.s_core; }
 	int SetUseCore(int core) { return m_status.s_core = m_status.s_core - core; }
@@ -140,6 +143,7 @@ private:
 	bool m_menuOpen;                    //メニューを開く判定
 	bool m_restTouch;                   //休息できるかの判定
 	bool m_rest;                        //休息判定
+	bool m_itemPick;                    //アイテムを拾える判定
 	bool m_bigRest;                     //レベルが上げられる休息判定
 	bool m_lockonTarget;                //ターゲット判定
 	bool m_warp;                        //マップをワープするための判定

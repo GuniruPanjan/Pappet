@@ -87,6 +87,7 @@ Player::Player() :
 	m_menuOpen(false),
 	m_restTouch(false),
 	m_rest(false),
+	m_itemPick(false),
 	m_bigRest(false),
 	m_lockonTarget(false),
 	m_warp(false),
