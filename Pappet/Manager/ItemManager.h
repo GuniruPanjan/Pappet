@@ -57,7 +57,7 @@ public:
 	//‰Šú‰»ˆ—
 	void Init(const char* stageName);
 	//XVˆ—
-	void Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager);
+	void Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, bool taking);
 
 	//•`‰æˆ—
 	void Draw();

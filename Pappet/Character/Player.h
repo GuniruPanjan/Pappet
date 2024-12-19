@@ -92,6 +92,7 @@ public:
 
 	//マップアイテム関係
 	bool SetItemPick(bool set) { return m_itemPick = set; }
+	bool GetTaking() { return m_animChange.sa_taking; }
 
 	//ワープ関係
 	bool SetWarp(bool set) { return m_warp = set; }

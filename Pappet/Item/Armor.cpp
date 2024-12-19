@@ -50,10 +50,10 @@ void Armor::Update()
 {
 }
 
-void Armor::ItemUpdate()
+void Armor::ItemUpdate(bool taking)
 {
 	//アイテムがまだ取られてない時の処理
-	if (!m_isTaking)
+	if (!m_isTaking && !taking)
 	{
 		if (m_pSearch->GetIsStay())
 		{
@@ -67,9 +67,14 @@ void Armor::ItemUpdate()
 		m_pSearch->Update(m_centerPos);
 	}
 	//アイテムが取られた時の処理
-	else
+	else if (m_itemPick && taking)
 	{
+		//一回だけ実行
 
+		ItemFinalize(m_pPhysics);
+
+		m_itemPick = false;
+		m_isTaking = true;
 	}
 }
 

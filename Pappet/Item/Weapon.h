@@ -19,7 +19,7 @@ public:
 	//更新処理
 	void Update(MATRIX mat);
 	//マップアイテムとしての更新処理
-	void ItemUpdate();
+	void ItemUpdate(bool taking);
 	//描画処理
 	void Draw();
 	//終了処理

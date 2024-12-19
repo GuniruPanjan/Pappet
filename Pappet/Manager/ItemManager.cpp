@@ -11,8 +11,7 @@
 /// </summary>
 ItemManager::ItemManager():
 	m_stageName(""),
-	m_itemPick(false),
-	m_one(false)
+	m_itemPick(false)
 {
 }
 
@@ -53,7 +52,7 @@ void ItemManager::Init(const char* stageName)
 /// 更新処理
 /// </summary>
 /// <param name="physics">フィジックス</param>
-void ItemManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager)
+void ItemManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, bool taking)
 {
 
 	//今のマップがどのマップか取得する
@@ -86,14 +85,13 @@ void ItemManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManage
 		//マップのアイテムとして更新する
 		for (auto& item : m_pItems)
 		{
-			item->ItemUpdate();
+			item->ItemUpdate(taking);
 
 			if (!m_itemPick)
 			{
 				m_itemPick = item->GetItemPick();
-
-				//取得したやつを消す
 			}
+
 		}
 	}
 }

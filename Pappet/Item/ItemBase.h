@@ -56,7 +56,7 @@ public:
 	//マップアイテムとしての削除処理
 	void ItemFinalize(std::shared_ptr<MyLibrary::Physics> physics);
 	//マップアイテムとしての更新処理
-	virtual void ItemUpdate() {};
+	virtual void ItemUpdate(bool taking) {};
 	//マップアイテムとしての終了処理
 	void ItemEnd();
 

@@ -16,6 +16,6 @@ class Tool : public ItemBase
 	//アイテムの初期化処理
 	void ItemInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics);
 	//マップアイテムとしての更新処理
-	void ItemUpdate();
+	void ItemUpdate(bool taking);
 };
 
