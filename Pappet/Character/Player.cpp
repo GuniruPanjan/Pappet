@@ -1360,7 +1360,7 @@ void Player::Draw(Armor& armor)
 	rigidbody.SetPos(rigidbody.GetNextPos());
 	m_collisionPos = rigidbody.GetPos();
 
-#if true
+#if false
 	DrawFormatString(200, 600, 0xffffff, "colPosx : %f", m_collisionPos.x);
 	DrawFormatString(200, 700, 0xffffff, "colPosy : %f", m_collisionPos.y);
 	DrawFormatString(200, 800, 0xffffff, "colPosz : %f", m_collisionPos.z);

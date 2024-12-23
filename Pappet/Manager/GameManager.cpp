@@ -334,6 +334,8 @@ void GameManager::Draw()
 	{
 		m_pUi->DiedDraw();
 	}
+
+	m_pItem->Draw();
 }
 
 /// <summary>

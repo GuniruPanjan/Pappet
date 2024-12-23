@@ -70,7 +70,6 @@ void Armor::ItemUpdate(bool taking)
 	else if (m_itemPick && taking)
 	{
 		//ˆê‰ñ‚¾‚¯Às
-
 		ItemFinalize(m_pPhysics);
 
 		m_itemPick = false;

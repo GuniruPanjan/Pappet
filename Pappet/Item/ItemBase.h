@@ -11,6 +11,17 @@
 class ItemBase
 {
 public:
+	//アイテムの種類構造体
+	struct Item
+	{
+		int SmallCore = 0;       //小型コア
+		int MediumCore = 0;      //中型コア
+		int Rubbish = 0;         //ゴミ
+		int BlackSword = 0;      //黒い剣
+		int Distorted = 0;       //歪んだ盾
+		int ArmorNormal = 0;     //普通の鎧
+	};
+
 	//武器の構造体
 	struct sWeapon
 	{
@@ -55,6 +66,8 @@ public:
 	virtual void ItemInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics) {};
 	//マップアイテムとしての削除処理
 	void ItemFinalize(std::shared_ptr<MyLibrary::Physics> physics);
+	//マップアイテムとしての判断処理
+	void ItemGudgment(int SmallCore, int MediumCore, int Rubbish, int BlackSword, int Distorted, int ArmorNormal);
 	//マップアイテムとしての更新処理
 	virtual void ItemUpdate(bool taking) {};
 	//マップアイテムとしての終了処理
@@ -64,6 +77,8 @@ public:
 	bool GetItemPick() { return m_itemPick; }
 	//アイテムを取得した時
 	bool SetItemPick(bool set) { return m_isTaking = set; }
+	//アイテムの種類を返す
+	Item GetItemKinds() { return m_item; }
 protected:
 	//アイテム情報を読み込む
 	void LoadData(std::string name);
@@ -91,6 +106,8 @@ protected:
 	MATRIX m_transMatrix;
 	//モデルの合成行列
 	MATRIX m_mixMatrix;
+
+	Item m_item;
 
 	std::shared_ptr<MyLibrary::Physics> m_pPhysics;
 
