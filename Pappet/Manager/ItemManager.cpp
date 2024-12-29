@@ -96,14 +96,16 @@ void ItemManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManage
 			}
 
 			//‚Æ‚Á‚½ê‡
-			if (taking && m_itemPick)
+			if (taking && m_itemPick && item->GetItemBox())
 			{
-				m_item.SmallCore = item->GetItemKinds().SmallCore;
-				m_item.MediumCore = item->GetItemKinds().MediumCore;
-				m_item.Rubbish = item->GetItemKinds().Rubbish;
-				m_item.BlackSword = item->GetItemKinds().BlackSword;
-				m_item.Distorted = item->GetItemKinds().Distorted;
-				m_item.ArmorNormal = item->GetItemKinds().ArmorNormal;
+				m_item.SmallCore += item->GetItemKinds().SmallCore;
+				m_item.MediumCore += item->GetItemKinds().MediumCore;
+				m_item.Rubbish += item->GetItemKinds().Rubbish;
+				m_item.BlackSword += item->GetItemKinds().BlackSword;
+				m_item.Distorted += item->GetItemKinds().Distorted;
+				m_item.ArmorNormal += item->GetItemKinds().ArmorNormal;
+
+				item->SetItemBox(false);
 			}
 
 		}

@@ -52,6 +52,7 @@ public:
 		m_frameIndex(0),
 		m_itemPick(false),
 		m_isTaking(false),
+		m_itemBox(false),
 		m_framePos(VGet(0.0f,0.0f,0.0f)),
 		m_pos(VGet(0.0f,0.0f,0.0f)),
 		m_transMatrix(),
@@ -77,6 +78,10 @@ public:
 	bool GetItemPick() { return m_itemPick; }
 	//アイテムを取得した時
 	bool SetItemPick(bool set) { return m_isTaking = set; }
+	//アイテムを取得した時にボックスに入れる判定
+	bool GetItemBox() { return m_itemBox; }
+	//アイテムを取得した時にボックスに入れる判定
+	bool SetItemBox(bool set) { return m_itemBox = set; }
 	//アイテムの種類を返す
 	Item GetItemKinds() { return m_item; }
 protected:
@@ -98,6 +103,8 @@ protected:
 	bool m_itemPick;
 	//取られたかどうかの判定
 	bool m_isTaking;
+	//取った時のアイテム判定
+	bool m_itemBox;
 	//フレームポジション
 	VECTOR m_framePos;
 	//ポジション

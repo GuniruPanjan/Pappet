@@ -969,6 +969,13 @@ void Player::Action()
 	//追加攻撃受付時間を減らす
 	if (cAddAttackTime <= 40 && cAddAttackTime > 0 && --cAddAttackTime > -1);
 
+	//強攻撃
+	//ZRボタン
+	if (m_xpad.RightTrigger)
+	{
+		
+	}
+
 	//行動中は防御できない
 	if (!m_anim.s_attack && !m_animChange.sa_avoidance && !m_animChange.sa_recovery)
 	{

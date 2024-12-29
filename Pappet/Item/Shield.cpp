@@ -116,6 +116,7 @@ void Shield::ItemUpdate(bool taking)
 
 		m_itemPick = false;
 		m_isTaking = true;
+		m_itemBox = true;
 	}
 
 }
