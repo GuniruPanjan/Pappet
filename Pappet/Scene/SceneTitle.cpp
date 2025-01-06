@@ -128,6 +128,14 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 {
 	m_pMap->Update(m_pPhysics, false, false, false);
 
+	//コントローラーが無いときに作ったやつだから消す
+	if (CheckHitKey(KEY_INPUT_A) == 1)
+	{
+		m_pMap->End(m_pPhysics);
+
+		return std::make_shared<SceneGame>();
+	}
+
 	if (m_pSetting->GetSettingScene() == false)
 	{
 		//パッド入力所得
@@ -162,7 +170,7 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 		if (m_waitTime > 50)
 		{
 			//Aボタンを押したら
-			if (m_xpad.Buttons[12] == 1)
+			if (m_xpad.Buttons[12] == 1 || CheckHitKey(KEY_INPUT_A) == 1)
 			{
 				PlaySoundMem(pse->GetButtonSE(), DX_PLAYTYPE_BACK, true);
 

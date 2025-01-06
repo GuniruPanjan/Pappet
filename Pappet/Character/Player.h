@@ -41,6 +41,7 @@ public:
 		bool sa_enterShield;                 //‚‚ğ\‚¦‚é”»’è
 		bool sa_shieldIdle;                  //‚‚ğ\‚¦‚Ä‚é”»’è
 		bool sa_imapact;                     //‚ó‚¯‚µ‚½”»’è
+		bool sa_strengthAttack;              //‹­UŒ‚
 
 	}m_animChange;
 
@@ -126,6 +127,7 @@ private:
 	void SetModelPos();
 private:
 	std::shared_ptr<AttackObject> m_pAttack;         //UŒ‚”»’è
+	std::shared_ptr<AttackObject> m_pStrengthAttack; //‹­UŒ‚”»’è
 	std::shared_ptr<PlayerSearchObject> m_pSearch;   //õ“G”»’è
 	std::shared_ptr<ShieldObject> m_pShield;    //‚‚Ì”»’è
 

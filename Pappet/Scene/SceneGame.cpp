@@ -34,6 +34,7 @@ std::shared_ptr<SceneBase> SceneGame::Update()
 #endif
 
 	game->Update();
+	m_pBgm->Update(m_pSetting->GetVolume());
 
 	if (game->GetTitle())
 	{

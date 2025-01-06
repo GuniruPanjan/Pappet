@@ -15,8 +15,18 @@ public:
 
 	//タイトルシーンBGM初期化
 	void TitleInit();
-	//ゲームシーンBGM初期化
-	void GameInit();
+	//ゲームシーン休息BGM初期化
+	void GameRestInit();
+	//ゲームシーン1BGM初期化
+	void GameOneInit();
+	//ゲームシーン2BGM初期化
+	void GameTwoInit();
+	//ゲームシーン3BGM初期化
+	void GameThreeInit();
+	//ゲームシーン4BGM初期化
+	void GameFourInit();
+	//ゲームシーン5BGM初期化
+	void GameFiveInit();
 	//クリアシーンBGM初期化
 	void ClearInit();
 	//更新処理
@@ -27,6 +37,8 @@ public:
 	void GameBGM();
 	//ボスBGM更新処理
 	void BossBGM();
+	//死亡した時にBGMを止める処理
+	void BossStopBGM();
 	//クリアBGM更新処理
 	void ClearBGM();
 	//終了処理

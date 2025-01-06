@@ -40,7 +40,7 @@ void BgmManager::TitleInit()
 /// <summary>
 /// ゲームBGMの初期化処理
 /// </summary>
-void BgmManager::GameInit()
+void BgmManager::GameOneInit()
 {
 	//BGM読み込み
 	m_gameBGM = LoadSoundMem("Data/BGM/GameBGM.mp3");
@@ -97,6 +97,14 @@ void BgmManager::BossBGM()
 	StopSoundMem(m_gameBGM);   //サウンドを止める
 
 	PlaySoundMem(m_bossBGM, DX_PLAYTYPE_LOOP, true);
+}
+
+/// <summary>
+/// ボスBGMストップ処理
+/// </summary>
+void BgmManager::BossStopBGM()
+{
+	StopSoundMem(m_bossBGM);
 }
 
 /// <summary>

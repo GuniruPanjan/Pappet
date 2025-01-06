@@ -16,6 +16,10 @@ namespace
 	bool cWarp = false;
 	//ワープ時に一回リセットする
 	bool cOne = false;
+	//ゲームBGMを再生する
+	bool cGameBGMOne = false;
+	//ボスBGMを再生する
+	bool cBossBGMOne = false;
 }
 
 /// <summary>
@@ -42,6 +46,9 @@ GameManager::~GameManager()
 /// </summary>
 void GameManager::Init()
 {
+	cGameBGMOne = false;
+	cBossBGMOne = false;
+
 	m_pMap->DataInit();
 
 	m_pPhysics = std::make_shared<MyLibrary::Physics>(m_pMap->GetCollisionMap());
@@ -60,6 +67,8 @@ void GameManager::Init()
 	m_pUi->Init();
 	m_pCore->Init();
 	m_pPlayer->ChangeStatus();
+
+	m_pBgm->GameOneInit();
 }
 
 /// <summary>
@@ -67,6 +76,9 @@ void GameManager::Init()
 /// </summary>
 void GameManager::GameInit()
 {
+	cGameBGMOne = false;
+	cBossBGMOne = false;
+
 	//マップを変える時の処理
 	ChangeStage(m_pMap->GetStageName());
 
@@ -91,6 +103,17 @@ void GameManager::Update()
 	//ワープしてない時
 	if (!m_pPlayer->GetWarp())
 	{
+		m_pBgm->Update(m_pSetting->GetVolume());
+
+		//一回再生
+		if (!cGameBGMOne)
+		{
+			m_pBgm->GameBGM();
+
+			cBossBGMOne = false;
+			cGameBGMOne = true;
+		}
+
 		m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
 		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, *m_pEnemy, *m_pCore);
@@ -119,12 +142,27 @@ void GameManager::Update()
 		m_pPlayer->SetItemPick(m_pItem->GetItemPick());
 		//ボス部屋に入ったか
 		m_pEnemy->SetBossRoom(m_pMap->GetBossRoom());
+		//ボス部屋に入ったら
+		if (m_pMap->GetBossRoom())
+		{
+			if (!cBossBGMOne)
+			{
+				//ボスのBGM再生
+				m_pBgm->BossBGM();
+
+				cGameBGMOne = false;
+				cBossBGMOne = true;
+			}
+			
+		}
 
 		//ボスが死んだ判定
 		if (m_pEnemy->GetBossDead())
 		{
 			cWarp = true;
 			m_pMap->CoreUpdate();
+
+			m_pBgm->BossStopBGM();
 
 			if (m_pMap->GetCore())
 			{
@@ -185,6 +223,8 @@ void GameManager::Update()
 				m_pEnemy->GameInit(m_pPhysics, this, m_deadInit);
 				m_pMap->TriggerReset();
 				m_pUi->Init();
+
+				m_pBgm->BossStopBGM();
 
 				m_deadInit = false;
 			}
@@ -254,7 +294,6 @@ void GameManager::Update()
 			cOne = true;
 		}
 	}
-
 	
 }
 
