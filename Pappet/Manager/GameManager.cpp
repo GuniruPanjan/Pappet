@@ -106,7 +106,7 @@ void GameManager::Update()
 		m_pBgm->Update(m_pSetting->GetVolume());
 
 		//ˆê‰ñÄ¶
-		if (!cGameBGMOne)
+		if (!cGameBGMOne && !m_pMap->GetBossRoom())
 		{
 			m_pBgm->GameBGM();
 

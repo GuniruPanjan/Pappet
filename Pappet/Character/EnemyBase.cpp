@@ -406,7 +406,7 @@ void EnemyBase::AttackDistance()
 	//盾よりプレイヤーの方が近かったら
 	if (m_difPSize < m_difSSize)
 	{
-		//プレイヤー「に攻撃が当たる
+		//プレイヤーに攻撃が当たる
 		m_isPlayerHit = true;
 	}
 	//プレイヤーより盾の方が近かったら

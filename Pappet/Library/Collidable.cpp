@@ -103,6 +103,10 @@ std::shared_ptr<MyLibrary::CollidableData> MyLibrary::Collidable::AddCollider(co
 	{
 		add = std::make_shared<CollidableDataCapsule>(isTrigger);
 	}
+	else if (kind == CollidableData::Kind::AttackCapsule)
+	{
+		add = std::make_shared<CollidableDataAttackCapsule>(isTrigger);
+	}
 	else if (kind == CollidableData::Kind::Sphere)
 	{
 		add = std::make_shared<CollidableDataSphere>(isTrigger);

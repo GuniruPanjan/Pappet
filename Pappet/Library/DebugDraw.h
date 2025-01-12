@@ -17,7 +17,7 @@ namespace MyLibrary
 		static void AddDrawCapsule(const LibVec3& center, const LibVec3& vec, const float& radius, const float& len, const unsigned int& color);
 
 		//攻撃用のカプセル描画リストに追加する
-		//static void AddDrawAttackCapsule(const LibVec3& pos1, const LibVec3& pos2, const float& radius, const unsigned int& color);
+		static void AddDrawAttackCapsule(const LibVec3& pos1, const LibVec3& pos2, const float& radius, const unsigned int& color);
 
 		//球体の描画リストに追加する
 		static void AddDrawSphere(const LibVec3& center, const float& radius, const unsigned int& color);
@@ -37,13 +37,13 @@ namespace MyLibrary
 		};
 
 		//攻撃用の描画情報
-		//struct AttackCapsuleInfo
-		//{
-		//	LibVec3 pos1;        //座標1
-		//	LibVec3 pos2;        //座標2
-		//	float radius;        //半径
-		//	unsigned int color;  //色
-		//};
+		struct AttackCapsuleInfo
+		{
+			LibVec3 pos1;        //座標1
+			LibVec3 pos2;        //座標2
+			float radius;        //半径
+			unsigned int color;  //色
+		};
 
 		//球体の描画情報
 		struct SphereInfo
@@ -64,7 +64,7 @@ namespace MyLibrary
 		//カプセルの描画情報リスト
 		static std::list<CapsuleInfo> m_capsuleInfo;
 		//攻撃用のカプセルの描画情報リスト
-		//static std::list<AttackCapsuleInfo> m_attackCapsuleInfo;
+		static std::list<AttackCapsuleInfo> m_attackCapsuleInfo;
 		//球体の描画情報リスト
 		static std::list<SphereInfo> m_sphereInfo;
 		//矩形の描画情報リスト

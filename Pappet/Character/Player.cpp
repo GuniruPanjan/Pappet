@@ -491,6 +491,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 				m_shieldOne = true;
 			}
 
+			//これがおかしいから盾受けがちゃんとしていない
 			for (auto enemy : enemy.GetEnemyAttackHit())
 			{
 				if (!enemy)
@@ -499,6 +500,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 					if (m_pShield->GetIsStay())
 					{
 						m_animChange.sa_imapact = true;
+						cHit = false;
 					}
 				}
 			}
@@ -511,7 +513,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		}
 
 		//ダメージを食らう処理
-		if (cHit)
+		if (cHit && !m_animChange.sa_imapact)
 		{
 			for (auto damage : enemy.GetEnemyDamage())
 			{
