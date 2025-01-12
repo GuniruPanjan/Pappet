@@ -3,6 +3,7 @@
 #include "Rigidbody.h"
 #include "CollidableData.h"
 #include "Collidable.h"
+#include "CollidableDataAttackCapsule.h"
 #include "CollidableDataCapsule.h"
 #include "CollidableDataSphere.h"
 #include "CollidableDataRect.h"

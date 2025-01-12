@@ -11,9 +11,10 @@ namespace MyLibrary
 		//当たり判定種別
 		enum class Kind
 		{
-			Capsule,     //カプセル型
-			Sphere,      //球体型
-			Rect,        //四角型
+			Capsule,        //カプセル型
+			AttackCapsule,  //攻撃型のカプセル型
+			Sphere,         //球体型
+			Rect,           //四角型
 		};
 
 		//コンストラクタ

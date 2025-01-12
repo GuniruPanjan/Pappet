@@ -46,6 +46,8 @@ namespace
 	float cMove = 0.0f;
 	//拳の攻撃範囲
 	constexpr float cFistAttackRadius = 18.0f;
+	//攻撃の判定範囲
+	constexpr float cPartAttackRadius = 8.0f;
 	//強攻撃の攻撃範囲
 	constexpr float cStrengthAttackRadius = 50.0f;
 	//盾の幅
@@ -204,6 +206,7 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, S
 	m_attackRadius = cFistAttackRadius;
 
 	m_pAttack = std::make_shared<AttackObject>(m_attackRadius);
+	//m_pPartAttack = std::make_shared<AttackObjectPart>(cPartAttackRadius, 0.0f, 0.0f);
 	m_pStrengthAttack = std::make_shared<AttackObject>(cStrengthAttackRadius);
 
 	m_pSearch = std::make_shared<PlayerSearchObject>(cSearchRadius);
@@ -647,6 +650,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	//判定の更新
 	m_pSearch->Update(centerPos);
 	m_pAttack->Update(attackPos);
+	//m_pPartAttack->Update(attackPos);
 	m_pStrengthAttack->Update(StrengthAttackPos);
 	m_pShield->Update(m_shieldPos, m_shieldSize);
 
@@ -655,6 +659,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	{
 		//攻撃判定リセット
 		m_pAttack->CollisionEnd();
+		//m_pPartAttack->CollisionEnd();
 	}
 
 	//怯みを終わらせる
@@ -708,17 +713,20 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			cNowAttackNumber = 1;
 
 			m_pAttack->SetAttack(m_status.s_attack + cEquipmentAttack);
+			//m_pPartAttack->SetAttack(m_status.s_attack + cEquipmentAttack);
 
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 25.0f)
 			{
 				m_status.s_stamina -= 25.0f;
 				m_pAttack->Init(m_pPhysics);
+				//m_pPartAttack->Init(m_pPhysics);
 			}
 			else if (m_nowFrame >= 35.0f && m_nowFrame < 40.0f)
 			{
 				//判定をリセット
 				m_pAttack->CollisionEnd();
+				//m_pPartAttack->CollisionEnd();
 			}
 			//攻撃終了
 			else if (m_nowFrame >= 40.0f && m_attackNumber == 1)
@@ -734,17 +742,21 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			cNowAttackNumber = 2;
 
 			m_pAttack->SetAttack((m_status.s_attack + cEquipmentAttack) * 1.1);
+			//m_pPartAttack->SetAttack(m_status.s_attack + cEquipmentAttack * 1.1);
 
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 55.0f)
 			{
 				m_status.s_stamina -= 25.0f;
 				m_pAttack->Init(m_pPhysics);
+				//m_pPartAttack->Init(m_pPhysics);
 			}
 			else if (m_nowFrame >= 65.0f && m_nowFrame < 70.0f)
 			{
 				//攻撃判定リセット
 				m_pAttack->CollisionEnd();
+				//m_pPartAttack->CollisionEnd();
+
 			}
 			//攻撃終了
 			else if (m_nowFrame >= 70.0f && m_attackNumber == 2)
@@ -759,17 +771,20 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			cNowAttackNumber = 3;
 
 			m_pAttack->SetAttack((m_status.s_attack + cEquipmentAttack) * 1.2);
+			//m_pPartAttack->SetAttack(m_status.s_attack + cEquipmentAttack * 1.2);
 
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 85.0f)
 			{
 				m_status.s_stamina -= 25.0f;
 				m_pAttack->Init(m_pPhysics);
+				//m_pPartAttack->Init(m_pPhysics);
 			}
 			else if (m_nowFrame >= 95.0f && m_nowFrame < 110.0f)
 			{
 				//攻撃判定リセット
 				m_pAttack->CollisionEnd();
+				//m_pPartAttack->CollisionEnd();
 			}
 			//攻撃終了
 			else if (m_nowFrame >= 110.0f)
@@ -787,6 +802,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			cIsEndAttack = 0;
 			//攻撃判定リセット
 			m_pAttack->CollisionEnd();
+			//m_pPartAttack->CollisionEnd();
 		}
 	}
 	//攻撃終了
@@ -960,41 +976,6 @@ void Player::Action()
 	if (m_status.s_stamina >= 25)
 	{
 		//攻撃
-		//コントローラが無いとき用
-		if (CheckHitKey(KEY_INPUT_R) == 1)
-		{
-			cRbutton++;
-
-			//一回だけ反応するようにする
-			if (cRbutton == 1)
-			{
-				m_anim.s_attack = true;
-
-				//追加攻撃受付
-				if (cAddAttackTime <= 30 && cAddAttackTime > 0)
-				{
-					//二段階目の攻撃
-					if (cNowAttackNumber == 1)
-					{
-						m_attackNumber = 1;
-					}
-					//三段階目の攻撃
-					else if (cNowAttackNumber == 2)
-					{
-						m_attackNumber = 2;
-					}
-				}
-
-				//追加攻撃時間を初期化
-				cAddAttackTime = 40;
-			}
-		}
-		else
-		{
-			cRbutton = 0;
-		}
-
-		//攻撃
 	    //Rボタンを押すことで攻撃
 		if (m_xpad.Buttons[9] == 1)
 		{
@@ -1039,13 +1020,6 @@ void Player::Action()
 	{
 		m_animChange.sa_strengthAttack = true;
 	}
-
-	//コントローラーが無いとき用だから後で消す
-	//強攻撃
-	//if (CheckHitKey(KEY_INPUT_R) == 1)
-	//{
-	//	m_animChange.sa_strengthAttack = true;
-	//}
 
 	//行動中は防御できない
 	if (!m_anim.s_attack && !m_animChange.sa_avoidance && !m_animChange.sa_recovery)

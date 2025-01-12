@@ -5,6 +5,7 @@ AttackObject::AttackObject(float radius) :
 	m_isCollisionOn(false),
 	m_attack(0)
 {
+	//ƒJƒvƒZƒ‹Œ^‚É‚µ‚Ä˜r‚É“–‚½‚è”»’è‚ğ‚Â‚¯‚éy•Ší‚É‚àz
 	//“–‚½‚è”»’è‚Ìİ’è
 	auto collider = Collidable::AddCollider(MyLibrary::CollidableData::Kind::Sphere, true);
 	auto sphereCol = dynamic_cast<MyLibrary::CollidableDataSphere*>(collider.get());

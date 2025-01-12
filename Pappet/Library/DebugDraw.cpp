@@ -2,6 +2,7 @@
 #include "DxLib.h"
 
 std::list<MyLibrary::DebugDraw::CapsuleInfo> MyLibrary::DebugDraw::m_capsuleInfo;
+//std::list<MyLibrary::DebugDraw::AttackCapsuleInfo> MyLibraty::DebugDraw::m_attackCapsuleInfo;
 std::list<MyLibrary::DebugDraw::SphereInfo> MyLibrary::DebugDraw::m_sphereInfo;
 std::list<MyLibrary::DebugDraw::RectInfo> MyLibrary::DebugDraw::m_rectInfo;
 
@@ -12,6 +13,7 @@ void MyLibrary::DebugDraw::Clear()
 {
 	//すべての描画情報リストの中身を全削除
 	m_capsuleInfo.clear();
+	//m_attackCapsuleInfo.clear();
 	m_sphereInfo.clear();
 	m_rectInfo.clear();
 }
@@ -47,6 +49,13 @@ void MyLibrary::DebugDraw::Draw()
 		//DrawFormatString(0, 600, 0xffffff, "pos2y : %f", pos2.y);
 		//DrawFormatString(0, 650, 0xffffff, "pos2z : %f", pos2.z);
 	}
+
+	//攻撃用のカプセル描画情報リストにある情報分描画する
+	//for (auto& attackcapsule : m_attackCapsuleInfo)
+	//{
+	//	DrawCapsule3D(attackcapsule.pos1.GetVector(), attackcapsule.pos2.GetVector(),
+	//		attackcapsule.radius, 16, attackcapsule.color, attackcapsule.color, false);
+	//}
 
 	//球体の描画情報リストにある情報分描画する
 	for (auto& sphere : m_sphereInfo)
@@ -107,6 +116,23 @@ void MyLibrary::DebugDraw::AddDrawCapsule(const LibVec3& center, const LibVec3& 
 	addInfo.color = color;
 	m_capsuleInfo.emplace_back(addInfo);
 }
+
+/// <summary>
+/// 攻撃用のカプセル型の描画リストに追加する
+/// </summary>
+/// <param name="pos1">座標１</param>
+/// <param name="pos2">座標２</param>
+/// <param name="radius">半径</param>
+/// <param name="color">色</param>
+//void MyLibrary::DebugDraw::AddDrawAttackCapsule(const LibVec3& pos1, const LibVec3& pos2, const float& radius, const unsigned int& color)
+//{
+//	AttackCapsuleInfo addInfo;
+//	addInfo.pos1 = pos1;
+//	addInfo.pos2 = pos2;
+//	addInfo.radius = radius;
+//	addInfo.color = color;
+//	m_attackCapsuleInfo.emplace_back(addInfo);
+//}
 
 /// <summary>
 /// 球体の描画リストに追加する

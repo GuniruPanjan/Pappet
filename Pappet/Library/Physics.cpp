@@ -131,6 +131,14 @@ void MyLibrary::Physics::Update()
 				//”’‚ªƒ|ƒWƒVƒ‡ƒ“
 				MyLibrary::DebugDraw::AddDrawCapsule(nextPos, vec, radius, len, kBeforePlanColor);
 			}
+			//else if (kind == CollidableData::Kind::AttackCapsule)
+			//{
+			//	auto attackCapsuleData = dynamic_cast<MyLibrary::CollidableDataAttackCapsule*> (collider.get());
+			//	auto pos1 = attackCapsuleData->m_pos1;
+			//	auto pos2 = attackCapsuleData->m_pos2;
+			//	auto radius = attackCapsuleData->m_radius;
+			//	MyLibrary::DebugDraw::AddDrawAttackCapsule(pos1, pos2, radius, kBeforeColor);
+			//}
 			else if (kind == CollidableData::Kind::Sphere)
 			{
 				auto sphereData = dynamic_cast<MyLibrary::CollidableDataSphere*> (collider.get());

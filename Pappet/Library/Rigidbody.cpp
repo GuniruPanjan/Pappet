@@ -9,6 +9,8 @@ MyLibrary::Rigidbody::Rigidbody():
 	m_vec(),
 	m_dir(),
 	m_velocity(),
+	m_pos1(),
+	m_pos2(),
 	m_useGravity(true)
 {
 }

@@ -234,6 +234,9 @@
     <ClCompile Include="Item\Tool.cpp">
       <Filter>ソース ファイル\Item</Filter>
     </ClCompile>
+    <ClCompile Include="Library\CollidableDataAttackCapsule.cpp">
+      <Filter>ソース ファイル\Library</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Icon\Icon.h">
@@ -403,6 +406,9 @@
     </ClInclude>
     <ClInclude Include="Item\Tool.h">
       <Filter>ヘッダー ファイル\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\CollidableDataAttackCapsule.h">
+      <Filter>ヘッダー ファイル\Library</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

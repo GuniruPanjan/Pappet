@@ -128,14 +128,6 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 {
 	m_pMap->Update(m_pPhysics, false, false, false);
 
-	//コントローラーが無いときに作ったやつだから消す
-	if (CheckHitKey(KEY_INPUT_A) == 1)
-	{
-		m_pMap->End(m_pPhysics);
-
-		return std::make_shared<SceneGame>();
-	}
-
 	if (m_pSetting->GetSettingScene() == false)
 	{
 		//パッド入力所得
