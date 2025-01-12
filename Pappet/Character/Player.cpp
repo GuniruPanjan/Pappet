@@ -491,6 +491,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 				m_shieldOne = true;
 			}
 
+			//修正案として盾を構えた先にサーチオブジェクトをつけてその範囲に入っているやつの攻撃は受けないようにすればいい
 			//これがおかしいから盾受けがちゃんとしていない
 			for (auto enemy : enemy.GetEnemyAttackHit())
 			{
