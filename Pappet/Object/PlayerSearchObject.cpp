@@ -4,7 +4,8 @@ PlayerSearchObject::PlayerSearchObject(float radius) :
 	ObjectBase(Priority::Low, ObjectTag::Search),
 	m_isTriggerEnter(false),
 	m_isTriggerExit(false),
-	m_isTriggerStay(false)
+	m_isTriggerStay(false),
+	m_isCollisionOn(false)
 {
 	//ìñÇΩÇËîªíËÇÃê›íË
 	auto collider = Collidable::AddCollider(MyLibrary::CollidableData::Kind::Sphere, true);
@@ -18,6 +19,8 @@ PlayerSearchObject::~PlayerSearchObject()
 
 void PlayerSearchObject::Init(std::shared_ptr<MyLibrary::Physics> physics, MyLibrary::LibVec3 pos)
 {
+	m_isCollisionOn = true;
+
 	m_pPhysics = physics;
 
 	Collidable::Init(m_pPhysics);
@@ -36,6 +39,15 @@ void PlayerSearchObject::Finalize(std::shared_ptr<MyLibrary::Physics> physics)
 {
 	Collidable::Finalize(physics);
 
+}
+
+void PlayerSearchObject::CollisionEnd()
+{
+	if (m_isCollisionOn)
+	{
+		Finalize(m_pPhysics);
+		m_isCollisionOn = false;
+	}
 }
 
 void PlayerSearchObject::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)

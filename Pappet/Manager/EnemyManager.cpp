@@ -44,13 +44,6 @@ EnemyManager::~EnemyManager()
 /// <param name="stageName">ステージ名前</param>
 void EnemyManager::Init(const char* stageName)
 {
-	//敵のモデル削除
-	//for (auto& enemy : m_pEnemys)
-	//{
-	//	enemy->End();
-	//}
-
-
 	m_stageName = stageName;
 
 	//敵生成情報を取得する

@@ -38,6 +38,16 @@ void BgmManager::TitleInit()
 }
 
 /// <summary>
+/// 休息地点のBGMの初期化処理
+/// </summary>
+void BgmManager::GameRestInit()
+{
+	//BGM読み込み
+	m_gameBGM = LoadSoundMem("Data/BGM/RestBGM.mp3");
+	m_bossBGM = LoadSoundMem("Data/BGM/RestBGM.mp3");
+}
+
+/// <summary>
 /// ゲームBGMの初期化処理
 /// </summary>
 void BgmManager::GameOneInit()
@@ -113,6 +123,15 @@ void BgmManager::BossStopBGM()
 void BgmManager::ClearBGM()
 {
 	PlaySoundMem(m_clearBGM, DX_PLAYTYPE_LOOP, true);
+}
+
+/// <summary>
+/// ゲーム内BGM終了処理
+/// </summary>
+void BgmManager::GameEnd()
+{
+	DeleteSoundMem(m_gameBGM);
+	DeleteSoundMem(m_bossBGM);
 }
 
 /// <summary>

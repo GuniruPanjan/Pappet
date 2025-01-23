@@ -49,6 +49,44 @@ void ItemManager::Init(const char* stageName)
 }
 
 /// <summary>
+/// ゲームの仕様上での初期化処理
+/// </summary>
+/// <param name="physics">物理クラス</param>
+/// <param name="gameManager">ゲームマネジャー</param>
+void ItemManager::GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager)
+{
+	//アイテムの当たり判定を消す
+	for (auto& item : m_pItems)
+	{
+		//マップに現存しているやつ
+		if (item->GetItemTaking())
+		{
+			item->ItemFinalize(physics);
+		}
+	}
+
+	auto thisMapName = gameManager->GetThisMapName();
+
+	if (thisMapName == 1 || thisMapName == 2 || thisMapName == 3 ||
+		thisMapName == 4 || thisMapName == 5)
+	{
+		//アイテム生成情報をまわして
+		for (auto& generate : m_pGenerateInfo)
+		{
+			//今のマップが一致しているとき
+			if (generate->mapNumber == thisMapName)
+			{
+				//生成済みのキャラを初期化する
+				if (generate->isCreated)
+				{
+					CreateItem(generate->posX, generate->posY, generate->posZ, generate->itemName, physics);
+				}
+			}
+		}
+	}
+}
+
+/// <summary>
 /// 更新処理
 /// </summary>
 /// <param name="physics">フィジックス</param>
@@ -117,7 +155,7 @@ void ItemManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManage
 /// </summary>
 void ItemManager::Draw()
 {
-#if true
+#if false
 	DrawFormatString(200, 600, 0xffffff, "SmallCore : %d", m_item.SmallCore);
 	DrawFormatString(200, 700, 0xffffff, "MediumCore : %d", m_item.MediumCore);
 	DrawFormatString(200, 800, 0xffffff, "Rubbish : %d", m_item.Rubbish);
@@ -132,6 +170,7 @@ void ItemManager::Draw()
 /// </summary>
 void ItemManager::End()
 {
+
 }
 
 /// <summary>

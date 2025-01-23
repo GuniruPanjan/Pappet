@@ -41,6 +41,8 @@ public:
 	void BossStopBGM();
 	//クリアBGM更新処理
 	void ClearBGM();
+	//ゲーム内BGM初期化処理
+	void GameEnd();
 	//終了処理
 	void End();
 

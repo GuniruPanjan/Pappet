@@ -56,6 +56,8 @@ namespace
 	constexpr float cShieldHight = 60.0f;
 	//盾の奥行
 	constexpr float cShieldDepht = 10.0f;
+	//盾の索敵範囲
+	constexpr float cShieldSearchRadius = 100.0f;
 	//現在のアタックのナンバーを入れる
 	int cNowAttackNumber = 0;
 	//攻撃の終了判定
@@ -112,7 +114,8 @@ Player::Player() :
 	m_rollMove(VGet(0.0f,0.0f,0.0f)),
 	m_moveVector(VGet(0.0f,0.0f,0.0f)),
 	m_shieldPos(),
-	m_shieldSize()
+	m_shieldSize(),
+	m_shieldSearchPos()
 {
 
 	//カプセル型
@@ -215,6 +218,7 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, S
 	m_shieldSize = MyLibrary::LibVec3::Size(cShieldWidth, cShieldHight, cShieldDepht);
 
 	m_pShield = std::make_shared<ShieldObject>(cShieldWidth, cShieldHight, cShieldDepht);
+	m_pShieldSearch = std::make_shared<PlayerSearchObject>(cShieldSearchRadius);
 
 	if (anim)
 	{
@@ -478,6 +482,10 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		}
 	}
 
+	//盾の索敵のポジション更新
+	m_shieldSearchPos = MyLibrary::LibVec3(rigidbody.GetPos().x + sinf(m_angle) * -100.0f, rigidbody.GetPos().y + 15.0f, rigidbody.GetPos().z - cosf(m_angle) * 100.0f);
+
+
 	//プレイヤーが生きている時だけ
 	if (!m_anim.s_isDead)
 	{
@@ -487,22 +495,32 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			if (!m_shieldOne)
 			{
 				m_pShield->Init(m_pPhysics, m_shieldPos);
-
+				m_pShieldSearch->Init(m_pPhysics, m_shieldSearchPos);
 				m_shieldOne = true;
 			}
 
 			//修正案として盾を構えた先にサーチオブジェクトをつけてその範囲に入っているやつの攻撃は受けないようにすればいい
 			//これがおかしいから盾受けがちゃんとしていない
-			for (auto enemy : enemy.GetEnemyAttackHit())
-			{
-				if (!enemy)
-				{
+			//for (auto enemy : enemy.GetEnemyAttackHit())
+			//{
+			//	if (!enemy)
+			//	{
 					//盾受けした時
-					if (m_pShield->GetIsStay())
-					{
-						m_animChange.sa_imapact = true;
-						cHit = false;
-					}
+			//		if (m_pShield->GetIsStay())
+			//		{
+			//			m_animChange.sa_imapact = true;
+			//			cHit = false;
+			//		}
+			//	}
+			//}
+
+			//結構適当にしたけどこれでいいと思う
+			if (m_pShieldSearch->GetIsStay())
+			{
+				if (m_pShield->GetIsStay())
+				{
+					m_animChange.sa_imapact = true;
+					cHit = false;
 				}
 			}
 
@@ -510,6 +528,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		else
 		{
 			m_pShield->CollisionEnd();
+			m_pShieldSearch->CollisionEnd();
 			m_shieldOne = false;
 		}
 
@@ -656,6 +675,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	//m_pPartAttack->Update(attackPos);
 	m_pStrengthAttack->Update(StrengthAttackPos);
 	m_pShield->Update(m_shieldPos, m_shieldSize);
+	m_pShieldSearch->Update(m_shieldSearchPos);
 
 	//怯み中
 	if (m_anim.s_hit)
@@ -1422,7 +1442,7 @@ void Player::Draw(Armor& armor)
 	rigidbody.SetPos(rigidbody.GetNextPos());
 	m_collisionPos = rigidbody.GetPos();
 
-#if false
+#if true
 	DrawFormatString(200, 600, 0xffffff, "colPosx : %f", m_collisionPos.x);
 	DrawFormatString(200, 700, 0xffffff, "colPosy : %f", m_collisionPos.y);
 	DrawFormatString(200, 800, 0xffffff, "colPosz : %f", m_collisionPos.z);

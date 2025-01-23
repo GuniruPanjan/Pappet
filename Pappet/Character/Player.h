@@ -126,15 +126,17 @@ public:
 private:
 	void SetModelPos();
 private:
-	std::shared_ptr<AttackObject> m_pAttack;         //UŒ‚”»’è
-	std::shared_ptr<AttackObject> m_pStrengthAttack; //‹­UŒ‚”»’è
-	std::shared_ptr<PlayerSearchObject> m_pSearch;   //õ“G”»’è
-	std::shared_ptr<ShieldObject> m_pShield;    //‚‚Ì”»’è
+	std::shared_ptr<AttackObject> m_pAttack;               //UŒ‚”»’è
+	std::shared_ptr<AttackObject> m_pStrengthAttack;       //‹­UŒ‚”»’è
+	std::shared_ptr<PlayerSearchObject> m_pSearch;         //õ“G”»’è
+	std::shared_ptr<PlayerSearchObject> m_pShieldSearch;   //‚‚Å–h‚°‚é‚©‚Ìõ“G”»’è
+	std::shared_ptr<ShieldObject> m_pShield;               //‚‚Ì”»’è
 
 	EnemyAttackObject* m_pEnemyAttackCol;    //“G‚ÌUŒ‚
 
 	MyLibrary::LibVec3 m_shieldPos;
 	MyLibrary::LibVec3::Size m_shieldSize;
+	MyLibrary::LibVec3 m_shieldSearchPos;
 
 	XINPUT_STATE m_xpad;                //ƒpƒbƒh“ü—Í
 	int m_mapNow;                       //Œ»İ‚Ìƒ}ƒbƒv

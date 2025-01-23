@@ -17,6 +17,8 @@ public:
 
 	void Finalize(std::shared_ptr<MyLibrary::Physics> physics) override;
 
+	void CollisionEnd();
+
 	void OnTriggerEnter(const std::shared_ptr<Collidable>& collidable) override;
 	void OnTriggerStay(const std::shared_ptr<Collidable>& collidable) override;
 	void OnTriggerExit(const std::shared_ptr<Collidable>& collidable) override;
@@ -33,5 +35,6 @@ private:
 	bool m_isTriggerEnter = false;
 	bool m_isTriggerStay = false;
 	bool m_isTriggerExit = false;
+	bool m_isCollisionOn = false;
 };
 

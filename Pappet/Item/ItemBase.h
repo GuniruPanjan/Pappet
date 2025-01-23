@@ -76,8 +76,10 @@ public:
 
 	//アイテムを拾えるかをの判定を返す
 	bool GetItemPick() { return m_itemPick; }
+	//アイテムを取得したかを返す
+	bool GetItemTaking() { return m_isTaking; }
 	//アイテムを取得した時
-	bool SetItemPick(bool set) { return m_isTaking = set; }
+	bool SetItemTaking(bool set) { return m_isTaking = set; }
 	//アイテムを取得した時にボックスに入れる判定
 	bool GetItemBox() { return m_itemBox; }
 	//アイテムを取得した時にボックスに入れる判定

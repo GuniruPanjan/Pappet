@@ -88,11 +88,23 @@ void GameManager::GameInit()
 
 	m_pPlayer->Init(m_pPhysics, *m_pWeapon, *m_pShield, *m_pArmor, false);
 	m_pEnemy->Init(m_pMap->GetStageName());
-	m_pItem->Init(m_pMap->GetStageName());
+	//m_pItem->Init(m_pMap->GetStageName());
+	m_pItem->GameInit(m_pPhysics, this);
 	m_pNpc->Init(m_pPhysics);
 	m_pSetting->Init();
 	m_pUi->Init();
 	m_pPlayer->ChangeStatus();
+
+	//ステージ１だった場合
+	if (m_pMap->GetStageName() == "stage1")
+	{
+		m_pBgm->GameOneInit();
+	}
+	//休息マップだった場合
+	else if (m_pMap->GetStageName() == "stageRest")
+	{
+		m_pBgm->GameRestInit();
+	}
 }
 
 /// <summary>
@@ -223,6 +235,7 @@ void GameManager::Update()
 				m_pEnemy->GameInit(m_pPhysics, this, m_deadInit);
 				m_pMap->TriggerReset();
 				m_pUi->Init();
+				m_pPlayer->ChangeStatus();
 
 				m_pBgm->BossStopBGM();
 
@@ -287,6 +300,8 @@ void GameManager::Update()
 		if (!cOne)
 		{
 			m_pEnemy->End();
+			m_pItem->End();
+			m_pBgm->GameEnd();
 			GameInit();
 
 			m_pPlayer->SetWarp(false);

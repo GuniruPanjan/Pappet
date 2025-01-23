@@ -56,6 +56,8 @@ public:
 	virtual ~ItemManager();
 	//‰Šú‰»ˆ—
 	void Init(const char* stageName);
+	//ƒQ[ƒ€“à‚Å‚Ì‰Šú‰»ˆ—
+	void GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager);
 	//XVˆ—
 	void Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, bool taking);
 
