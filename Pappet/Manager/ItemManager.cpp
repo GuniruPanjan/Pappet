@@ -29,6 +29,8 @@ ItemManager::~ItemManager()
 /// <param name="stageName">ステージ名</param>
 void ItemManager::Init(const char* stageName)
 {
+	m_pGenerateInfo.clear();
+
 	m_stageName = stageName;
 
 	//アイテム生成情報を取得する
@@ -76,10 +78,13 @@ void ItemManager::GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameMana
 			//今のマップが一致しているとき
 			if (generate->mapNumber == thisMapName)
 			{
-				//生成済みのキャラを初期化する
+				//生成済みのアイテムを初期化する
 				if (generate->isCreated)
 				{
 					CreateItem(generate->posX, generate->posY, generate->posZ, generate->itemName, physics);
+
+					//何のアイテムかを判断する
+					CheckItem(generate->itemName, generate->SmallCore, generate->MediumCore, generate->Rubbish, generate->BlackSword, generate->Distorted, generate->ArmorNormal);
 				}
 			}
 		}
@@ -114,7 +119,6 @@ void ItemManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManage
 					//何のアイテムかを判断する
 					CheckItem(generate->itemName, generate->SmallCore, generate->MediumCore, generate->Rubbish, generate->BlackSword, generate->Distorted, generate->ArmorNormal);
 				}
-
 			}
 		}
 	}

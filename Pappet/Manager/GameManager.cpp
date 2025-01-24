@@ -20,6 +20,8 @@ namespace
 	bool cGameBGMOne = false;
 	//ボスBGMを再生する
 	bool cBossBGMOne = false;
+
+	bool warp = true;
 }
 
 /// <summary>
@@ -88,6 +90,7 @@ void GameManager::GameInit()
 
 	m_pPlayer->Init(m_pPhysics, *m_pWeapon, *m_pShield, *m_pArmor, false);
 	m_pEnemy->Init(m_pMap->GetStageName());
+	//m_pEnemy->GameInit(m_pPhysics, this, true);
 	//m_pItem->Init(m_pMap->GetStageName());
 	m_pItem->GameInit(m_pPhysics, this);
 	m_pNpc->Init(m_pPhysics);
@@ -105,6 +108,8 @@ void GameManager::GameInit()
 	{
 		m_pBgm->GameRestInit();
 	}
+
+	warp = false;
 }
 
 /// <summary>
@@ -142,6 +147,11 @@ void GameManager::Update()
 
 		m_pItem->Update(m_pPhysics, this, m_pPlayer->GetTaking());
 		m_pEnemy->Update(m_pPhysics, this, *m_pCore, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->GetShieldPos(), !m_pPlayer->IsGetPlayerDead(), m_init);
+
+		//バグの原因
+		if (warp)
+		{
+		}
 
 		m_pMap->JudgeUpdate();
 
@@ -405,9 +415,9 @@ void GameManager::ChangeStage(const char* stageName)
 		m_pPlayer->SetMapNow(RestMap);
 	}
 	//マップ1だった場合
-	else if (stageName == "stage1")
+	if (stageName == "stage1")
 	{
-		m_nowMap == eMapName::FirstMap;
+		m_nowMap = eMapName::FirstMap;
 		m_pPlayer->SetMapNow(FirstMap);
 	}
 }

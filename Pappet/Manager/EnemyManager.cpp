@@ -44,6 +44,8 @@ EnemyManager::~EnemyManager()
 /// <param name="stageName">ステージ名前</param>
 void EnemyManager::Init(const char* stageName)
 {
+	m_pGenerateInfo.clear();
+
 	m_stageName = stageName;
 
 	//敵生成情報を取得する
@@ -130,13 +132,12 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 	//今のマップがどのマップか取得する
 	auto thisMapName = gameManager->GetThisMapName();
 
-	if (thisMapName == 1 || thisMapName == 2 || thisMapName == 3 ||
-		thisMapName == 4 || thisMapName == 5)
+	if (thisMapName == 0 || thisMapName == 1 || thisMapName == 2 ||
+		thisMapName == 3 || thisMapName == 4 || thisMapName == 5)
 	{
 		//敵生成情報をまわして
 		for (auto& generate : m_pGenerateInfo)
 		{
-
 			//今のマップが一致しているとき
 			if (generate->mapNumber == thisMapName)
 			{
@@ -175,7 +176,6 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 
 					//コア取得
 					core.Core(enemy->GetDropCore());
-
 
 					enemy->SetOne(false);
 				}
