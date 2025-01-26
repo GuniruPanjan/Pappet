@@ -70,6 +70,7 @@ bool CharacterBase::UpdateAnim(int attachNo, int max, float startTime)
 		m_nowFrame -= m_animTime;
 	}
 
+	//ここが問題になっている
 	//アニメーションを再生させる時
 	if (!m_animReverse)
 	{

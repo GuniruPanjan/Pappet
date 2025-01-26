@@ -93,6 +93,8 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
 	m_nowAnimIdx = m_animIdx["Idle"];
 
+	float totalAnimFrame = MV1GetAttachAnimTotalTime(m_modelHandle, m_nowAnimNo);
+
 	m_status.s_hp = 1.0f;
 
 	//死をfalseにする
@@ -135,6 +137,7 @@ void Immortal::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLi
 	//アニメーション設定
 	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
 	m_nowAnimIdx = m_animIdx["Idle"];
+
 
 	m_anim.s_isDead = false;
 	cDead = false;

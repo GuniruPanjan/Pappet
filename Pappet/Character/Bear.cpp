@@ -98,6 +98,8 @@ void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::P
 	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
 	m_nowAnimIdx = m_animIdx["Idle"];
 
+	float totalAnimFrame = MV1GetAttachAnimTotalTime(m_modelHandle, m_nowAnimNo);
+
 	m_anim.s_isDead = false;
 	cDead = false;
 

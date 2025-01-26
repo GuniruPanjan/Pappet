@@ -121,7 +121,7 @@ void EnemyManager::GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameMan
 /// <param name="playerPos">プレイヤーポジション</param>
 /// <param name="playerDir">プレイヤーの方向</param>
 /// <param name="isPlayerChase">プレイヤーを発見したかどうか</param>
-void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, CoreManager& core, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, MyLibrary::LibVec3 shieldPos, bool isPlayerChase, bool init)
+void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, CoreManager& core, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, MyLibrary::LibVec3 shieldPos, bool isPlayerChase, bool warp, bool init)
 {
 	m_enemyPos.clear();
 	m_enemyTarget.clear();
@@ -158,7 +158,7 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 		//敵の更新する
 		for (auto& enemy : m_pEnemys)
 		{
-			//更新
+			//ここで無限に繰り返しているバグ
 			enemy->Update(playerPos, shieldPos, isPlayerChase);
 
 			m_enemyPos.emplace_back(enemy->GetPos());
@@ -179,6 +179,12 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 
 					enemy->SetOne(false);
 				}
+			}
+
+			//更新
+			if (warp)
+			{
+				
 			}
 			
 		}

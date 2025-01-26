@@ -146,7 +146,7 @@ void GameManager::Update()
 		}
 
 		m_pItem->Update(m_pPhysics, this, m_pPlayer->GetTaking());
-		m_pEnemy->Update(m_pPhysics, this, *m_pCore, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->GetShieldPos(), !m_pPlayer->IsGetPlayerDead(), m_init);
+		m_pEnemy->Update(m_pPhysics, this, *m_pCore, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->GetShieldPos(), !m_pPlayer->IsGetPlayerDead(), warp, m_init);
 
 		//ƒoƒO‚ÌŒ´ˆö
 		if (warp)
