@@ -20,8 +20,6 @@ namespace
 	bool cGameBGMOne = false;
 	//ボスBGMを再生する
 	bool cBossBGMOne = false;
-
-	bool warp = true;
 }
 
 /// <summary>
@@ -108,8 +106,6 @@ void GameManager::GameInit()
 	{
 		m_pBgm->GameRestInit();
 	}
-
-	warp = false;
 }
 
 /// <summary>
@@ -146,12 +142,7 @@ void GameManager::Update()
 		}
 
 		m_pItem->Update(m_pPhysics, this, m_pPlayer->GetTaking());
-		m_pEnemy->Update(m_pPhysics, this, *m_pCore, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->GetShieldPos(), !m_pPlayer->IsGetPlayerDead(), warp, m_init);
-
-		//バグの原因
-		if (warp)
-		{
-		}
+		m_pEnemy->Update(m_pPhysics, this, *m_pCore, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->GetShieldPos(), !m_pPlayer->IsGetPlayerDead(), m_init);
 
 		m_pMap->JudgeUpdate();
 
@@ -185,6 +176,13 @@ void GameManager::Update()
 			m_pMap->CoreUpdate();
 
 			m_pBgm->BossStopBGM();
+
+			//ステージ１だった場合
+			if (m_pMap->GetStageName() == "stage1")
+			{
+				//クマ
+				m_bossEnd.sBear = true;
+			}
 
 			if (m_pMap->GetCore())
 			{

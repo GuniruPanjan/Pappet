@@ -35,6 +35,11 @@ public:
 		LastMap        //最後のステージ
 	};
 
+	struct sBossEnd
+	{
+		bool sBear = false;
+	};
+
 public:
 	GameManager();
 	virtual ~GameManager();
@@ -58,6 +63,8 @@ public:
 	//タイトルに戻るかの判定を取得
 	bool GetTitle() { return m_title; }
 
+	sBossEnd GetEndBoss() { return m_bossEnd; }
+
 private:
 	//スマートポインタ管理
 	std::shared_ptr<MyLibrary::Physics> m_pPhysics;
@@ -80,6 +87,9 @@ private:
 	eMapName m_nowMap;
 	//ステージ名
 	//std::string m_stageName;
+
+	//
+	sBossEnd m_bossEnd;
 
 	//死亡で初期化する
 	bool m_deadInit;

@@ -151,6 +151,9 @@ void Immortal::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLi
 /// <param name="isChase">プレイヤーと戦えるかどうか</param>
 void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChase)
 {
+
+	float totalAnimFrame = MV1GetAttachAnimTotalTime(m_modelHandle, m_nowAnimNo);
+
 	//アニメーションの更新
 	if (!cDead)
 	{

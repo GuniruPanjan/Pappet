@@ -71,7 +71,7 @@ SceneTitle::~SceneTitle()
 void SceneTitle::Init()
 {
 	//メモリ読み込み
-	m_backScene = m_pUi->MyLoadGraph("Data/SceneBack/PuppetNuclearTitleMini.png", 1, 1);     //144 KB (147,793 バイト)
+	m_backScene = m_pUi->MyLoadGraph("Data/SceneBack/PuppetGravesタイトルmini.png", 1, 1);     //144 KB (147,793 バイト)
 	m_start = m_pUi->MyLoadGraph("Data/UI/STARTButtonMini.png", 1, 1);                       //27.1 KB (27,851 バイト)
 	m_setting = m_pUi->MyLoadGraph("Data/UI/SettingButtonMini.png", 1, 1);                   //29.4 KB (30,170 バイト)
 	m_end = m_pUi->MyLoadGraph("Data/UI/EndButtonMini.png", 1, 1);                           //22.5 KB (23,109 バイト)

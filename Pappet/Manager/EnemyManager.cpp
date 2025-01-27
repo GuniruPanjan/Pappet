@@ -45,6 +45,7 @@ EnemyManager::~EnemyManager()
 void EnemyManager::Init(const char* stageName)
 {
 	m_pGenerateInfo.clear();
+	m_pEnemys.clear();
 
 	m_stageName = stageName;
 
@@ -121,7 +122,7 @@ void EnemyManager::GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameMan
 /// <param name="playerPos">プレイヤーポジション</param>
 /// <param name="playerDir">プレイヤーの方向</param>
 /// <param name="isPlayerChase">プレイヤーを発見したかどうか</param>
-void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, CoreManager& core, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, MyLibrary::LibVec3 shieldPos, bool isPlayerChase, bool warp, bool init)
+void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, CoreManager& core, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, MyLibrary::LibVec3 shieldPos, bool isPlayerChase, bool init)
 {
 	m_enemyPos.clear();
 	m_enemyTarget.clear();
@@ -144,9 +145,19 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 				//生成済みでなければ
 				if (!generate->isCreated)
 				{
-					//生成済みにして敵を生成する
-					generate->isCreated = true;
-					CreateEnemy(generate->posX, generate->posY, generate->posZ, generate->enemyName, physics);
+					if (generate->enemyName != "bear")
+					{
+						//生成済みにして敵を生成する
+						generate->isCreated = true;
+						CreateEnemy(generate->posX, generate->posY, generate->posZ, generate->enemyName, physics);
+					}
+					else if (!gameManager->GetEndBoss().sBear)
+					{
+						//生成済みにしてボスを生成する
+						generate->isCreated = true;
+						CreateEnemy(generate->posX, generate->posY, generate->posZ, generate->enemyName, physics);
+					}
+					
 				}
 			}
 		}
@@ -179,12 +190,6 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 
 					enemy->SetOne(false);
 				}
-			}
-
-			//更新
-			if (warp)
-			{
-				
 			}
 			
 		}
@@ -272,7 +277,6 @@ void EnemyManager::EnemyInit(float posX, float posY, float posZ, std::string nam
 {
 	if (name == "Immortal")
 	{
-		//std::shared_ptr<Immortal> add = std::make_shared<Immortal>();
 		immortal = std::make_shared<Immortal>();
 		immortal->GameInit(posX, posY, posZ, physics);
 		m_pEnemys.emplace_back(immortal);
@@ -280,7 +284,6 @@ void EnemyManager::EnemyInit(float posX, float posY, float posZ, std::string nam
 	}
 	if (name == "bear")
 	{
-		//std::shared_ptr<Bear> add = std::make_shared<Bear>();
 		bear = std::make_shared<Bear>();
 		bear->GameInit(posX, posY, posZ, physics);
 		m_pEnemys.emplace_back(bear);
