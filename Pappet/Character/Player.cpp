@@ -7,6 +7,7 @@
 #include "Item/Weapon.h"
 #include "Item/Shield.h"
 #include "Item/Armor.h"
+#include "Manager/GameManager.h"
 
 #include <cassert>
 
@@ -180,7 +181,7 @@ Player::~Player()
 /// 初期化処理
 /// </summary>
 /// <param name="physics">物理クラスのポインタ</param>
-void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, Shield& shield, Armor& armor, bool anim)
+void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* manager, Weapon& weapon, Shield& shield, Armor& armor, bool anim)
 {
 	m_pPhysics = physics;
 
@@ -189,9 +190,16 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, S
 
 	//プレイヤーの初期位置設定
 	rigidbody.Init(false);
-	//rigidbody.SetPos(MyLibrary::LibVec3(485.0f, 12.0f, -800.0f));
+	if (manager->GetThisMapName() == 0)
+	{
+		rigidbody.SetPos(MyLibrary::LibVec3(40.0f, 12.0f, 0.0f));
+	}
+	else if (manager->GetThisMapName() == 1)
+	{
+		rigidbody.SetPos(MyLibrary::LibVec3(485.0f, 12.0f, -800.0f));
+	}
 	// ↓色々試すための初期化位置
-	rigidbody.SetPos(MyLibrary::LibVec3(40.0f, 12.0f, 0.0f));
+	//rigidbody.SetPos(MyLibrary::LibVec3(40.0f, 12.0f, 0.0f));
 	rigidbody.SetNextPos(rigidbody.GetPos());
 	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
 	m_collisionPos = rigidbody.GetPos();
@@ -1442,7 +1450,7 @@ void Player::Draw(Armor& armor)
 	rigidbody.SetPos(rigidbody.GetNextPos());
 	m_collisionPos = rigidbody.GetPos();
 
-#if true
+#if false
 	DrawFormatString(200, 600, 0xffffff, "colPosx : %f", m_collisionPos.x);
 	DrawFormatString(200, 700, 0xffffff, "colPosy : %f", m_collisionPos.y);
 	DrawFormatString(200, 800, 0xffffff, "colPosz : %f", m_collisionPos.z);

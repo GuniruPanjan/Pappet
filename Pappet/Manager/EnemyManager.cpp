@@ -208,7 +208,7 @@ void EnemyManager::Draw()
 		enemy->Draw();
 	}
 
-	DrawFormatString(200, 500, 0xffffff, "%d", cEnemy);
+	//DrawFormatString(200, 500, 0xffffff, "%d", cEnemy);
 }
 
 /// <summary>

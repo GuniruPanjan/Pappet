@@ -531,7 +531,7 @@ void Bear::Draw()
 	//ƒ‚ƒfƒ‹‚Ì•`‰æ
 	MV1DrawModel(m_modelHandle);
 
-	DrawFormatString(200, 400, 0xffffff, "m_playerHit : %d", m_isPlayerHit);
+	//DrawFormatString(200, 400, 0xffffff, "m_playerHit : %d", m_isPlayerHit);
 
 #if false
 	DrawFormatString(200, 300, 0xffffff, "m_angle : %f", m_angle);

@@ -6,6 +6,7 @@ class Shield;
 class Armor;
 class EnemyManager;
 class CoreManager;
+class GameManager;
 
 class Player : public CharacterBase
 {
@@ -48,7 +49,7 @@ public:
 	Player();
 	virtual ~Player();
 
-	void Init(std::shared_ptr<MyLibrary::Physics> physics, Weapon& weapon, Shield& shield, Armor& armor, bool anim);
+	void Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* manager, Weapon& weapon, Shield& shield, Armor& armor, bool anim);
 	void GameInit(std::shared_ptr<MyLibrary::Physics> physics);
 	void Finalize();
 	void Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core);
@@ -105,6 +106,11 @@ public:
 
 	//死亡関係
 	bool GetDead() { return m_deadReset; }
+
+	//ステータス関係
+	Status GetStatus() { return m_status; }
+	LevelUpStatus GetLevelStatus() { return m_levelStatus; }
+	MaxStatus GetMaxStatus() { return ms_maxStatus; }
 
 	//アイテムなどのステータス関係
 	int GetLevel() { return m_levelStatus.sl_all; }

@@ -2,6 +2,13 @@
 #include "Item/Weapon.h"
 #include "Item/Shield.h"
 #include "Item/Armor.h"
+#include "Character/Player.h"
+
+namespace
+{
+	int c_maxHP = 800;
+	int c_maxHPWidth = 1000;
+}
 
 /// <summary>
 /// コンストラクタ
@@ -29,6 +36,39 @@ void UI::Init()
 	m_deadA = 0;
 	m_waitResetTime = 0;
 	m_deadReset = false;
+}
+
+/// <summary>
+/// ゲーム内UIの描画処理
+/// </summary>
+/// <param name="player"></param>
+/// <param name="enemy"></param>
+/// <param name="eq"></param>
+/// <param name="map"></param>
+/// <param name="item"></param>
+void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map, ItemManager& item)
+{
+	//ステータスバーの描画
+	StatusDraw(180, 30, player);
+
+	//プレイヤーの状態アイコン描画
+	DrawGraph(-50, 0, m_statusIcon, true);
+
+	//装備の描画
+	DrawGraph(150, 550, m_equipmentFrame, true);
+	DrawGraph(0, 665, m_equipmentFrame, true);
+	DrawGraph(300, 665, m_equipmentFrame, true);
+	DrawGraph(150, 780, m_equipmentFrame, true);
+
+	//コアバーの描画
+	DrawGraph(1050, 750, m_coreBackBar, true);
+
+	SetFontSize(40);
+
+	//コア数描画
+	DrawFormatString(1400, 905, 0xffffff, "%d", player.GetStatus().s_core);
+
+	SetFontSize(40);
 }
 
 /// <summary>
@@ -145,6 +185,89 @@ void UI::DiedDraw()
 	DrawGraph(-150, -100, m_dead, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
+}
+
+/// <summary>
+/// ステータスバーの描画処理
+/// </summary>
+/// <param name="x"></param>
+/// <param name="y"></param>
+/// <param name="player"></param>
+void UI::StatusDraw(int x, int y, Player& player)
+{
+	//HP最大幅を計算
+	int HPbar = player.GetMaxStatus().sm_hp / 30;
+	//HP最大幅を計算
+	int HPBarWidth = (int)((float)player.GetStatus().s_hp / player.GetMaxStatus().sm_hp * (200 + (50 * player.GetLevelStatus().sl_hp)));
+
+	//スタミナ最大幅を計算
+	int StaminaBar = player.GetMaxStatus().sm_stamina / 10;
+	//スタミナ最大幅を計算
+	int StaminaBarWidth = (int)((float)player.GetStatus().s_stamina / player.GetMaxStatus().sm_stamina * (150 + (10 * player.GetLevelStatus().sl_stamina)));
+
+	if (HPBarWidth > 0)
+	{
+		DrawRectGraph(x - 8, y, 0, 0, HPBarWidth, 50, m_hpBar, true);
+	}
+
+
+	for (int i = 0; i < HPbar; i++)
+	{
+		//中央のバーを描画
+		if (i > 0 && i != HPbar - 1)
+		{
+			if (i == 1)
+			{
+				DrawGraph(x + 23, y, m_backCenterBar, true);
+			}
+			else
+			{
+				DrawGraph(x + 23 + (50 * (i - 1)), y, m_backCenterBar, true);
+			}
+		}
+		//左端のバーを描画
+		else if (i == 0)
+		{
+			DrawGraph(x, y, m_backLeftBar, true);
+		}
+		//右端のバーを描画
+		else if (i == HPbar - 1)
+		{
+			DrawGraph(x + 23 + (50 * (i - 1)), y, m_backRightBar, true);
+		}
+
+		
+	}
+
+	if (StaminaBarWidth > 0)
+	{
+		DrawRectGraph(x - 8, y + 50, 0, 0, StaminaBarWidth, 50, m_staminaBar, true);
+	}
+
+	//左端のバーを描画
+	DrawGraph(x, y + 50, m_backLeftBar, true);
+
+	for (int i = 0; i < StaminaBar; i++)
+	{
+		//中央のバーを描画
+		if (i > 0 && i != StaminaBar - 1)
+		{
+			if (i == 1)
+			{
+				DrawGraph(x + 23, y +50, m_backCenterBar, true);
+			}
+			else
+			{
+				DrawGraph(x + 23 + (10 * (i - 1)), y + 50, m_backCenterBar, true);
+			}
+		}
+		//右端のバーを描画
+		else if (i == StaminaBar - 1)
+		{
+			DrawGraph(x + 23 + (10 * (i - 1)) + (2 * i), y + 50, m_backRightBar, true);
+		}
+	}
+	
 }
 
 /// <summary>

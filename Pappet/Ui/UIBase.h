@@ -41,6 +41,14 @@ protected:
 	int m_selectEquipment;//装備選択画面格納変数
 	int m_rest;           //休息選択画面格納変数
 	int m_levelUp;        //レベルアップ画面格納変数
+	int m_backRightBar;   //バーの右端の画像格納変数
+	int m_backLeftBar;    //バーの左端の画像格納変数
+	int m_backCenterBar;  //バーの中央の画像格納変数
+	int m_hpBar;          //HPバー端の画像格納変数
+	int m_staminaBar;     //スタミナバーの画像格納変数
+	int m_coreBackBar;    //コアバーの背景画像格納変数
+	int m_statusIcon;     //ステータスアイコン画像格納変数
+	int m_equipmentFrame; //装備の枠画像格納変数
 
 	//アイテムの画像
 	int m_blackSword;     //黒い剣の画像格納変数

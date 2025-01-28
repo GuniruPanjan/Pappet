@@ -27,6 +27,14 @@ UIBase::UIBase()
 	m_dead = MyLoadGraph("Data/UI/YOUDIEDGraph.png", 1, 1);
 	m_selectUi = MyLoadGraph("Data/UI/選択UI.png", 2, 2);
 	m_levelUp = MyLoadGraph("Data/UI/レベルステータスUI.png", 1, 1);
+	m_backRightBar = MyLoadGraph("Data/UI/StatusBar右端.png", 2, 2);
+	m_backLeftBar = MyLoadGraph("Data/UI/StatusBar左端.png", 2, 2);
+	m_backCenterBar = MyLoadGraph("Data/UI/StatusBar中央.png", 2, 2);
+	m_hpBar = MyLoadGraph("Data/UI/HPBar.png", 2, 2);
+	m_staminaBar = MyLoadGraph("Data/UI/StaminaBar.png", 2, 2);
+	m_coreBackBar = MyLoadGraph("Data/UI/CoreBar.png", 1, 1);
+	m_statusIcon = MyLoadGraph("Data/UI/StatusIcon.png", 1, 1);
+	m_equipmentFrame = MyLoadGraph("Data/UI/Frame.png", 1, 1);
 }
 
 /// <summary>
@@ -52,6 +60,10 @@ UIBase::~UIBase()
 	DeleteGraph(m_rest);
 	DeleteGraph(m_selectUi);
 	DeleteGraph(m_levelUp);
+	DeleteGraph(m_coreBackBar);
+	DeleteGraph(m_statusIcon);
+	DeleteGraph(m_equipmentFrame);
+	DeleteGraph(m_hpBar);
 }
 
 /// <summary>

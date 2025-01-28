@@ -56,7 +56,7 @@ void GameManager::Init()
 	m_pMap->Init(m_pPhysics);
 	//pCamera->Init();
 
-	m_pPlayer->Init(m_pPhysics, *m_pWeapon, *m_pShield, *m_pArmor, true);
+	m_pPlayer->Init(m_pPhysics, this, *m_pWeapon, *m_pShield, *m_pArmor, true);
 	m_pPlayer->SetMapNow(FirstMap);
 	m_pEnemy = std::make_shared<EnemyManager>();
 	m_pEnemy->Init(m_pMap->GetStageName());
@@ -86,7 +86,7 @@ void GameManager::GameInit()
 
 	m_pMap->Init(m_pPhysics);
 
-	m_pPlayer->Init(m_pPhysics, *m_pWeapon, *m_pShield, *m_pArmor, false);
+	m_pPlayer->Init(m_pPhysics, this, *m_pWeapon, *m_pShield, *m_pArmor, false);
 	m_pEnemy->Init(m_pMap->GetStageName());
 	//m_pEnemy->GameInit(m_pPhysics, this, true);
 	//m_pItem->Init(m_pMap->GetStageName());
@@ -339,6 +339,8 @@ void GameManager::Draw()
 	}
 
 	m_pCamera->Draw();
+
+	m_pUi->Draw(*m_pPlayer, *m_pEnemy, *m_pSetting, *m_pMap, *m_pItem);
 
 	//ƒƒjƒ…[‚Ì”wŒi•`‰æ
 	if (m_pPlayer->GetMenu())

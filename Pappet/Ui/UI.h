@@ -2,9 +2,9 @@
 #include "UIBase.h"
 
 class Player;
-class Enemy;
-class Equipment;
-class Map;
+class EnemyManager;
+class Setting;
+class MapManager;
 class ItemManager;
 class Weapon;
 class Shield;
@@ -41,7 +41,7 @@ public:
 	/// <param name="eq">装備の呼び出し</param>
 	/// <param name="map">マップの呼び出し</param>
 	/// <param name="item">アイテムの呼び出し</param>
-	void Draw(Player& player, Enemy& enemy, Equipment& eq, Map& map, ItemManager& item);
+	void Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map, ItemManager& item);
 
 	/// <summary>
 	/// 装備の描画処理
@@ -67,6 +67,14 @@ public:
 	/// 死んだときの描画
 	/// </summary>
 	void DiedDraw();
+
+	/// <summary>
+	/// ステータスバーの描画処理
+	/// </summary>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
+	/// <param name="player"></param>
+	void StatusDraw(int x, int y, Player& player);
 
 	/// <summary>
 	/// 終了処理
