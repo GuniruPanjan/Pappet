@@ -6,6 +6,7 @@
 #include "Manager/EnemyManager.h"
 #include "Ui/Setting.h"
 #include "Ui/UI.h"
+#include "EffectManager.h"
 
 //カメラの初期化で描画バグが発生する
 //カメラのせいでマップとモデルの描画がバグる
@@ -20,6 +21,9 @@ namespace
 	bool cGameBGMOne = false;
 	//ボスBGMを再生する
 	bool cBossBGMOne = false;
+
+	//シングルトン
+	auto& cEffect = EffectManager::GetInstance();
 }
 
 /// <summary>
@@ -54,6 +58,7 @@ void GameManager::Init()
 	m_pPhysics = std::make_shared<MyLibrary::Physics>(m_pMap->GetCollisionMap());
 
 	m_pMap->Init(m_pPhysics);
+	cEffect.Init();
 	//pCamera->Init();
 
 	m_pPlayer->Init(m_pPhysics, this, *m_pWeapon, *m_pShield, *m_pArmor, true);
@@ -85,6 +90,7 @@ void GameManager::GameInit()
 	m_pPhysics = std::make_shared<MyLibrary::Physics>(m_pMap->GetCollisionMap());
 
 	m_pMap->Init(m_pPhysics);
+	cEffect.Init();
 
 	m_pPlayer->Init(m_pPhysics, this, *m_pWeapon, *m_pShield, *m_pArmor, false);
 	m_pEnemy->Init(m_pMap->GetStageName());
@@ -239,6 +245,7 @@ void GameManager::Update()
 			//一回だけ実行
 			if (m_deadInit == true)
 			{
+				cEffect.End();
 				m_pPlayer->GameInit(m_pPhysics);
 				m_pEnemy->GameInit(m_pPhysics, this, m_deadInit);
 				m_pMap->TriggerReset();
@@ -307,6 +314,7 @@ void GameManager::Update()
 		//一回だけ実行
 		if (!cOne)
 		{
+			cEffect.End();
 			m_pEnemy->End();
 			m_pItem->End();
 			m_pBgm->GameEnd();
@@ -317,6 +325,8 @@ void GameManager::Update()
 			cOne = true;
 		}
 	}
+
+	cEffect.Update();
 	
 }
 
@@ -339,6 +349,8 @@ void GameManager::Draw()
 	}
 
 	m_pCamera->Draw();
+
+	cEffect.Draw();
 
 	m_pUi->Draw(*m_pPlayer, *m_pEnemy, *m_pSetting, *m_pMap, *m_pItem);
 

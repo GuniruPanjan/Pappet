@@ -16,6 +16,17 @@ EffectManager::~EffectManager()
 }
 
 /// <summary>
+/// 初期化処理
+/// </summary>
+void EffectManager::Init()
+{
+	//回復エフェクト
+	EffectLoad("Heel", "Data/Effect/AnotherEffect/Sylph13.efkefc", 160, 20.0f);
+	//アイテムエフェクト
+	EffectLoad("Item", "Data/Effect/Item.efkefc", 60, 5.0f);
+}
+
+/// <summary>
 /// エフェクトロード
 /// </summary>
 /// <param name="name">エフェクトの名前</param>
@@ -82,6 +93,17 @@ void EffectManager::Update()
 void EffectManager::Draw()
 {
 	DrawEffekseer3D();
+}
+
+/// <summary>
+/// 終了処理
+/// </summary>
+void EffectManager::End()
+{
+	for (auto& effect : m_effect)
+	{
+		DeleteEffekseerEffect(effect.second->emitterHandle);
+	}
 }
 
 /// <summary>

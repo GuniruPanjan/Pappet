@@ -3,6 +3,7 @@
 #include "Item/Shield.h"
 #include "Item/Armor.h"
 #include "Character/Player.h"
+#include "Manager/EnemyManager.h"
 
 namespace
 {
@@ -198,7 +199,7 @@ void UI::StatusDraw(int x, int y, Player& player)
 	//HP最大幅を計算
 	int HPbar = player.GetMaxStatus().sm_hp / 30;
 	//HP最大幅を計算
-	int HPBarWidth = (int)((float)player.GetStatus().s_hp / player.GetMaxStatus().sm_hp * (200 + (50 * player.GetLevelStatus().sl_hp)));
+	int HPBarWidth = (int)((float)player.GetStatus().s_hp / player.GetMaxStatus().sm_hp * (185 + (50 * player.GetLevelStatus().sl_hp)));
 
 	//スタミナ最大幅を計算
 	int StaminaBar = player.GetMaxStatus().sm_stamina / 10;
@@ -207,7 +208,7 @@ void UI::StatusDraw(int x, int y, Player& player)
 
 	if (HPBarWidth > 0)
 	{
-		DrawRectGraph(x - 8, y, 0, 0, HPBarWidth, 50, m_hpBar, true);
+		DrawRectGraph(x + 5, y + 8, 0, 0, HPBarWidth, 45, m_hpBar, true);
 	}
 
 
@@ -268,6 +269,58 @@ void UI::StatusDraw(int x, int y, Player& player)
 		}
 	}
 	
+}
+
+/// <summary>
+/// 敵のHP描画処理
+/// </summary>
+/// <param name="pos"></param>
+/// <param name="hp"></param>
+/// <param name="maxHP"></param>
+void UI::EnemyHPDraw(VECTOR pos, int hp, int maxHP)
+{
+	//3D座標から2D座標に変換
+	VECTOR screenPos;
+	
+	screenPos = ConvWorldPosToScreenPos(pos);
+
+	int screenX = (int)screenPos.x - 100;   //HPバーの場所を調整
+	int screenY = (int)screenPos.y - 300;   //HPバーの高さを調整
+
+	//HPバーの最大幅を計算
+	int HPBarWidth = (int)((float)hp / maxHP * 200);
+
+	if (HPBarWidth > 0)
+	{
+		DrawRectGraph(screenX, screenY, 0, 0, HPBarWidth, 30, m_hpBar, true);
+	}
+}
+
+/// <summary>
+/// ボスのHP描画処理
+/// </summary>
+/// <param name="hp"></param>
+/// <param name="maxHP"></param>
+/// <param name="name"></param>
+void UI::BossHPDraw(int hp, int maxHP, const char* name, const char* subName)
+{
+	//HPバーの最大幅を計算
+	int HPBarWidth = (int)((float)hp / maxHP * 800);
+
+	SetFontSize(30);
+	//ボスの当て字
+	DrawString(450, 670, subName, 0xffffff);
+
+	SetFontSize(40);
+
+	//ボスの名前
+	DrawString(450, 700, name, 0xffffff);
+
+	if (HPBarWidth > 0)
+	{
+		DrawRectGraph(450, 750, 0, 0, HPBarWidth, 50, m_hpBar, true);
+	}
+
 }
 
 /// <summary>

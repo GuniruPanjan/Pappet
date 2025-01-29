@@ -47,6 +47,11 @@ public:
 	//I—¹ˆ—
 	void End();
 
+	//“G‚ÌHP‚ğ•Ô‚·
+	const int GetHP();
+	//“G‚ÌÅ‘åHP‚ğ•Ô‚·
+	const int GetMaxHP();
+
 	//³–Ê‚Ì“G‚ÌŒ»İ‚ÌHP‚ğ•Ô‚·
 	const int GetFrontEnemyHp() const { return m_frontEnemyHp; }
 	//³–Ê‚Ì“G‚ÌÅ‘åHP‚ğ•Ô‚·

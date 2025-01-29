@@ -50,7 +50,7 @@ namespace
 	//攻撃の判定範囲
 	constexpr float cPartAttackRadius = 8.0f;
 	//強攻撃の攻撃範囲
-	constexpr float cStrengthAttackRadius = 50.0f;
+	constexpr float cStrengthAttackRadius = 80.0f;
 	//盾の幅
 	constexpr float cShieldWidth = 20.0f;
 	//盾の横
@@ -148,10 +148,13 @@ Player::Player() :
 	m_animChange.sa_imapact = false;
 	m_animChange.sa_strengthAttack = false;
 	
+	//エフェクトの初期化
+	m_effect.s_heel = false;
+
 	//エフェクト読み込み
-	effect.EffectLoad("Rest", "Data/Effect/Benediction.efkefc", 210, 10.0f);
-	effect.EffectLoad("Heal", "Data/Effect/AnotherEffect/Sylph13.efkefc", 160, 20.0f);
-	effect.EffectLoad("Imapct", "Data/Effect/HitEffect.efkefc", 30, 7.0f);
+	//effect.EffectLoad("Rest", "Data/Effect/Benediction.efkefc", 210, 10.0f);
+	//effect.EffectLoad("Heal", "Data/Effect/AnotherEffect/Sylph13.efkefc", 160, 20.0f);
+	//effect.EffectLoad("Imapct", "Data/Effect/HitEffect.efkefc", 30, 7.0f);
 
 	//モデル読み込み
 	m_modelHandle = handle.GetModelHandle(cPath);
@@ -545,12 +548,16 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		{
 			for (auto damage : enemy.GetEnemyDamage())
 			{
-				m_status.s_hp -= damage - (m_status.s_defense / 10);
+				if (damage > 0)
+				{
+					m_status.s_hp -= damage - (m_status.s_defense / 10);
+				}
 			}
 
 			cHit = false;
 		}
 
+		EffectAction();
 
 		//メニューを開いている間はアクションできない
 		if (!m_menuOpen)
@@ -850,7 +857,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	//強攻撃
 	if (!m_isAnimationFinish && m_animChange.sa_strengthAttack)
 	{
-		m_pStrengthAttack->SetAttack(80.0f);
+		m_pStrengthAttack->SetAttack(120.0f);
 
 		//フレーム中に攻撃を発生
 		if (m_nowFrame == 58.0f)
@@ -1101,6 +1108,7 @@ void Player::Action()
 	//Xボタンが押されたら
 	if (m_xpad.Buttons[14] == 1 && !m_anim.s_attack)
 	{
+		m_effect.s_heel = true;
 		m_animChange.sa_recovery = true;
 	}
 	
@@ -1171,6 +1179,20 @@ void Player::Action()
 	if (m_xpad.Buttons[4] == 1)
 	{
 		m_menuOpen = true;
+	}
+}
+
+/// <summary>
+/// エフェクト関係
+/// </summary>
+void Player::EffectAction()
+{
+	//回復エフェクト
+	if (m_effect.s_heel)
+	{
+		effect.EffectCreate("Heel", m_collisionPos.ConversionToVECTOR());
+
+		m_effect.s_heel = false;
 	}
 }
 

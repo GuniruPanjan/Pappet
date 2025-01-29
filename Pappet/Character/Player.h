@@ -54,6 +54,7 @@ public:
 	void Finalize();
 	void Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core);
 	void Action();
+	void EffectAction();
 	void WarpMap();
 	void NotWeaponAnimation();
 	void AllAnimation();

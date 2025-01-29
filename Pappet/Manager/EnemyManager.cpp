@@ -222,6 +222,22 @@ void EnemyManager::End()
 	}
 }
 
+const int EnemyManager::GetHP()
+{
+	for (auto& enemy : m_pEnemys)
+	{
+		return enemy->GetHp();
+	}
+}
+
+const int EnemyManager::GetMaxHP()
+{
+	for (auto& enemy : m_pEnemys)
+	{
+		return enemy->GetMaxHp();
+	}
+}
+
 /// <summary>
 /// ƒ{ƒX‚Ì•”‰®‚É“ü‚Á‚½‚©
 /// </summary>

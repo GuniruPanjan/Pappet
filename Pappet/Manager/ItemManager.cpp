@@ -5,6 +5,16 @@
 #include "Item/Shield.h"
 #include "Item/Armor.h"
 #include "Item/Tool.h"
+#include "EffectManager.h"
+
+namespace
+{
+	//エフェクトの再生時間
+	int effectPlayerBack = 0;
+
+	//シングルトン
+	auto& effect = EffectManager::GetInstance();
+}
 
 /// <summary>
 /// コンストラクタ
@@ -30,6 +40,7 @@ ItemManager::~ItemManager()
 void ItemManager::Init(const char* stageName)
 {
 	m_pGenerateInfo.clear();
+	//m_pItems.clear();
 
 	m_stageName = stageName;
 
@@ -58,14 +69,14 @@ void ItemManager::Init(const char* stageName)
 void ItemManager::GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager)
 {
 	//アイテムの当たり判定を消す
-	for (auto& item : m_pItems)
-	{
-		//マップに現存しているやつ
-		if (item->GetItemTaking())
-		{
-			item->ItemFinalize(physics);
-		}
-	}
+	//for (auto& item : m_pItems)
+	//{
+	//	//マップに現存しているやつ
+	//	if (!item->GetItemTaking())
+	//	{
+	//		item->ItemFinalize(physics);
+	//	}
+	//}
 
 	auto thisMapName = gameManager->GetThisMapName();
 
@@ -130,6 +141,21 @@ void ItemManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManage
 		//マップのアイテムとして更新する
 		for (auto& item : m_pItems)
 		{
+			//アイテムを取ってないとき
+			if (!item->GetItemTaking())
+			{
+				if (effectPlayerBack <= 30)
+				{
+					effectPlayerBack++;
+				}
+				else
+				{
+					effect.EffectCreate("Item", item->GetPos().ConversionToVECTOR());
+
+					effectPlayerBack = 0;
+				}
+			}
+
 			item->ItemUpdate(taking);
 
 			if (!m_itemPick)

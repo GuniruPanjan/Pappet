@@ -1,4 +1,5 @@
 #include "Immortal.h"
+#include "Ui/UI.h"
 
 //アタックのCollidableが登録されていない
 
@@ -47,6 +48,8 @@ Immortal::Immortal() :
 	m_anim.s_attack = false;
 	m_anim.s_moveflag = false;
 	m_anim.s_hit = false;
+
+	m_pUI = std::make_shared<UI>();
 }
 
 /// <summary>
@@ -94,8 +97,10 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 	m_nowAnimIdx = m_animIdx["Idle"];
 
 	float totalAnimFrame = MV1GetAttachAnimTotalTime(m_modelHandle, m_nowAnimNo);
+	//最大HPを取得
+	m_maxHP = m_status.s_hp;
 
-	m_status.s_hp = 1.0f;
+	//m_status.s_hp = 1.0f;
 
 	//死をfalseにする
 	m_anim.s_isDead = false;
@@ -137,7 +142,8 @@ void Immortal::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLi
 	//アニメーション設定
 	m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
 	m_nowAnimIdx = m_animIdx["Idle"];
-
+	//最大HPを取得
+	m_maxHP = m_status.s_hp;
 
 	m_anim.s_isDead = false;
 	cDead = false;
@@ -381,4 +387,12 @@ void Immortal::Draw()
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
 	//モデルの描画
 	MV1DrawModel(m_modelHandle);
+	
+	//戦闘中だと描画
+	if (m_pSearch->GetIsStay())
+	{
+		//HPバーの描画
+		m_pUI->EnemyHPDraw(rigidbody.GetPos().GetVector(), m_status.s_hp, m_maxHP);
+	}
+	
 }

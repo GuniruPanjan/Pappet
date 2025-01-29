@@ -1,6 +1,8 @@
 #pragma once
 #include "CharacterBase.h"
 
+class UI;
+
 /// <summary>
 /// エネミーの基盤となるクラス
 /// </summary>
@@ -71,6 +73,8 @@ public:
 	const int GetModelHandle() const { return m_modelHandle; }
 	//現在のHPを取得
 	const int GetHp() const { return m_status.s_hp; }
+	//最大HPを取得
+	const int GetMaxHp () const { return m_maxHP; }
 
 	int SetI(int &set) { return m_I = set; }
 
@@ -135,12 +139,14 @@ protected:
 protected:
 	std::shared_ptr<EnemyAttackObject> m_pAttack;    //攻撃判定
 	std::shared_ptr<SearchObject> m_pSearch;    //索敵判定
+	std::shared_ptr<UI> m_pUI;                  //UI
 
 	EnemyAnimation m_enemyAnim;   //アニメーション
 
 	AttackObject* m_col;
 
 	int m_randomAction;       //ランダムに行動するための変数
+	int m_maxHP;              //最大HP
 
 	float m_hpRadius;            //HPバーを表示する当たり判定の半径
 	float m_moveTurning;         //時計周りに旋回する法線ベクトル
@@ -166,6 +172,9 @@ protected:
 	VECTOR m_move;
 	VECTOR m_difPlayer;          //プレイヤーとの距離
 	VECTOR m_difShield;          //盾との距離
+
+	const char* m_bossName;      //ボスの名前
+	const char* m_subName;       //当て字用
 
 	int m_I;
 

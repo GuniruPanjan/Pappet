@@ -1,6 +1,7 @@
 #pragma once
 #include "UIBase.h"
 
+
 class Player;
 class EnemyManager;
 class Setting;
@@ -75,6 +76,17 @@ public:
 	/// <param name="y"></param>
 	/// <param name="player"></param>
 	void StatusDraw(int x, int y, Player& player);
+
+	/// <summary>
+	/// “G‚ÌHP•`‰æˆ—
+	/// </summary>
+	/// <param name="enemy"></param>
+	void EnemyHPDraw(VECTOR pos, int hp, int maxHP);
+
+	/// <summary>
+	/// ƒ{ƒX‚ÌHP•`‰æˆ—
+	/// </summary>
+	void BossHPDraw(int hp, int maxHP, const char* name, const char* subName);
 
 	/// <summary>
 	/// I—¹ˆ—

@@ -30,7 +30,8 @@ UIBase::UIBase()
 	m_backRightBar = MyLoadGraph("Data/UI/StatusBar右端.png", 2, 2);
 	m_backLeftBar = MyLoadGraph("Data/UI/StatusBar左端.png", 2, 2);
 	m_backCenterBar = MyLoadGraph("Data/UI/StatusBar中央.png", 2, 2);
-	m_hpBar = MyLoadGraph("Data/UI/HPBar.png", 2, 2);
+	m_backOutBar = MyLoadGraph("Data/UI/StatusBar外枠.png", 2, 2);
+	m_hpBar = MyLoadGraph("Data/UI/HPBarRed.png", 2, 2);
 	m_staminaBar = MyLoadGraph("Data/UI/StaminaBar.png", 2, 2);
 	m_coreBackBar = MyLoadGraph("Data/UI/CoreBar.png", 1, 1);
 	m_statusIcon = MyLoadGraph("Data/UI/StatusIcon.png", 1, 1);
@@ -64,6 +65,7 @@ UIBase::~UIBase()
 	DeleteGraph(m_statusIcon);
 	DeleteGraph(m_equipmentFrame);
 	DeleteGraph(m_hpBar);
+	DeleteGraph(m_backOutBar);
 }
 
 /// <summary>

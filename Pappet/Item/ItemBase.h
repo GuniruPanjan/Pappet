@@ -86,6 +86,8 @@ public:
 	bool SetItemBox(bool set) { return m_itemBox = set; }
 	//アイテムの種類を返す
 	Item GetItemKinds() { return m_item; }
+	//アイテムの中心座標を返す
+	MyLibrary::LibVec3 GetPos() { return m_centerPos; }
 protected:
 	//アイテム情報を読み込む
 	void LoadData(std::string name);

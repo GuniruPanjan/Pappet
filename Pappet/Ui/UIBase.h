@@ -44,6 +44,7 @@ protected:
 	int m_backRightBar;   //バーの右端の画像格納変数
 	int m_backLeftBar;    //バーの左端の画像格納変数
 	int m_backCenterBar;  //バーの中央の画像格納変数
+	int m_backOutBar;     //バーの外枠画像格納変数   
 	int m_hpBar;          //HPバー端の画像格納変数
 	int m_staminaBar;     //スタミナバーの画像格納変数
 	int m_coreBackBar;    //コアバーの背景画像格納変数

@@ -37,6 +37,8 @@ private:
 public:
 	virtual ~EffectManager();
 
+	void Init();   //初期化処理
+
 	//コピーコンストラクタから実態の生成ができてしまうため
 	//コピーコンストラクタを禁止する
 	EffectManager(const EffectManager&) = delete;
@@ -74,6 +76,9 @@ public:
 
 	//描画
 	void Draw();
+
+	//終了処理
+	void End();
 
 	//エフェクトを生成する
 	void EffectCreate(std::string name, VECTOR pos);

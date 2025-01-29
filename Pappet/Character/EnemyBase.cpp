@@ -23,6 +23,7 @@ namespace
 EnemyBase::EnemyBase(Priority priority) :
 	CharacterBase(priority, ObjectTag::Enemy),
 	m_randomAction(0),
+	m_maxHP(0),
 	m_hpRadius(0.0f),
 	m_moveTurning(0.0f),
 	m_moveReverseTurning(0.0f),
@@ -45,7 +46,9 @@ EnemyBase::EnemyBase(Priority priority) :
 	m_isEnterHit(false),
 	m_isExitHit(false),
 	m_centerPos(),
-	m_I(0)
+	m_I(0),
+	m_bossName(0),
+	m_subName(0)
 {
 }
 

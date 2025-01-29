@@ -1,4 +1,5 @@
 #include "Bear.h"
+#include "Ui/UI.h"
 
 namespace
 {
@@ -51,6 +52,8 @@ Bear::Bear() :
 	m_anim.s_attack = false;
 	m_anim.s_moveflag = false;
 	m_anim.s_hit = false;
+
+	m_pUI = std::make_shared<UI>();
 }
 
 /// <summary>
@@ -103,7 +106,13 @@ void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::P
 	m_anim.s_isDead = false;
 	cDead = false;
 
+	//Å‘åHP‚ðŽæ“¾
+	m_maxHP = m_status.s_hp;
+
 	m_status.s_hp = 1.0f;
+
+	m_bossName = "ŒF‚Ì˜ø™SlŒ`";
+	m_subName = "H  A  R  I  B  O";
 
 	cOne = false;
 	m_deadOne = false;
@@ -144,6 +153,12 @@ void Bear::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 
 	m_anim.s_isDead = false;
 	cDead = false;
+
+	//Å‘åHP‚ðŽæ“¾
+	m_maxHP = m_status.s_hp;
+
+	m_bossName = "ŒF‚Ì˜ø™SlŒ`";
+	m_subName = "H  A  R  I  B  O";
 
 	cOne = false;
 	m_deadOne = false;
@@ -532,6 +547,11 @@ void Bear::Draw()
 	MV1DrawModel(m_modelHandle);
 
 	//DrawFormatString(200, 400, 0xffffff, "m_playerHit : %d", m_isPlayerHit);
+
+	if (m_isBossDiscovery && !cDead)
+	{
+		m_pUI->BossHPDraw(m_status.s_hp, m_maxHP, m_bossName, m_subName);
+	}
 
 #if false
 	DrawFormatString(200, 300, 0xffffff, "m_angle : %f", m_angle);
