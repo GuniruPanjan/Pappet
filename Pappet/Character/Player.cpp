@@ -50,7 +50,7 @@ namespace
 	//攻撃の判定範囲
 	constexpr float cPartAttackRadius = 8.0f;
 	//強攻撃の攻撃範囲
-	constexpr float cStrengthAttackRadius = 80.0f;
+	constexpr float cStrengthAttackRadius = 100.0f;
 	//盾の幅
 	constexpr float cShieldWidth = 20.0f;
 	//盾の横
@@ -72,7 +72,7 @@ namespace
 
 	//シングルトン
 	auto& handle = HandleManager::GetInstance();
-	auto& effect = EffectManager::GetInstance();
+	auto& cEffect = EffectManager::GetInstance();
 
 
 	int cAnimIdx;
@@ -295,7 +295,7 @@ void Player::Finalize()
 	m_pSearch->Finalize(m_pPhysics);
 }
 
-void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core)
+void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos)
 {
 	//とりあえずやっとく
 	m_status.s_core = core.GetCore();
@@ -566,7 +566,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			if (!m_animChange.sa_avoidance && !m_anim.s_hit && !m_animChange.sa_recovery && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact
 				&& !m_staminaBreak && !m_rest && !m_animChange.sa_strengthAttack)
 			{
-				Action();
+				Action(restpos);
 			}
 		}
 
@@ -859,6 +859,12 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	{
 		m_pStrengthAttack->SetAttack(120.0f);
 
+		//エフェクトを出す
+		if (m_nowFrame == 25.0f)
+		{
+			cEffect.EffectCreate("BearLance", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y - 12.0f, rigidbody.GetPos().z));
+		}
+
 		//フレーム中に攻撃を発生
 		if (m_nowFrame == 58.0f)
 		{
@@ -931,7 +937,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 /// <summary>
 /// プレイヤーのアクション実装
 /// </summary>
-void Player::Action()
+void Player::Action(VECTOR restpos)
 {
 	//ターゲットできる時
 	if (!m_lockonTarget && m_pSearch->GetIsStay())
@@ -1125,6 +1131,8 @@ void Player::Action()
 		if (m_xpad.Buttons[15] == 1)
 		{
 			m_rest = true;
+
+			cEffect.EffectCreate("Rest", restpos);
 		}
 	}
 	else if(m_mapNow != 0)
@@ -1146,6 +1154,8 @@ void Player::Action()
 		{
 			m_rest = true;
 			m_bigRest = true;
+
+			cEffect.EffectCreate("Rest", restpos);
 		}
 	}
 	else if(m_mapNow == 0)
@@ -1190,7 +1200,7 @@ void Player::EffectAction()
 	//回復エフェクト
 	if (m_effect.s_heel)
 	{
-		effect.EffectCreate("Heel", m_collisionPos.ConversionToVECTOR());
+		cEffect.EffectCreate("Heel", m_collisionPos.ConversionToVECTOR());
 
 		m_effect.s_heel = false;
 	}
@@ -1498,6 +1508,11 @@ void Player::Draw(Armor& armor)
 	DrawFormatString(200, 650, 0xffffff, "shield : %d", m_pShield->GetUgly());
 	DrawFormatString(200, 700, 0xffffff, "fist : %d", m_pWeapon->GetFist());
 	DrawFormatString(200, 750, 0xffffff, "fist : %d", m_pShield->GetFist());
+#endif
+
+#if false
+	DrawFormatString(200, 300, 0xffffff, "pickup : %d", m_itemPick);
+
 #endif
 
 	MV1SetPosition(m_modelHandle, VSub(m_modelPos.ConversionToVECTOR(), VGet(0.0f, 12.0f, 0.0f)));

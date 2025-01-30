@@ -68,6 +68,7 @@ void MapManager::WarpUpdate(std::shared_ptr<MyLibrary::Physics> physics, bool wa
 	{
 		//現在のマップの終了処理
 		m_pMap->End(physics);
+		m_pMap->MapEnd(physics);
 
 		m_pMap = pNext;
 

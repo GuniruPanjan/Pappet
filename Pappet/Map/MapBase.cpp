@@ -121,3 +121,12 @@ void MapBase::InitBossEnter(float width, float hight, float depth, MyLibrary::Li
 	m_pRectTrigger = std::make_shared<RectObjectTrigger>(width, hight, depth);
 	m_pRectTrigger->Init(m_pPhysics, pos, true);
 }
+
+/// <summary>
+/// I—¹ˆ—
+/// </summary>
+/// <param name="physics"></param>
+void MapBase::MapEnd(std::shared_ptr<MyLibrary::Physics> physics)
+{
+	handle.Clear();
+}

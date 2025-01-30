@@ -90,7 +90,7 @@ void ItemManager::GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameMana
 			if (generate->mapNumber == thisMapName)
 			{
 				//生成済みのアイテムを初期化する
-				if (generate->isCreated)
+				if (generate->isCreated && !generate->isPickUp)
 				{
 					CreateItem(generate->posX, generate->posY, generate->posZ, generate->itemName, physics);
 
@@ -98,6 +98,7 @@ void ItemManager::GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameMana
 					CheckItem(generate->itemName, generate->SmallCore, generate->MediumCore, generate->Rubbish, generate->BlackSword, generate->Distorted, generate->ArmorNormal);
 				}
 			}
+			
 		}
 	}
 }
@@ -135,48 +136,64 @@ void ItemManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManage
 	}
 
 
-	//マップが0以外だと動かす
-	if (thisMapName != 0)
+	//マップのアイテムとして更新する
+	for (auto& item : m_pItems)
 	{
-		//マップのアイテムとして更新する
-		for (auto& item : m_pItems)
+		//アイテムを取ってないとき
+		if (!item->GetItemTaking())
 		{
-			//アイテムを取ってないとき
-			if (!item->GetItemTaking())
+			if (effectPlayerBack <= 30)
 			{
-				if (effectPlayerBack <= 30)
-				{
-					effectPlayerBack++;
-				}
-				else
-				{
-					effect.EffectCreate("Item", item->GetPos().ConversionToVECTOR());
-
-					effectPlayerBack = 0;
-				}
+				effectPlayerBack++;
 			}
-
-			item->ItemUpdate(taking);
-
-			if (!m_itemPick)
+			else
 			{
-				m_itemPick = item->GetItemPick();
+				effect.EffectCreate("Item", item->GetPos().ConversionToVECTOR());
+
+				effectPlayerBack = 0;
 			}
-
-			//とった場合
-			if (taking && m_itemPick && item->GetItemBox())
-			{
-				m_item.SmallCore += item->GetItemKinds().SmallCore;
-				m_item.MediumCore += item->GetItemKinds().MediumCore;
-				m_item.Rubbish += item->GetItemKinds().Rubbish;
-				m_item.BlackSword += item->GetItemKinds().BlackSword;
-				m_item.Distorted += item->GetItemKinds().Distorted;
-				m_item.ArmorNormal += item->GetItemKinds().ArmorNormal;
-
-				item->SetItemBox(false);
-			}
-
 		}
+
+		item->ItemUpdate(taking);
+
+		if (!m_itemPick)
+		{
+			m_itemPick = item->GetItemPick();
+		}
+		else
+		{
+			if (item->GetIsOut())
+			{
+				m_itemPick = false;
+			}
+		}
+
+		//とった場合
+		if (taking && item->GetItemBox())
+		{
+			m_item.SmallCore += item->GetItemKinds().SmallCore;
+			m_item.MediumCore += item->GetItemKinds().MediumCore;
+			m_item.Rubbish += item->GetItemKinds().Rubbish;
+			m_item.BlackSword += item->GetItemKinds().BlackSword;
+			m_item.Distorted += item->GetItemKinds().Distorted;
+			m_item.ArmorNormal += item->GetItemKinds().ArmorNormal;
+
+			item->SetItemBox(false);
+
+			//アイテムが取得されたことを記録
+			for (auto& generate : m_pGenerateInfo)
+			{
+				if (generate->posX == item->GetPos().x && generate->posY == item->GetPos().y && generate->posZ == item->GetPos().z)
+				{
+					generate->isPickUp = true;
+					break;
+				}
+			}
+
+			//エフェクトを削除
+			//effect.RemoveEffect("Item", item->GetPos().ConversionToVECTOR());
+		}
+
 	}
 }
 

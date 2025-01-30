@@ -39,6 +39,9 @@ public:
 	//終了
 	virtual void End(std::shared_ptr<MyLibrary::Physics> physics) = 0;
 
+	//終了処理
+	void MapEnd(std::shared_ptr<MyLibrary::Physics> physics);
+
 	//コリジョンのマップハンドルを返す
 	int GetCollisionMap() { return m_collisionHandle; }
 	//休息できるように当たっているかを返す
@@ -49,6 +52,8 @@ public:
 	bool GetCore() { return m_pCore->GetIsStay(); }
 	//マップのボス部屋判定を返す
 	bool GetBossEnter() { return m_pRectTrigger->GetIsStay(); }
+	//マップの休息地点を返す
+	VECTOR GetRestPos() { return m_mapRestPos.ConversionToVECTOR(); }
 	//ステージ名を返す
 	const char* GetStageName() { return m_stageName; }
 protected:

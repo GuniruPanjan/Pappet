@@ -26,6 +26,11 @@ void ItemBase::ItemEnd()
 {
 }
 
+bool ItemBase::GetIsOut()
+{
+	return m_pSearch->GetIsExit();
+}
+
 /// <summary>
 /// ƒAƒCƒeƒ€î•ñ‚ğ“Ç‚İ‚Ş
 /// </summary>

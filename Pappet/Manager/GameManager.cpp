@@ -135,7 +135,7 @@ void GameManager::Update()
 
 		m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
-		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, *m_pEnemy, *m_pCore);
+		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, *m_pEnemy, *m_pCore, m_pMap->GetRestPos());
 		//ƒƒbƒNƒIƒ“‚µ‚Ä‚È‚¢Žž
 		if (!m_pPlayer->GetLock())
 		{
@@ -318,6 +318,8 @@ void GameManager::Update()
 			m_pEnemy->End();
 			m_pItem->End();
 			m_pBgm->GameEnd();
+			m_pSetting->End();
+			m_pUi->End();
 			GameInit();
 
 			m_pPlayer->SetWarp(false);

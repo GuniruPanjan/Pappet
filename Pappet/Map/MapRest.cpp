@@ -1,5 +1,6 @@
 #include "MapRest.h"
 #include "MapFirst.h"
+#include "Manager/EffectManager.h"
 
 namespace
 {
@@ -23,6 +24,11 @@ namespace
 	constexpr float cBossHight = 100.0f;
 	//ボス部屋の奥行
 	constexpr float cBossDepth = 30.0f;
+
+	int cEffectPlay = 500;
+
+	//シングルトン
+	auto& cEffect = EffectManager::GetInstance();
 }
 
 /// <summary>
@@ -80,6 +86,9 @@ void MapRest::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	m_mapCoreCollisionePos = MyLibrary::LibVec3(m_mapCorePos.x, 0.0f, m_mapCorePos.z);
 	m_mapBossEnterTriggerPos = MyLibrary::LibVec3(10.0f, 1000.0f, 0.0f);
 
+	//炎のエフェクト
+	cEffect.EffectLoad("Fire", "Data/Effect/MagicFire1.efkefc", 600, 90.0f);
+
 	//ライト関係
 	ChangeLightTypeDir(VGet(-1.0f, 0.0f, 0.0f));
 	m_light = CreateDirLightHandle(VGet(1.0f, 0.0f, 0.0f));
@@ -103,6 +112,17 @@ void MapRest::Init(std::shared_ptr<MyLibrary::Physics> physics)
 std::shared_ptr<MapBase> MapRest::Update(bool warp, bool enter, bool Dead)
 {
 	m_pSearch->Update(m_mapRestPos);
+
+	if (cEffectPlay >= 500)
+	{
+		cEffect.EffectCreate("Fire", VGet(m_mapRestPos.x, m_mapRestPos.y - 30, m_mapRestPos.z - 50));
+
+		cEffectPlay = 0;
+	}
+	else
+	{
+		cEffectPlay++;
+	}
 
 	return shared_from_this();  //自身のポインタ
 }

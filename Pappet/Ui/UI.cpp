@@ -37,6 +37,22 @@ void UI::Init()
 	m_deadA = 0;
 	m_waitResetTime = 0;
 	m_deadReset = false;
+
+	m_blackSword = MyLoadGraph("Data/UI/çïÇ¢åïUI.png", 3, 3);
+	m_fist = MyLoadGraph("Data/UI/åùUI.png", 3, 3);
+	m_body = MyLoadGraph("Data/UI/óáëÃUI.png", 3, 3);
+	m_uglyShield = MyLoadGraph("Data/UI/èXÇ¢èÇUI.png", 4, 4);
+	m_commonArmor = MyLoadGraph("Data/UI/ïΩñ}Ç»äZUI.png", 3, 3);
+	m_dead = MyLoadGraph("Data/UI/YOUDIEDGraph.png", 1, 1);
+	m_backRightBar = MyLoadGraph("Data/UI/StatusBarâEí[.png", 2, 2);
+	m_backLeftBar = MyLoadGraph("Data/UI/StatusBarç∂í[.png", 2, 2);
+	m_backCenterBar = MyLoadGraph("Data/UI/StatusBaríÜâõ.png", 2, 2);
+	m_backOutBar = MyLoadGraph("Data/UI/StatusBaräOòg.png", 2, 2);
+	m_hpBar = MyLoadGraph("Data/UI/HPBarRed.png", 2, 2);
+	m_staminaBar = MyLoadGraph("Data/UI/StaminaBar.png", 2, 2);
+	m_coreBackBar = MyLoadGraph("Data/UI/CoreBar.png", 1, 1);
+	m_statusIcon = MyLoadGraph("Data/UI/StatusIcon.png", 1, 1);
+	m_equipmentFrame = MyLoadGraph("Data/UI/Frame.png", 1, 1);
 }
 
 /// <summary>
@@ -328,4 +344,19 @@ void UI::BossHPDraw(int hp, int maxHP, const char* name, const char* subName)
 /// </summary>
 void UI::End()
 {
+	DeleteGraph(m_blackSword);
+	DeleteGraph(m_fist);
+	DeleteGraph(m_body);
+	DeleteGraph(m_uglyShield);
+	DeleteGraph(m_commonArmor);
+	DeleteGraph(m_dead);
+	DeleteGraph(m_backRightBar);
+	DeleteGraph(m_backLeftBar);
+	DeleteGraph(m_backCenterBar);
+	DeleteGraph(m_backOutBar);
+	DeleteGraph(m_hpBar);
+	DeleteGraph(m_staminaBar);
+	DeleteGraph(m_coreBackBar);
+	DeleteGraph(m_statusIcon);
+	DeleteGraph(m_equipmentFrame);
 }

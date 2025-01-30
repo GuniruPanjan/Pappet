@@ -162,6 +162,13 @@ void Setting::Init()
 	m_whitePal = 0;
 
 	pse->SceneInit();
+
+	m_equipment = MyLoadGraph("Data/UI/装備画面UI.png", 1, 1);
+	m_itemBox = MyLoadGraph("Data/UI/アイテム画面UI.png", 1, 1);
+	m_selectEquipment = MyLoadGraph("Data/UI/装備選択画面UI.png", 1, 1);
+	m_rest = MyLoadGraph("Data/UI/四角の白い長方形の囲い.png", 1, 1);
+	m_selectUi = MyLoadGraph("Data/UI/選択UI.png", 2, 2);
+	m_levelUp = MyLoadGraph("Data/UI/レベルステータスUI.png", 1, 1);
 }
 
 /// <summary>
@@ -1356,5 +1363,11 @@ void Setting::End()
 	DeleteGraph(m_black);
 	DeleteGraph(m_back);
 	DeleteGraph(m_white);
+	DeleteGraph(m_equipment);
+	DeleteGraph(m_itemBox);
+	DeleteGraph(m_selectEquipment);
+	DeleteGraph(m_rest);
+	DeleteGraph(m_selectUi);
+	DeleteGraph(m_levelUp);
 	pse->End();
 }

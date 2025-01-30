@@ -47,6 +47,7 @@ public:
 		int ArmorNormal = 0;     //•’Ê‚ÌŠZ
 
 		bool isCreated = false;    //¶¬Ï‚İ‚©‚Ç‚¤‚©
+		bool isPickUp = false;     //E‚í‚ê‚½‚©‚Ç‚¤‚©
 	};
 
 public:

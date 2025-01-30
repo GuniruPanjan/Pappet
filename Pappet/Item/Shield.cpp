@@ -39,7 +39,7 @@ void Shield::Init()
 {
 	if (m_ugly.ss_equipment)
 	{
-		m_itemHandle = handle.GetModelHandle("Data/Weapon/Shield.mv1");
+		//m_itemHandle = handle.GetModelHandle("Data/Weapon/Shield.mv1");
 		m_ugly.ss_cut = 90.0f;
 		m_ugly.ss_strength = 20.0f;
 
@@ -104,8 +104,6 @@ void Shield::ItemUpdate(bool taking)
 		{
 			m_itemPick = false;
 		}
-
-		m_pSearch->Update(m_centerPos);
 	}
 	//ƒAƒCƒeƒ€‚ªŽæ‚ç‚ê‚½Žž‚Ìˆ—
 	else if (m_itemPick && taking)
@@ -118,6 +116,8 @@ void Shield::ItemUpdate(bool taking)
 		m_isTaking = true;
 		m_itemBox = true;
 	}
+
+	m_pSearch->Update(m_centerPos);
 
 }
 

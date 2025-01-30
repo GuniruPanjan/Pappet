@@ -1,5 +1,6 @@
 #include "Bear.h"
 #include "Ui/UI.h"
+#include "Manager/EffectManager.h"
 
 namespace
 {
@@ -28,6 +29,8 @@ namespace
 	//攻撃範囲3
 	constexpr float cAttackRadius3 = 130.0f;
 
+	//シングルトン
+	EffectManager& cEffect = EffectManager::GetInstance();
 
 	bool cOne = false;
 }
@@ -112,7 +115,7 @@ void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::P
 	m_status.s_hp = 1.0f;
 
 	m_bossName = "熊の傀儡人形";
-	m_subName = "H  A  R  I  B  O";
+	m_subName = "H A R I B O";
 
 	cOne = false;
 	m_deadOne = false;
@@ -479,6 +482,12 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 				//攻撃判定の更新
 				m_attackPos = MyLibrary::LibVec3(rigidbody.GetPos().x, rigidbody.GetPos().y, rigidbody.GetPos().z);
 				m_pAttack->Update(m_attackPos);
+			}
+
+			//エフェクトを出す
+			if (m_nowFrame == 25.0f)
+			{
+				cEffect.EffectCreate("BearLance", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y - 25.0f, rigidbody.GetPos().z));
 			}
 
 			//アニメーションフレーム中に攻撃判定を出す

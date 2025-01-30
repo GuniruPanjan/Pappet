@@ -50,6 +50,9 @@ public:
 	//ボス部屋に入るための判定を返す
 	bool GetBossEnter() { return m_pMap->GetBossEnter(); }
 
+	//休息地点を返す
+	VECTOR GetRestPos() { return m_pMap->GetRestPos(); }
+
 	//ステージ名を返す
 	const char* GetStageName() { return m_pMap->GetStageName(); }
 private:

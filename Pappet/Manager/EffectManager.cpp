@@ -24,6 +24,10 @@ void EffectManager::Init()
 	EffectLoad("Heel", "Data/Effect/AnotherEffect/Sylph13.efkefc", 160, 20.0f);
 	//アイテムエフェクト
 	EffectLoad("Item", "Data/Effect/Item.efkefc", 60, 5.0f);
+	//休息エフェクト
+	EffectLoad("Rest", "Data/Effect/Benediction.efkefc", 210, 10.0f);
+	//熊の必殺エフェクト
+	EffectLoad("BearLance", "Data/Effect/BloodLance.efkefc", 350, 10.0f);
 }
 
 /// <summary>
@@ -141,4 +145,22 @@ void EffectManager::EffectCreate(std::string name, VECTOR pos)
 	m_effect[name]->effects.emplace_back(add);
 
 	return;
+}
+
+/// <summary>
+/// エフェクトを削除
+/// </summary>
+/// <param name="name"></param>
+/// <param name="pos"></param>
+void EffectManager::RemoveEffect(std::string name, VECTOR pos)
+{
+	auto it = m_effect.find(name);
+	if (it != m_effect.end())
+	{
+		auto& effects = it->second->effects;
+		effects.erase(std::remove_if(effects.begin(), effects.end(),
+			[&pos](const Effectstruct& effect) {
+				return effect.x == pos.x && effect.y == pos.y && effect.z == pos.z;
+			}), effects.end());
+	}
 }

@@ -82,6 +82,8 @@ public:
 
 	//エフェクトを生成する
 	void EffectCreate(std::string name, VECTOR pos);
+	//エフェクトを削除する
+	void RemoveEffect(std::string name, VECTOR pos);
 
 private:
 	//Singletonのポインタがプログラム起動時に一つ作られるようにする

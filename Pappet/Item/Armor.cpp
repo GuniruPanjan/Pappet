@@ -63,8 +63,6 @@ void Armor::ItemUpdate(bool taking)
 		{
 			m_itemPick = false;
 		}
-
-		m_pSearch->Update(m_centerPos);
 	}
 	//ƒAƒCƒeƒ€‚ªŽæ‚ç‚ê‚½Žž‚Ìˆ—
 	else if (m_itemPick && taking)
@@ -76,6 +74,9 @@ void Armor::ItemUpdate(bool taking)
 		m_isTaking = true;
 		m_itemBox = true;
 	}
+
+	m_pSearch->Update(m_centerPos);
+
 }
 
 void Armor::Draw()

@@ -88,6 +88,9 @@ public:
 	Item GetItemKinds() { return m_item; }
 	//アイテムの中心座標を返す
 	MyLibrary::LibVec3 GetPos() { return m_centerPos; }
+
+	//範囲外に出た判定
+	bool GetIsOut();
 protected:
 	//アイテム情報を読み込む
 	void LoadData(std::string name);

@@ -170,6 +170,7 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 				if (selectDecision == 8)
 				{
 					m_pMap->End(m_pPhysics);
+					m_pSetting->End();
 
 					return std::make_shared<SceneGame>();
 
