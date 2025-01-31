@@ -55,8 +55,6 @@ Bear::Bear() :
 	m_anim.s_attack = false;
 	m_anim.s_moveflag = false;
 	m_anim.s_hit = false;
-
-	m_pUI = std::make_shared<UI>();
 }
 
 /// <summary>
@@ -112,7 +110,7 @@ void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::P
 	//Å‘åHP‚ğæ“¾
 	m_maxHP = m_status.s_hp;
 
-	m_status.s_hp = 1.0f;
+	//m_status.s_hp = 1.0f;
 
 	m_bossName = "ŒF‚Ì˜ø™SlŒ`";
 	m_subName = "H A R I B O";
@@ -546,7 +544,7 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 /// <summary>
 /// •`‰æˆ—
 /// </summary>
-void Bear::Draw()
+void Bear::Draw(UI& ui)
 {
 	//“–‚½‚è”»’èÀ•W‚ğæ“¾‚µ‚Äƒ‚ƒfƒ‹‚Ì•`‰æÀ•W‚ğİ’è‚·‚é
 	SetDrawModelPos(cModelPosY);
@@ -559,7 +557,7 @@ void Bear::Draw()
 
 	if (m_isBossDiscovery && !cDead)
 	{
-		m_pUI->BossHPDraw(m_status.s_hp, m_maxHP, m_bossName, m_subName);
+		ui.BossHPDraw(m_status.s_hp, m_maxHP, m_bossName, m_subName);
 	}
 
 #if false

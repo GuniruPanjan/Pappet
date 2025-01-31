@@ -48,8 +48,6 @@ Immortal::Immortal() :
 	m_anim.s_attack = false;
 	m_anim.s_moveflag = false;
 	m_anim.s_hit = false;
-
-	m_pUI = std::make_shared<UI>();
 }
 
 /// <summary>
@@ -379,7 +377,7 @@ void Immortal::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 /// <summary>
 /// •`‰æ
 /// </summary>
-void Immortal::Draw()
+void Immortal::Draw(UI& ui)
 {
 	//“–‚½‚è”»’èÀ•W‚ðŽæ“¾‚µ‚Äƒ‚ƒfƒ‹‚Ì•`‰æÀ•W‚ðÝ’è‚·‚é
 	SetDrawModelPos(cModelPosY);
@@ -392,7 +390,7 @@ void Immortal::Draw()
 	if (m_pSearch->GetIsStay())
 	{
 		//HPƒo[‚Ì•`‰æ
-		m_pUI->EnemyHPDraw(rigidbody.GetPos().GetVector(), m_status.s_hp, m_maxHP);
+		ui.EnemyHPDraw(rigidbody.GetPos().GetVector(), m_status.s_hp, m_maxHP);
 	}
 	
 }

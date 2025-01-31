@@ -24,6 +24,6 @@ public:
 	//‹¯‚ñ‚Å‚È‚¢‚Æ‚«‚É‚Å‚«‚és“®
 	void Action(MyLibrary::LibVec3 playerPos, bool isChase);
 	//•`‰æ
-	void Draw();
+	void Draw(UI& ui);
 };
 

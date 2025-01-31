@@ -3,6 +3,8 @@
 #include "Manager/SEManager.h"
 #include<memory>
 
+class ItemManager;
+
 /// <summary>
 /// UI関連の画像などを読み込むためのクラス
 /// </summary>
@@ -64,6 +66,8 @@ protected:
 
 	//スマートポインタ
 	std::shared_ptr<SEManager> pse = std::make_shared<SEManager>();
+
+	ItemManager* m_pItem;
 };
 
 

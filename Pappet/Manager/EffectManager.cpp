@@ -28,6 +28,10 @@ void EffectManager::Init()
 	EffectLoad("Rest", "Data/Effect/Benediction.efkefc", 210, 10.0f);
 	//熊の必殺エフェクト
 	EffectLoad("BearLance", "Data/Effect/BloodLance.efkefc", 350, 10.0f);
+	//煙エフェクト
+	EffectLoad("Smoke", "Data/Effect/Smoke.efkefc", 50, 30.0f);
+	//歪みエフェクト
+	EffectLoad("Distortion", "Data/Effect/effect2.efkefc", 120, 10.0f);
 }
 
 /// <summary>

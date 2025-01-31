@@ -102,7 +102,7 @@ public:
 	/// <summary>
 	/// 装備選択画面更新処理
 	/// </summary>
-	void EquipmentDecisionUpdate(Weapon& weapon, Shield& shield, Armor& armor);
+	void EquipmentDecisionUpdate(Weapon& weapon, Shield& shield, Armor& armor, ItemManager& item);
 
 	/// <summary>
 	/// 描画処理
@@ -178,7 +178,7 @@ public:
 	/// <summary>
 	/// 装備選択画面描画処理
 	/// </summary>
-	void EquipmentDecisionDraw();
+	void EquipmentDecisionDraw(ItemManager& item);
 
 	/// <summary>
 	/// 終了処理

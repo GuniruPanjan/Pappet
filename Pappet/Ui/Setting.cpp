@@ -6,6 +6,7 @@
 #include "Item/Armor.h"
 #include "Character/Player.h"
 #include "Manager/CoreManager.h"
+#include "Manager/ItemManager.h"
 
 namespace
 {
@@ -710,7 +711,7 @@ void Setting::ItemBoxUpdate()
 /// <summary>
 /// 装備選択画面更新処理
 /// </summary>
-void Setting::EquipmentDecisionUpdate(Weapon& weapon, Shield& shield, Armor& armor)
+void Setting::EquipmentDecisionUpdate(Weapon& weapon, Shield& shield, Armor& armor, ItemManager& item)
 {
 	//パッド入力所得
 	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
@@ -733,7 +734,43 @@ void Setting::EquipmentDecisionUpdate(Weapon& weapon, Shield& shield, Armor& arm
 		m_one = false;
 	}
 
-	pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Nine);
+	//右装備だった場合
+	if (m_select.right)
+	{
+		if (item.GetItem().BlackSword >= 1)
+		{
+			pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Nine);
+		}
+		else if (item.GetItem().BlackSword <= 0)
+		{
+			pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Ten);
+		}
+	}
+	//左装備だった場合
+	else if (m_select.left)
+	{
+		if (item.GetItem().Distorted >= 1)
+		{
+			pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Nine);
+		}
+		else if (item.GetItem().Distorted <= 0)
+		{
+			pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Ten);
+		}
+	}
+	//防具だった場合
+	else if (m_select.armor)
+	{
+		if (item.GetItem().ArmorNormal >= 1)
+		{
+			pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Nine);
+		}
+		else if (item.GetItem().ArmorNormal <= 0)
+		{
+			pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Ten);
+		}
+	}
+
 
 	if (cWaitTime >= 10)
 	{
@@ -1332,21 +1369,96 @@ void Setting::ItemBoxDraw()
 /// <summary>
 /// 装備選択画面
 /// </summary>
-void Setting::EquipmentDecisionDraw()
+void Setting::EquipmentDecisionDraw(ItemManager& item)
 {
 	DrawGraph(0, 0, m_selectEquipment, true);
 
-	if (pselect->NowSelect == pselect->Nine)
+	//右装備だった場合
+	if (m_select.right)
 	{
-		m_selectObject.oneX = cOneX;
-		m_selectObject.oneY = cOneY;
-		m_selectObject.secondX = cSecondX;
-		m_selectObject.secondY = cSecondY;
+		if (item.GetItem().BlackSword >= 1)
+		{
+			if (pselect->NowSelect == pselect->Nine)
+			{
+				m_selectObject.oneX = cOneX;
+				m_selectObject.oneY = cOneY;
+				m_selectObject.secondX = cSecondX;
+				m_selectObject.secondY = cSecondY;
+			}
+			else if (pselect->NowSelect == pselect->Ten)
+			{
+				m_selectObject.oneY = cOneY + cDifferenceY;
+				m_selectObject.secondY = cSecondY + cDifferenceY;
+			}
+		}
+		else if (item.GetItem().BlackSword <= 0)
+		{
+			if (pselect->NowSelect == pselect->Ten)
+			{
+				m_selectObject.oneX = cOneX;
+				m_selectObject.oneY = cOneY;
+				m_selectObject.secondX = cSecondX;
+				m_selectObject.secondY = cSecondY;
+			}
+		}
 	}
-	else if (pselect->NowSelect == pselect->Ten)
+	//左装備だった場合
+	else if (m_select.left)
 	{
-		m_selectObject.oneY = cOneY + cDifferenceY;
-		m_selectObject.secondY = cSecondY + cDifferenceY;
+		if (item.GetItem().Distorted >= 1)
+		{
+			if (pselect->NowSelect == pselect->Nine)
+			{
+				m_selectObject.oneX = cOneX;
+				m_selectObject.oneY = cOneY;
+				m_selectObject.secondX = cSecondX;
+				m_selectObject.secondY = cSecondY;
+			}
+			else if (pselect->NowSelect == pselect->Ten)
+			{
+				m_selectObject.oneY = cOneY + cDifferenceY;
+				m_selectObject.secondY = cSecondY + cDifferenceY;
+			}
+		}
+		else if (item.GetItem().Distorted <= 0)
+		{
+			if (pselect->NowSelect == pselect->Ten)
+			{
+				m_selectObject.oneX = cOneX;
+				m_selectObject.oneY = cOneY;
+				m_selectObject.secondX = cSecondX;
+				m_selectObject.secondY = cSecondY;
+			}
+		}
+	}
+	//防具だった場合
+	else if (m_select.armor)
+	{
+		if (item.GetItem().ArmorNormal >= 1)
+		{
+			if (pselect->NowSelect == pselect->Nine)
+			{
+				m_selectObject.oneX = cOneX;
+				m_selectObject.oneY = cOneY;
+				m_selectObject.secondX = cSecondX;
+				m_selectObject.secondY = cSecondY;
+			}
+			else if (pselect->NowSelect == pselect->Ten)
+			{
+				m_selectObject.oneY = cOneY + cDifferenceY;
+				m_selectObject.secondY = cSecondY + cDifferenceY;
+			}
+		}
+		else if (item.GetItem().ArmorNormal <= 0)
+		{
+			if (pselect->NowSelect == pselect->Ten)
+			{
+				m_selectObject.oneX = cOneX;
+				m_selectObject.oneY = cOneY;
+				m_selectObject.secondX = cSecondX;
+				m_selectObject.secondY = cSecondY;
+			}
+		}
 	}
 
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);

@@ -39,7 +39,7 @@ void Shield::Init()
 {
 	if (m_ugly.ss_equipment)
 	{
-		//m_itemHandle = handle.GetModelHandle("Data/Weapon/Shield.mv1");
+		m_itemHandle = handle.GetModelHandle("Data/Weapon/Shield.mv1");
 		m_ugly.ss_cut = 90.0f;
 		m_ugly.ss_strength = 20.0f;
 

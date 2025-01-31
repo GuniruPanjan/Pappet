@@ -24,7 +24,7 @@ public:
 	//É{ÉXÇÃçsìÆ
 	void Action(MyLibrary::LibVec3 playerPos, bool isChase);
 	//ï`âÊ
-	void Draw();
+	void Draw(UI& ui);
 
 
 private:

@@ -69,6 +69,8 @@ namespace
 	float cDamage = 0.0f;
 	//人形のモデルパス
 	constexpr const char* cPath = "Data/Player/PlayerModelPuppet.mv1";
+	//装備を一回だけ初期化する
+	bool cEquipmentOne = false;
 
 	//シングルトン
 	auto& handle = HandleManager::GetInstance();
@@ -247,9 +249,15 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* mana
 	m_staminaBreak = false;
 
 	//装備初期化
-	weapon.SetFist(true);
-	shield.SetFist(true);
-	armor.SetBody(true);
+	if (!cEquipmentOne)
+	{
+		weapon.SetFist(true);
+		shield.SetFist(true);
+		armor.SetBody(true);
+
+		cEquipmentOne = true;
+	}
+
 	m_armorOne[0] = true;
 }
 

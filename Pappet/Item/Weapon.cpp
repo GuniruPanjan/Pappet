@@ -42,7 +42,7 @@ void Weapon::Init()
 	{
 		m_black.sw_attack = 30.0f;
 		m_black.sw_radius = 25.0f;
-		//m_itemHandle = handle.GetModelHandle("Data/Weapon/Sword.mv1");
+		m_itemHandle = handle.GetModelHandle("Data/Weapon/Sword.mv1");
 
 		m_pos = VGet(-5.0f, 1.947f, -1.947f);
 	}

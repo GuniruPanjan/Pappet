@@ -200,12 +200,12 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 /// <summary>
 /// •`‰æ
 /// </summary>
-void EnemyManager::Draw()
+void EnemyManager::Draw(UI& ui)
 {
 	//“G‚ð•`‰æ‚·‚é
 	for (auto& enemy : m_pEnemys)
 	{
-		enemy->Draw();
+		enemy->Draw(ui);
 	}
 
 	//DrawFormatString(200, 500, 0xffffff, "%d", cEnemy);

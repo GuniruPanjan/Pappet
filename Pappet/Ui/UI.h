@@ -42,7 +42,7 @@ public:
 	/// <param name="eq">‘•”õ‚ÌŒÄ‚Ño‚µ</param>
 	/// <param name="map">ƒ}ƒbƒv‚ÌŒÄ‚Ño‚µ</param>
 	/// <param name="item">ƒAƒCƒeƒ€‚ÌŒÄ‚Ño‚µ</param>
-	void Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map, ItemManager& item);
+	void Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map, ItemManager& item, Weapon& weapon, Shield& shield, Armor& armor);
 
 	/// <summary>
 	/// ‘•”õ‚Ì•`‰æˆ—
@@ -52,17 +52,20 @@ public:
 	/// <summary>
 	/// ‰E•Ší•`‰æˆ—
 	/// </summary>
-	void RightDraw(Weapon& weapon);
+	void RightDraw(Weapon& weapon, ItemManager& item);
 
 	/// <summary>
 	/// ¶•Ší•`‰æˆ—
 	/// </summary>
-	void LeftDraw(Shield& shield);
+	void LeftDraw(Shield& shield, ItemManager& item);
 
 	/// <summary>
 	/// –h‹ï•`‰æˆ—
 	/// </summary>
-	void ArmorDraw(Armor& armor);
+	void ArmorDraw(Armor& armor, ItemManager& item);
+
+	//‘•”õ‚Ì•`‰æ
+	void EquipmentUIDraw(Weapon& weapon, Shield& shield, Armor& armor);
 
 	/// <summary>
 	/// €‚ñ‚¾‚Æ‚«‚Ì•`‰æ

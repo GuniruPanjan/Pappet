@@ -31,7 +31,7 @@ public:
 	//更新
 	virtual void Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChange) {};
 	//描画
-	virtual void Draw() {};
+	virtual void Draw(UI& ui) {};
 	//終了処理
 	virtual void End();
 
@@ -139,7 +139,6 @@ protected:
 protected:
 	std::shared_ptr<EnemyAttackObject> m_pAttack;    //攻撃判定
 	std::shared_ptr<SearchObject> m_pSearch;    //索敵判定
-	std::shared_ptr<UI> m_pUI;                  //UI
 
 	EnemyAnimation m_enemyAnim;   //アニメーション
 

@@ -10,6 +10,7 @@ class GameManager;
 class Immortal;
 class Bear;
 class CoreManager;
+class UI;
 
 /// <summary>
 /// 敵を管理するクラス
@@ -43,7 +44,7 @@ public:
 	//更新
 	void Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, CoreManager& core, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, MyLibrary::LibVec3 shieldPos, bool isPlayerChase, bool init = false);
 	//描画
-	void Draw();
+	void Draw(UI& ui);
 	//終了処理
 	void End();
 

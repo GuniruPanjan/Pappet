@@ -70,6 +70,8 @@ public:
 
 	//アイテムを拾えるかを返す
 	bool GetItemPick() { return m_itemPick; }
+	//アイテム所得状態を返す
+	Item GetItem() { return m_item; }
 private:
 	//アイテムの生成
 	void CreateItem(float posX, float posY, float posZ, std::string name, std::shared_ptr<MyLibrary::Physics> physics);

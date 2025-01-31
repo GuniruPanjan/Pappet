@@ -4,6 +4,7 @@
 #include "Item/Armor.h"
 #include "Character/Player.h"
 #include "Manager/EnemyManager.h"
+#include "Manager/ItemManager.h"
 
 namespace
 {
@@ -63,7 +64,7 @@ void UI::Init()
 /// <param name="eq"></param>
 /// <param name="map"></param>
 /// <param name="item"></param>
-void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map, ItemManager& item)
+void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map, ItemManager& item, Weapon& weapon, Shield& shield, Armor& armor)
 {
 	//ƒXƒe[ƒ^ƒXƒo[‚Ì•`‰æ
 	StatusDraw(180, 30, player);
@@ -76,6 +77,9 @@ void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map,
 	DrawGraph(0, 665, m_equipmentFrame, true);
 	DrawGraph(300, 665, m_equipmentFrame, true);
 	DrawGraph(150, 780, m_equipmentFrame, true);
+
+	//‘•”õ‚µ‚Ä‚¢‚é•¨•`‰æ
+	EquipmentUIDraw(weapon, shield, armor);
 
 	//ƒRƒAƒo[‚Ì•`‰æ
 	DrawGraph(1050, 750, m_coreBackBar, true);
@@ -133,34 +137,90 @@ void UI::EquipmentDraw(Weapon& weapon, Shield& shield, Armor& armor)
 /// <summary>
 /// ‰E•Ší•`‰æˆ—
 /// </summary>
-void UI::RightDraw(Weapon& weapon)
+void UI::RightDraw(Weapon& weapon, ItemManager& item)
 {
 	//Œ
 	DrawGraph(70, 56, m_fist, true);
-	//•‚¢Œ•
-	DrawGraph(100, 210, m_blackSword, true);
+
+	if (item.GetItem().BlackSword >= 1)
+	{
+		//•‚¢Œ•
+		DrawGraph(100, 210, m_blackSword, true);
+	}
 }
 
 /// <summary>
 /// ¶•Ší•`‰æˆ—
 /// </summary>
-void UI::LeftDraw(Shield& shield)
+void UI::LeftDraw(Shield& shield, ItemManager& item)
 {
 	//Œ
 	DrawGraph(70, 56, m_fist, true);
-	//X‚¢‚
-	DrawGraph(85, 230, m_uglyShield, true);
+
+	if (item.GetItem().Distorted >= 1)
+	{
+		//X‚¢‚
+		DrawGraph(85, 230, m_uglyShield, true);
+	}
+	
 }
 
 /// <summary>
 /// –h‹ï•`‰æˆ—
 /// </summary>
-void UI::ArmorDraw(Armor& armor)
+void UI::ArmorDraw(Armor& armor, ItemManager& item)
 {
 	//—‡
 	DrawGraph(120, 66, m_body, true);
-	//•½–}‚ÈŠZ
-	DrawGraph(85, 220, m_commonArmor, true);
+
+	if (item.GetItem().ArmorNormal >= 1)
+	{
+		//•½–}‚ÈŠZ
+		DrawGraph(85, 220, m_commonArmor, true);
+	}
+}
+
+/// <summary>
+/// ƒQ[ƒ€‰æ–Ê‚Ì‘•”õUI•`‰æˆ—
+/// </summary>
+/// <param name="weapon"></param>
+/// <param name="shield"></param>
+/// <param name="armor"></param>
+void UI::EquipmentUIDraw(Weapon& weapon, Shield& shield, Armor& armor)
+{
+	//‰E•Ší
+	if (weapon.GetFist())
+	{
+		//Œ
+		DrawGraph(5, 700, m_fist, true);
+	}
+	else if (weapon.GetBlack())
+	{
+		//•‚¢Œ•
+		DrawGraph(20, 700, m_blackSword, true);
+	}
+	//¶•Ší
+	if (shield.GetFist())
+	{
+		//Œ
+		DrawGraph(305, 700, m_fist, true);
+	}
+	else if (shield.GetUgly())
+	{
+		//X‚¢‚
+		DrawGraph(317, 720, m_uglyShield, true);
+	}
+	//–h‹ï
+	if (armor.GetBody())
+	{
+		//—‡‘Ì
+		DrawGraph(195, 600, m_body, true);
+	}
+	else if (armor.GetCommon())
+	{
+		//•½–}‚È–h‹ï
+		DrawGraph(160, 600, m_commonArmor, true);
+	}
 }
 
 /// <summary>

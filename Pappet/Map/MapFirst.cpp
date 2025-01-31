@@ -1,5 +1,6 @@
 #include "MapFirst.h"
 #include "MapRest.h"
+#include "Manager/EffectManager.h"
 
 namespace
 {
@@ -25,6 +26,16 @@ namespace
 	constexpr float cBossDepth = 30.0f;
 	//ボス部屋の入り口初期化
 	bool cOne = false;
+
+	//エフェクトの再生時間
+	int cEffectTime = 50;
+	//エフェクト再生
+	bool cEffectOne = false;
+	//エフェクトの再生位置
+	VECTOR cEffectPos = VGet(-10.0f, 50.0f, 0.0f);
+
+	//シングルトン
+	auto& cEffect = EffectManager::GetInstance();
 }
 
 /// <summary>
@@ -118,6 +129,14 @@ std::shared_ptr<MapBase> MapFirst::Update(bool warp, bool enter, bool Dead)
 	m_pCore->Update(m_mapCoreCollisionePos);
 	m_pRectTrigger->Update(m_mapBossEnterTriggerPos, triggerSize);
 
+	//ボスが死んだとき
+	if (Dead)
+	{
+		m_mapBossRoomPos = MyLibrary::LibVec3(-80.0f, 400.0f, 0.0f);
+		m_mapBossEnterTriggerPos = MyLibrary::LibVec3(10.0f, 400.0f, 0.0f);
+
+	}
+
 	if (enter || Dead)
 	{
 		//一回だけ実行
@@ -139,6 +158,29 @@ std::shared_ptr<MapBase> MapFirst::Update(bool warp, bool enter, bool Dead)
 
 			cOne = false;
 		}
+	}
+
+	//エフェクトの生成
+	if (cEffectTime >= 20 && !Dead)
+	{
+		cEffect.EffectCreate("Smoke", cEffectPos);
+
+		cEffectTime = 0;
+	}
+	else
+	{
+		cEffectTime++;
+	}
+	//エフェクト生成
+	if (!cEffectOne && enter && !Dead)
+	{
+		cEffect.EffectCreate("Distortion", cEffectPos);
+
+		cEffectOne = true;
+	}
+	else if(!enter)
+	{
+		cEffectOne = false;
 	}
 
 	return shared_from_this();   //自身のポインタ

@@ -220,7 +220,7 @@ void GameManager::Update()
 		//装備選択画面更新
 		else if (m_pSetting->GetDecision())
 		{
-			m_pSetting->EquipmentDecisionUpdate(*m_pWeapon, *m_pShield, *m_pArmor);
+			m_pSetting->EquipmentDecisionUpdate(*m_pWeapon, *m_pShield, *m_pArmor, *m_pItem);
 			EquipmentUpdate();
 		}
 		//メニューを開けるようにする
@@ -245,7 +245,7 @@ void GameManager::Update()
 			//一回だけ実行
 			if (m_deadInit == true)
 			{
-				cEffect.End();
+				//cEffect.End();
 				m_pPlayer->GameInit(m_pPhysics);
 				m_pEnemy->GameInit(m_pPhysics, this, m_deadInit);
 				m_pMap->TriggerReset();
@@ -341,7 +341,7 @@ void GameManager::Draw()
 	m_pPlayer->Draw(*m_pArmor);
 	m_pWeapon->Draw();
 	m_pShield->Draw();
-	m_pEnemy->Draw();
+	m_pEnemy->Draw(*m_pUi);
 	m_pNpc->Draw();
 
 	//ボスが死んだ判定
@@ -354,7 +354,7 @@ void GameManager::Draw()
 
 	cEffect.Draw();
 
-	m_pUi->Draw(*m_pPlayer, *m_pEnemy, *m_pSetting, *m_pMap, *m_pItem);
+	m_pUi->Draw(*m_pPlayer, *m_pEnemy, *m_pSetting, *m_pMap, *m_pItem, *m_pWeapon, *m_pShield, *m_pArmor);
 
 	//メニューの背景描画
 	if (m_pPlayer->GetMenu())
@@ -381,7 +381,7 @@ void GameManager::Draw()
 	//装備選択画面描画
 	else if (m_pSetting->GetDecision())
 	{
-		m_pSetting->EquipmentDecisionDraw();
+		m_pSetting->EquipmentDecisionDraw(*m_pItem);
 		EquipmentDraw();
 	}
 
@@ -478,17 +478,17 @@ void GameManager::EquipmentDraw()
 	//右装備
 	if (m_pSetting->GetSelect().right)
 	{
-		m_pUi->RightDraw(*m_pWeapon);
+		m_pUi->RightDraw(*m_pWeapon, *m_pItem);
 	}
 	//左装備
 	else if (m_pSetting->GetSelect().left)
 	{
-		m_pUi->LeftDraw(*m_pShield);
+		m_pUi->LeftDraw(*m_pShield, *m_pItem);
 	}
 	//防具
 	else if (m_pSetting->GetSelect().armor)
 	{
-		m_pUi->ArmorDraw(*m_pArmor);
+		m_pUi->ArmorDraw(*m_pArmor, *m_pItem);
 	}
 }
 
