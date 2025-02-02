@@ -177,6 +177,7 @@
     <ClCompile Include="Map\MapRest.cpp" />
     <ClCompile Include="Object\AttackObject.cpp" />
     <ClCompile Include="Object\EnemyAttackObject.cpp" />
+    <ClCompile Include="Object\ItemObject.cpp" />
     <ClCompile Include="Object\ObjectBase.cpp" />
     <ClCompile Include="Object\PlayerSearchObject.cpp" />
     <ClCompile Include="Object\RectObject.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="Map\MapRest.h" />
     <ClInclude Include="Object\AttackObject.h" />
     <ClInclude Include="Object\EnemyAttackObject.h" />
+    <ClInclude Include="Object\ItemObject.h" />
     <ClInclude Include="Object\ObjectBase.h" />
     <ClInclude Include="Object\PlayerSearchObject.h" />
     <ClInclude Include="Object\RectObject.h" />

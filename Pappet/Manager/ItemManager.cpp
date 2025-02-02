@@ -156,17 +156,17 @@ void ItemManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManage
 
 		item->ItemUpdate(taking);
 
+		//力技を使う
+		//アイテムが取れるかの範囲
+		//ここが問題になっている
 		if (!m_itemPick)
 		{
-			m_itemPick = item->GetItemPick();
+			//m_itemPick = item->GetItemPick();
 		}
-		else
-		{
-			if (item->GetIsOut())
-			{
-				m_itemPick = false;
-			}
-		}
+		//else if(!item->GetIsOut())
+		//{
+		//	m_itemPick = item->GetItemPick();
+		//}
 
 		//とった場合
 		if (taking && item->GetItemBox())
@@ -195,6 +195,8 @@ void ItemManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManage
 		}
 
 	}
+
+	//m_pItems.clear();
 }
 
 /// <summary>

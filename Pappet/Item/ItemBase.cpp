@@ -28,7 +28,7 @@ void ItemBase::ItemEnd()
 
 bool ItemBase::GetIsOut()
 {
-	return m_pSearch->GetIsExit();
+	return m_pSearch->GetIsStay();
 }
 
 /// <summary>
@@ -47,6 +47,6 @@ void ItemBase::LoadData(std::string name)
 /// <param name="radius"></param>
 void ItemBase::InitSearch(MyLibrary::LibVec3 pos, float radius)
 {
-	m_pSearch = std::make_shared<SearchObject>(radius);
-	m_pSearch->Init(m_pPhysics, pos, true);
+	m_pSearch = std::make_shared<ItemObject>(radius);
+	m_pSearch->Init(m_pPhysics, pos);
 }

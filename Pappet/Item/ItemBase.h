@@ -2,6 +2,7 @@
 #include "DxLib.h"
 #include "Library/MyLibrary.h"
 #include "Object/SearchObject.h"
+#include "Object/ItemObject.h"
 #include <map>
 #include <string>
 
@@ -98,7 +99,7 @@ protected:
 	void InitSearch(MyLibrary::LibVec3 pos, float radius);
 
 protected:
-	std::shared_ptr<SearchObject> m_pSearch;     //õ“G”»’è
+	std::shared_ptr<ItemObject> m_pSearch;     //õ“G”»’è
 
 	//ƒAƒCƒeƒ€‚ÌŒø‰Ê
 	int m_itemUse;

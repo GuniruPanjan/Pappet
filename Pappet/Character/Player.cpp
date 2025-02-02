@@ -1490,15 +1490,21 @@ void Player::Draw(Armor& armor)
 	rigidbody.SetPos(rigidbody.GetNextPos());
 	m_collisionPos = rigidbody.GetPos();
 
-#if false
-	DrawFormatString(200, 600, 0xffffff, "colPosx : %f", m_collisionPos.x);
-	DrawFormatString(200, 700, 0xffffff, "colPosy : %f", m_collisionPos.y);
-	DrawFormatString(200, 800, 0xffffff, "colPosz : %f", m_collisionPos.z);
-	DrawFormatString(200, 100, 0xffffff, "HP : %f LevelHp : %d", m_status.s_hp, m_levelStatus.sl_hp);
-	DrawFormatString(200, 150, 0xffffff, "Stamina : %f LevelStamina : %d", m_status.s_stamina, m_levelStatus.sl_stamina);
-	DrawFormatString(200, 200, 0xffffff, "Muscle : %d LevelMuscle : %d", m_status.s_muscle, m_levelStatus.sl_muscle);
-	DrawFormatString(200, 250, 0xffffff, "Skill : %d LevelSkill : %d", m_status.s_skill, m_levelStatus.sl_skill);
-	DrawFormatString(200, 300, 0xffffff, "Core : %d", m_status.s_core);
+#if true
+	DrawFormatString(1000, 600, 0xffffff, "move : %d", m_anim.s_moveflag);
+	DrawFormatString(1000, 700, 0xffffff, "attack : %d", m_anim.s_attack);
+	DrawFormatString(1000, 800, 0xffffff, "hit : %d", m_anim.s_hit);
+	DrawFormatString(1000, 100, 0xffffff, "death : %d", m_anim.s_isDead);
+	DrawFormatString(1000, 150, 0xffffff, "avoidance : %d", m_animChange.sa_avoidance);
+	DrawFormatString(1000, 200, 0xffffff, "bossEnter : %d", m_animChange.sa_bossEnter);
+	DrawFormatString(1000, 250, 0xffffff, "dash : %d", m_animChange.sa_dashMove);
+	DrawFormatString(1000, 300, 0xffffff, "enterShield : %d", m_animChange.sa_enterShield);
+	DrawFormatString(1000, 350, 0xffffff, "imapact : %d", m_animChange.sa_imapact);
+	DrawFormatString(1000, 400, 0xffffff, "recover : %d", m_animChange.sa_recovery);
+	DrawFormatString(1000, 450, 0xffffff, "shieldIdle : %d", m_animChange.sa_shieldIdle);
+	DrawFormatString(1000, 500, 0xffffff, "strengthAttack : %d", m_animChange.sa_strengthAttack);
+	DrawFormatString(1000, 550, 0xffffff, "taking : %d", m_animChange.sa_taking);
+	DrawFormatString(1000, 650, 0xffffff, "touch : %d", m_animChange.sa_touch);
 #endif
 #if false
 	DrawFormatString(0, 400, 0xffffff, "m_nowAnim : %d", m_nowAnimIdx);
@@ -1520,7 +1526,6 @@ void Player::Draw(Armor& armor)
 
 #if false
 	DrawFormatString(200, 300, 0xffffff, "pickup : %d", m_itemPick);
-
 #endif
 
 	MV1SetPosition(m_modelHandle, VSub(m_modelPos.ConversionToVECTOR(), VGet(0.0f, 12.0f, 0.0f)));
@@ -1617,6 +1622,9 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 #if _DEBUG
 		message += "ƒAƒCƒeƒ€";
 #endif
+
+		m_itemPick = true;
+
 		break;
 	case ObjectTag::Rest:
 #if _DEBUG
