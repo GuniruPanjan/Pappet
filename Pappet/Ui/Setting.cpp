@@ -56,6 +56,8 @@ namespace
 	constexpr int cSecondX = 218;
 	constexpr int cSecondY = 200;
 	constexpr int cDifferenceY = 155;
+
+	bool cNo = false;    //力技用
 }
 
 /// <summary>
@@ -311,29 +313,49 @@ void Setting::MenuUpdate()
 
 	pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Eight);
 
-	//Aボタンが押されたら
-	if (m_xpad.Buttons[12] == 1)
+	if (cWaitTime >= 10)
 	{
-		PlaySoundMem(pse->GetButtonSE(), DX_PLAYTYPE_BACK, true);
-
-		//装備選択
-		if (selectDecision == 8)
+		//Aボタンが押されたら
+		if (m_xpad.Buttons[12] == 1)
 		{
-			m_equipmentMenu = true;
+			PlaySoundMem(pse->GetButtonSE(), DX_PLAYTYPE_BACK, true);
+
+			//装備選択
+			if (selectDecision == 8)
+			{
+				m_equipmentMenu = true;
+
+				//リセット
+				cWaitTime = 0;
+			}
+			//元の画面に戻る
+			if (selectDecision == 9)
+			{
+				m_returnMenu = false;
+			}
+			//タイトルに戻る
+			if (selectDecision == 10)
+			{
+				m_titleMenu = true;
+			}
 
 			//リセット
 			cWaitTime = 0;
 		}
-		//元の画面に戻る
-		if (selectDecision == 9)
+		//Bボタンが押されたら
+		else if (m_xpad.Buttons[13] == 1)
 		{
+			PlaySoundMem(pse->GetButtonSE(), DX_PLAYTYPE_BACK, true);
+
+			//元の画面に戻る
 			m_returnMenu = false;
+			//リセット
+			cWaitTime = 0;
 		}
-		//タイトルに戻る
-		if (selectDecision == 10)
-		{
-			m_titleMenu = true;
-		}
+	}
+	else
+	{
+		cWaitTime++;
 	}
 
 }
@@ -409,6 +431,8 @@ void Setting::EquipmentUpdate()
 		{
 			//装備画面から戻る
 			m_equipmentMenu = false;
+			//リセット
+			cWaitTime = 0;
 		}
 
 
@@ -740,10 +764,14 @@ void Setting::EquipmentDecisionUpdate(Weapon& weapon, Shield& shield, Armor& arm
 		if (item.GetItem().BlackSword >= 1)
 		{
 			pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Nine);
+
+			cNo = true;
 		}
 		else if (item.GetItem().BlackSword <= 0)
 		{
 			pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Ten);
+
+			cNo = false;
 		}
 	}
 	//左装備だった場合
@@ -752,10 +780,14 @@ void Setting::EquipmentDecisionUpdate(Weapon& weapon, Shield& shield, Armor& arm
 		if (item.GetItem().Distorted >= 1)
 		{
 			pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Nine);
+
+			cNo = true;
 		}
 		else if (item.GetItem().Distorted <= 0)
 		{
 			pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Ten);
+
+			cNo = false;
 		}
 	}
 	//防具だった場合
@@ -764,10 +796,14 @@ void Setting::EquipmentDecisionUpdate(Weapon& weapon, Shield& shield, Armor& arm
 		if (item.GetItem().ArmorNormal >= 1)
 		{
 			pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Nine);
+
+			cNo = true;
 		}
 		else if (item.GetItem().ArmorNormal <= 0)
 		{
 			pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Ten);
+
+			cNo = false;
 		}
 	}
 
@@ -823,34 +859,71 @@ void Setting::EquipmentDecisionUpdate(Weapon& weapon, Shield& shield, Armor& arm
 			}
 			else if (selectDecision == 10)
 			{
-				//右装備だった場合
-				if (m_select.right)
+				//力技
+				if (cNo)
 				{
-					weapon.End();
+					//右装備だった場合
+					if (m_select.right)
+					{
+						weapon.End();
 
-					weapon.SetBlack(true);
-					weapon.SetFist(false);
+						weapon.SetBlack(true);
+						weapon.SetFist(false);
 
-					weapon.Init();
+						weapon.Init();
+					}
+					//左装備だった場合
+					else if (m_select.left)
+					{
+						shield.End();
+
+						shield.SetUgly(true);
+						shield.SetFist(false);
+
+						shield.Init();
+					}
+					//防具だった場合
+					else if (m_select.armor)
+					{
+						armor.SetCommon(true);
+						armor.SetBody(false);
+
+						armor.Init();
+					}
 				}
-				//左装備だった場合
-				else if (m_select.left)
+				//力技
+				else if (!cNo)
 				{
-					shield.End();
+					//右装備だった場合
+					if (m_select.right)
+					{
+						weapon.End();
 
-					shield.SetUgly(true);
-				    shield.SetFist(false);
+						weapon.SetFist(true);
+						weapon.SetBlack(false);
 
-					shield.Init();
+						weapon.Init();
+					}
+					//左装備だった場合
+					else if (m_select.left)
+					{
+						shield.End();
+
+						shield.SetFist(true);
+						shield.SetUgly(false);
+
+						shield.Init();
+					}
+					//防具だった場合
+					else if (m_select.armor)
+					{
+						armor.SetBody(true);
+						armor.SetCommon(false);
+
+						armor.Init();
+					}
 				}
-				//防具だった場合
-				else if (m_select.armor)
-				{
-					armor.SetCommon(true);
-					armor.SetBody(false);
-
-					armor.Init();
-				}
+				
 			}
 
 			//装備を開く

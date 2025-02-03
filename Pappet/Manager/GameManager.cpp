@@ -7,6 +7,7 @@
 #include "Ui/Setting.h"
 #include "Ui/UI.h"
 #include "EffectManager.h"
+#include "Item/Tool.h"
 
 //カメラの初期化で描画バグが発生する
 //カメラのせいでマップとモデルの描画がバグる
@@ -36,6 +37,12 @@ GameManager::GameManager() :
 	m_title(false)
 {
 	m_pUi = std::make_shared<UI>();
+	m_pWeapon = std::make_shared<Weapon>();
+	m_pShield = std::make_shared<Shield>();
+	m_pArmor = std::make_shared<Armor>();
+	m_pCore = std::make_shared<CoreManager>();
+	m_pBgm = std::make_shared<BgmManager>();
+	m_pMap = std::make_shared<MapManager>();
 }
 
 /// <summary>
@@ -61,17 +68,22 @@ void GameManager::Init()
 	cEffect.Init();
 	//pCamera->Init();
 
+	m_pPlayer = std::make_shared<Player>();
 	m_pPlayer->Init(m_pPhysics, this, *m_pWeapon, *m_pShield, *m_pArmor, true);
 	m_pPlayer->SetMapNow(FirstMap);
 	m_pEnemy = std::make_shared<EnemyManager>();
 	m_pEnemy->Init(m_pMap->GetStageName());
 	m_pItem = std::make_shared<ItemManager>();
 	m_pItem->Init(m_pMap->GetStageName());
-	m_pNpc->Init(m_pPhysics);
+	//m_pNpc->Init(m_pPhysics);
+	m_pSetting = std::make_shared<Setting>();
 	m_pSetting->Init();
 	m_pUi->Init();
 	m_pCore->Init();
 	m_pPlayer->ChangeStatus();
+	
+	m_pTool = std::make_shared<Tool>();
+	m_pTool->Init();
 
 	m_pBgm->GameOneInit();
 }
@@ -97,10 +109,13 @@ void GameManager::GameInit()
 	//m_pEnemy->GameInit(m_pPhysics, this, true);
 	//m_pItem->Init(m_pMap->GetStageName());
 	m_pItem->GameInit(m_pPhysics, this);
-	m_pNpc->Init(m_pPhysics);
+	//m_pNpc->Init(m_pPhysics);
 	m_pSetting->Init();
 	m_pUi->Init();
 	m_pPlayer->ChangeStatus();
+
+	m_pTool->Init();
+
 
 	//ステージ１だった場合
 	if (m_pMap->GetStageName() == "stage1")
@@ -135,7 +150,7 @@ void GameManager::Update()
 
 		m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
-		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, *m_pEnemy, *m_pCore, m_pMap->GetRestPos());
+		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, *m_pEnemy, *m_pCore, m_pMap->GetRestPos(), *m_pTool);
 		//ロックオンしてない時
 		if (!m_pPlayer->GetLock())
 		{
@@ -251,6 +266,7 @@ void GameManager::Update()
 				m_pMap->TriggerReset();
 				m_pUi->Init();
 				m_pPlayer->ChangeStatus();
+				m_pTool->Init();
 
 				m_pBgm->BossStopBGM();
 
@@ -280,6 +296,7 @@ void GameManager::Update()
 				{
 					m_pPlayer->GameInit(m_pPhysics);
 					m_pPlayer->ChangeStatus();
+					m_pTool->Init();
 
 					//休息地点以外だと初期化
 					if (m_nowMap != 0)
@@ -342,7 +359,7 @@ void GameManager::Draw()
 	m_pWeapon->Draw();
 	m_pShield->Draw();
 	m_pEnemy->Draw(*m_pUi);
-	m_pNpc->Draw();
+	//m_pNpc->Draw();
 
 	//ボスが死んだ判定
 	if (cWarp)
@@ -354,7 +371,7 @@ void GameManager::Draw()
 
 	cEffect.Draw();
 
-	m_pUi->Draw(*m_pPlayer, *m_pEnemy, *m_pSetting, *m_pMap, *m_pItem, *m_pWeapon, *m_pShield, *m_pArmor);
+	m_pUi->Draw(*m_pPlayer, *m_pEnemy, *m_pSetting, *m_pMap, *m_pItem, *m_pWeapon, *m_pShield, *m_pArmor, *m_pTool);
 
 	//メニューの背景描画
 	if (m_pPlayer->GetMenu())

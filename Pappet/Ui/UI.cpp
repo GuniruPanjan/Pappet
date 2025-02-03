@@ -5,6 +5,7 @@
 #include "Character/Player.h"
 #include "Manager/EnemyManager.h"
 #include "Manager/ItemManager.h"
+#include "Item/Tool.h"
 
 namespace
 {
@@ -39,6 +40,7 @@ void UI::Init()
 	m_waitResetTime = 0;
 	m_deadReset = false;
 
+	m_heelStone = MyLoadGraph("Data/UI/HeelStoneMini.png", 4, 4);
 	m_blackSword = MyLoadGraph("Data/UI/黒い剣UI.png", 3, 3);
 	m_fist = MyLoadGraph("Data/UI/拳UI.png", 3, 3);
 	m_body = MyLoadGraph("Data/UI/裸体UI.png", 3, 3);
@@ -54,6 +56,8 @@ void UI::Init()
 	m_coreBackBar = MyLoadGraph("Data/UI/CoreBar.png", 1, 1);
 	m_statusIcon = MyLoadGraph("Data/UI/StatusIcon.png", 1, 1);
 	m_equipmentFrame = MyLoadGraph("Data/UI/Frame.png", 1, 1);
+	m_actionUI = MyLoadGraph("Data/UI/Action.png", 1, 1);
+	m_yButton = MyLoadGraph("Data/UI/YButton.png", 1, 1);
 }
 
 /// <summary>
@@ -64,7 +68,7 @@ void UI::Init()
 /// <param name="eq"></param>
 /// <param name="map"></param>
 /// <param name="item"></param>
-void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map, ItemManager& item, Weapon& weapon, Shield& shield, Armor& armor)
+void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map, ItemManager& item, Weapon& weapon, Shield& shield, Armor& armor, Tool& tool)
 {
 	//ステータスバーの描画
 	StatusDraw(180, 30, player);
@@ -79,12 +83,42 @@ void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map,
 	DrawGraph(150, 780, m_equipmentFrame, true);
 
 	//装備している物描画
-	EquipmentUIDraw(weapon, shield, armor);
+	EquipmentUIDraw(weapon, shield, armor, tool);
 
 	//コアバーの描画
 	DrawGraph(1050, 750, m_coreBackBar, true);
 
 	SetFontSize(40);
+
+	//休息するときは　休息する
+	//アイテムの時は　アイテムを取る
+	//ボス部屋に入るときは　白い光の中に入る
+	//ワープするときは　転移する
+	if (player.GetItemPick() || player.GetRestTouch() || player.GetBossEnter() || player.GetWarp())
+	{
+		DrawGraph(480, 800, m_actionUI, true);
+		DrawGraph(500, 805, m_yButton, true);
+		//休息
+		if (player.GetRestTouch())
+		{
+
+		}
+		//アイテム
+		else if (player.GetItemPick())
+		{
+
+		}
+		//ボス部屋入り口
+		else if (player.GetBossEnter())
+		{
+
+		}
+		//ワープ
+		else if (player.GetWarp())
+		{
+
+		}
+	}
 
 	//コア数描画
 	DrawFormatString(1400, 905, 0xffffff, "%d", player.GetStatus().s_core);
@@ -186,7 +220,7 @@ void UI::ArmorDraw(Armor& armor, ItemManager& item)
 /// <param name="weapon"></param>
 /// <param name="shield"></param>
 /// <param name="armor"></param>
-void UI::EquipmentUIDraw(Weapon& weapon, Shield& shield, Armor& armor)
+void UI::EquipmentUIDraw(Weapon& weapon, Shield& shield, Armor& armor, Tool& tool)
 {
 	//右武器
 	if (weapon.GetFist())
@@ -220,6 +254,14 @@ void UI::EquipmentUIDraw(Weapon& weapon, Shield& shield, Armor& armor)
 	{
 		//平凡な防具
 		DrawGraph(160, 600, m_commonArmor, true);
+	}
+
+	if (tool.GetHeel().sa_number > 0)
+	{
+		//アイテム
+		DrawGraph(115, 815, m_heelStone, true);
+
+		DrawFormatString(260, 930, 0xffffff, "%d", tool.GetHeel().sa_number);
 	}
 }
 
@@ -419,4 +461,6 @@ void UI::End()
 	DeleteGraph(m_coreBackBar);
 	DeleteGraph(m_statusIcon);
 	DeleteGraph(m_equipmentFrame);
+	DeleteGraph(m_actionUI);
+	DeleteGraph(m_yButton);
 }

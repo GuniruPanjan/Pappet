@@ -18,6 +18,7 @@ class EnemyManager;
 class Setting;
 class ItemManager;
 class UI;
+class Tool;
 
 /// <summary>
 /// ゲームの内容を管理するクラス
@@ -68,20 +69,21 @@ public:
 private:
 	//スマートポインタ管理
 	std::shared_ptr<MyLibrary::Physics> m_pPhysics;
-	std::shared_ptr<Player> m_pPlayer = std::make_shared<Player>();
+	std::shared_ptr<Player> m_pPlayer;
 	//std::shared_ptr<Map> m_pMap = std::make_shared<Map>();
-	std::shared_ptr<MapManager> m_pMap = std::make_shared<MapManager>();
+	std::shared_ptr<MapManager> m_pMap;
 	std::shared_ptr<Camera> m_pCamera = std::make_shared<Camera>();
-	std::shared_ptr<CollidableNpc> m_pNpc = std::make_shared<CollidableNpc>();
+	//std::shared_ptr<CollidableNpc> m_pNpc = std::make_shared<CollidableNpc>();
 	std::shared_ptr<EnemyManager> m_pEnemy;
-	std::shared_ptr<Setting> m_pSetting = std::make_shared<Setting>();
+	std::shared_ptr<Setting> m_pSetting;
 	std::shared_ptr<UI> m_pUi;
-	std::shared_ptr<Weapon> m_pWeapon = std::make_shared<Weapon>();
-	std::shared_ptr<Shield> m_pShield = std::make_shared<Shield>();
-	std::shared_ptr<Armor> m_pArmor = std::make_shared<Armor>();
-	std::shared_ptr<CoreManager> m_pCore = std::make_shared<CoreManager>();
+	std::shared_ptr<Weapon> m_pWeapon;
+	std::shared_ptr<Shield> m_pShield;
+	std::shared_ptr<Armor> m_pArmor;
+	std::shared_ptr<CoreManager> m_pCore;
 	std::shared_ptr<ItemManager> m_pItem;
-	std::shared_ptr<BgmManager> m_pBgm = std::make_shared<BgmManager>();
+	std::shared_ptr<BgmManager> m_pBgm;
+	std::shared_ptr<Tool> m_pTool;
 
 	//現在のマップ
 	eMapName m_nowMap;

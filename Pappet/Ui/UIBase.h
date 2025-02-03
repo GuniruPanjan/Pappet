@@ -63,6 +63,8 @@ protected:
 	//UIの画像
 	int m_dead;           //死亡時の画像格納変数
 	int m_selectUi;       //選択時の画像格納変数
+	int m_actionUI;       //アクションを格納する変数
+	int m_yButton;        //Yボタン画像格納変数
 
 	//スマートポインタ
 	std::shared_ptr<SEManager> pse = std::make_shared<SEManager>();

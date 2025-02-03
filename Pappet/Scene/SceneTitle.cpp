@@ -13,6 +13,8 @@ namespace
 	float cCameraTargety = 80.0f;
 	float cCameraTargetz = -550.0f;
 
+	int cHandY = 600;
+
 	//シングルトン
 	auto& handle = HandleManager::GetInstance();
 }
@@ -25,6 +27,9 @@ SceneTitle::SceneTitle() :
 	m_setting(0),
 	m_end(0),
 	m_button(0),
+	m_hand(0),
+	m_BButton(0),
+	m_AButton(0),
 	m_one(false),
 	m_blend(false),
 	m_setButton(false),
@@ -56,6 +61,9 @@ SceneTitle::~SceneTitle()
 	DeleteGraph(m_start);
 	DeleteGraph(m_setting);
 	DeleteGraph(m_end);
+	DeleteGraph(m_hand);
+	DeleteGraph(m_BButton);
+	DeleteGraph(m_AButton);
 	MV1DeleteModel(m_playerHandle);
 	MV1DeleteModel(m_anim);
 	m_pSetting->End();
@@ -72,9 +80,12 @@ void SceneTitle::Init()
 {
 	//メモリ読み込み
 	m_backScene = m_pUi->MyLoadGraph("Data/SceneBack/PuppetGravesタイトルmini.png", 1, 1);     //144 KB (147,793 バイト)
-	m_start = m_pUi->MyLoadGraph("Data/UI/STARTButtonMini.png", 1, 1);                       //27.1 KB (27,851 バイト)
-	m_setting = m_pUi->MyLoadGraph("Data/UI/SettingButtonMini.png", 1, 1);                   //29.4 KB (30,170 バイト)
-	m_end = m_pUi->MyLoadGraph("Data/UI/EndButtonMini.png", 1, 1);                           //22.5 KB (23,109 バイト)
+	m_start = m_pUi->MyLoadGraph("Data/UI/STARTButtonMini.png", 1, 1);                         //27.1 KB (27,851 バイト)
+	m_setting = m_pUi->MyLoadGraph("Data/UI/SettingButtonMini.png", 1, 1);                     //29.4 KB (30,170 バイト)
+	m_end = m_pUi->MyLoadGraph("Data/UI/EndButtonMini.png", 1, 1);                             //22.5 KB (23,109 バイト)
+	m_hand = m_pUi->MyLoadGraph("Data/UI/PuppetHand.png", 2, 2);                         
+	m_BButton = m_pUi->MyLoadGraph("Data/UI/BButton.png", 1, 1);
+	m_AButton = m_pUi->MyLoadGraph("Data/UI/AButton.png", 1, 1);
 
 	m_playerHandle = handle.GetModelHandle("Data/Player/PuppetPlayerModel.mv1");
 	m_anim = handle.GetModelHandle("Data/PlayerAnimation/JumpingDown.mv1");
@@ -126,6 +137,7 @@ void SceneTitle::Init()
 /// <returns>シーンを返す</returns>
 std::shared_ptr<SceneBase> SceneTitle::Update()
 {
+
 	m_pMap->Update(m_pPhysics, false, false, false);
 
 	if (m_pSetting->GetSettingScene() == false)
@@ -159,6 +171,19 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 			pselect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, pselect->Eight);
 		}
 
+		if (pselect->NowSelect == 7)
+		{
+			cHandY = 600;
+		}
+		else if (pselect->NowSelect == 8)
+		{
+			cHandY = 750;
+		}
+		else if (pselect->NowSelect == 9)
+		{
+			cHandY = 900;
+		}
+
 		if (m_waitTime > 50)
 		{
 			//Aボタンを押したら
@@ -190,6 +215,11 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 				{
 					SetEnd(true);
 				}
+			}
+			//Bボタンを押したら
+			else if (m_xpad.Buttons[13] == 1)
+			{
+				SetEnd(true);
 			}
 		}
 		else if (m_pSetting->GetSettingScene() == false)
@@ -282,6 +312,7 @@ void SceneTitle::Draw()
 	//3Dモデルの回転地をセットする
 	MV1SetRotationXYZ(m_playerHandle, VGet(0.0f, 160.0f, 0.0f));
 
+
 	DrawGraph(120, 0, m_backScene, TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_pal[0]);
 	DrawGraph(500, 350, m_start, TRUE);
@@ -292,6 +323,19 @@ void SceneTitle::Draw()
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_pal[2]);
 	DrawGraph(500, 650, m_end, TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	//DrawGraph(500, 350, m_hand, true);
+	DrawRotaGraph(620, cHandY, 1.0f, DX_PI_F - (DX_PI_F / 4), m_hand, true);
+	DrawRotaGraph(1050, cHandY, 1.0f, DX_PI_F + (DX_PI_F / 4), m_hand, true, true);
+
+	SetFontSize(35);
+
+	DrawGraph(1150, 900, m_BButton, true);
+	DrawFormatString(1210, 910, 0xffffff, "決定");
+	DrawGraph(1350, 900, m_AButton, true);
+	DrawFormatString(1410, 910, 0xffffff, "キャンセル");
+
+	SetFontSize(40);
 
 	//設定画面を描画
 	if (m_pSetting->GetSettingScene() == true)
@@ -317,6 +361,9 @@ void SceneTitle::End()
 	DeleteGraph(m_start);
 	DeleteGraph(m_setting);
 	DeleteGraph(m_end);
+	DeleteGraph(m_hand);
+	DeleteGraph(m_BButton);
+	DeleteGraph(m_AButton);
 	MV1DeleteModel(m_playerHandle);
 	MV1DeleteModel(m_anim);
 	m_pSetting->End();

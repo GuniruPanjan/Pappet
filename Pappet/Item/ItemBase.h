@@ -46,6 +46,12 @@ public:
 		bool sa_equipment = false;     //装備したかの判定
 	};
 
+	//アイテムの構造体
+	struct sTool
+	{
+		int sa_number;                 //持っている数
+	};
+
 	//コンストラクタ
 	ItemBase() :
 		m_itemUse(0),

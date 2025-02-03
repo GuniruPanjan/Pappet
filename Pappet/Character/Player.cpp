@@ -7,6 +7,7 @@
 #include "Item/Weapon.h"
 #include "Item/Shield.h"
 #include "Item/Armor.h"
+#include "Item/Tool.h"
 #include "Manager/GameManager.h"
 
 #include <cassert>
@@ -46,7 +47,7 @@ namespace
 	//行動での移動距離
 	float cMove = 0.0f;
 	//拳の攻撃範囲
-	constexpr float cFistAttackRadius = 18.0f;
+	constexpr float cFistAttackRadius = 30.0f;
 	//攻撃の判定範囲
 	constexpr float cPartAttackRadius = 8.0f;
 	//強攻撃の攻撃範囲
@@ -82,7 +83,8 @@ namespace
 	bool cOne = false;
 	bool cTwo = false;
 
-	bool cHit = false;
+	bool cHit = false;         //攻撃を体に受けるときの判定
+	bool cShieldHit = false;   //攻撃を盾に受けるときの判定
 }
 
 Player::Player() :
@@ -152,11 +154,6 @@ Player::Player() :
 	
 	//エフェクトの初期化
 	m_effect.s_heel = false;
-
-	//エフェクト読み込み
-	//effect.EffectLoad("Rest", "Data/Effect/Benediction.efkefc", 210, 10.0f);
-	//effect.EffectLoad("Heal", "Data/Effect/AnotherEffect/Sylph13.efkefc", 160, 20.0f);
-	//effect.EffectLoad("Imapct", "Data/Effect/HitEffect.efkefc", 30, 7.0f);
 
 	//モデル読み込み
 	m_modelHandle = handle.GetModelHandle(cPath);
@@ -303,7 +300,7 @@ void Player::Finalize()
 	m_pSearch->Finalize(m_pPhysics);
 }
 
-void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos)
+void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool)
 {
 	//とりあえずやっとく
 	m_status.s_core = core.GetCore();
@@ -540,6 +537,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 				{
 					m_animChange.sa_imapact = true;
 					cHit = false;
+					cShieldHit = false;
 				}
 			}
 
@@ -564,6 +562,19 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 
 			cHit = false;
 		}
+		//盾受けしたときの処理
+		else if (!cShieldHit && m_animChange.sa_imapact)
+		{
+			for (auto damage : enemy.GetEnemyDamage())
+			{
+				if (damage > 0)
+				{
+					m_status.s_stamina -= damage - (shield.GetStrengthUgly() / 10);
+				}
+			}
+
+			cShieldHit = true;
+		}
 
 		EffectAction();
 
@@ -572,9 +583,9 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		{
 			//アクションをできなくする
 			if (!m_animChange.sa_avoidance && !m_anim.s_hit && !m_animChange.sa_recovery && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact
-				&& !m_staminaBreak && !m_rest && !m_animChange.sa_strengthAttack)
+				&& !m_rest && !m_animChange.sa_strengthAttack)
 			{
-				Action(restpos);
+				Action(restpos, tool, shield);
 			}
 		}
 
@@ -642,9 +653,14 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	}
 
 	//スタミナ回復
-	if (m_status.s_stamina < ms_maxStatus.sm_stamina && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_dashMove && !m_animChange.sa_strengthAttack)
+	if (m_status.s_stamina < ms_maxStatus.sm_stamina && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_dashMove && !m_animChange.sa_strengthAttack && !m_shieldNow)
 	{
 		m_status.s_stamina += 0.5f;
+	}
+	//盾を構えた状態だと回復が遅くなる
+	else if (m_shieldNow && m_status.s_stamina < ms_maxStatus.sm_stamina)
+	{
+		m_status.s_stamina += 0.2f;
 	}
 
 	//スタミナ切れ
@@ -876,6 +892,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		//フレーム中に攻撃を発生
 		if (m_nowFrame == 58.0f)
 		{
+			m_status.s_stamina -= 50.0f;
 			m_pStrengthAttack->Init(m_pPhysics);
 		}
 		else if (m_nowFrame >= 68.0f)
@@ -945,7 +962,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 /// <summary>
 /// プレイヤーのアクション実装
 /// </summary>
-void Player::Action(VECTOR restpos)
+void Player::Action(VECTOR restpos, Tool& tool, Shield& shield)
 {
 	//ターゲットできる時
 	if (!m_lockonTarget && m_pSearch->GetIsStay())
@@ -983,7 +1000,8 @@ void Player::Action(VECTOR restpos)
 	}
 
 	//Aボタンが押されたらダッシュか回避
-	if (m_xpad.Buttons[12] == 1 && !m_anim.s_attack)
+	//スタミナがあれば
+	if (m_xpad.Buttons[12] == 1 && !m_anim.s_attack && !m_staminaBreak)
 	{
 		//ダッシュ
 		if (cAbutton > 30)
@@ -1008,7 +1026,7 @@ void Player::Action(VECTOR restpos)
 		m_status.s_speed = cWalkSpeed;
 
 		//回避に必要なスタミナがある場合
-		if (m_status.s_stamina >= 20)
+		if (m_status.s_stamina >= 20 && !m_staminaBreak)
 		{
 			//回避
 		    //離した瞬間
@@ -1025,7 +1043,7 @@ void Player::Action(VECTOR restpos)
 	}
 
 	//攻撃に必要なスタミナがある場合
-	if (m_status.s_stamina >= 25)
+	if (m_status.s_stamina >= 25 && !m_staminaBreak)
 	{
 		//攻撃
 	    //Rボタンを押すことで攻撃
@@ -1068,13 +1086,18 @@ void Player::Action(VECTOR restpos)
 
 	//強攻撃
 	//ZRボタン
-	if (m_xpad.RightTrigger)
+	//攻撃に必要なスタミナがあったら
+	if (m_status.s_stamina >= 50.0f && !m_staminaBreak)
 	{
-		m_animChange.sa_strengthAttack = true;
+		if (m_xpad.RightTrigger)
+		{
+			m_animChange.sa_strengthAttack = true;
+		}
 	}
+	
 
 	//行動中は防御できない
-	if (!m_anim.s_attack && !m_animChange.sa_avoidance && !m_animChange.sa_recovery)
+	if (!m_anim.s_attack && !m_animChange.sa_avoidance && !m_animChange.sa_recovery && !shield.GetFist() && !m_staminaBreak)
 	{
 		//Lボタンで防御
 		if (m_xpad.Buttons[8] == 1)
@@ -1120,10 +1143,16 @@ void Player::Action(VECTOR restpos)
 
 	//回復
 	//Xボタンが押されたら
-	if (m_xpad.Buttons[14] == 1 && !m_anim.s_attack)
+	if (m_xpad.Buttons[14] == 1 && !m_anim.s_attack && tool.GetHeel().sa_number > 0)
 	{
-		m_effect.s_heel = true;
-		m_animChange.sa_recovery = true;
+		//一回実行
+		if (!m_animChange.sa_recovery)
+		{
+			tool.SetHeel(1);
+
+			m_effect.s_heel = true;
+			m_animChange.sa_recovery = true;
+		}
 	}
 	
 	//休息
@@ -1490,7 +1519,7 @@ void Player::Draw(Armor& armor)
 	rigidbody.SetPos(rigidbody.GetNextPos());
 	m_collisionPos = rigidbody.GetPos();
 
-#if true
+#if false
 	DrawFormatString(1000, 600, 0xffffff, "move : %d", m_anim.s_moveflag);
 	DrawFormatString(1000, 700, 0xffffff, "attack : %d", m_anim.s_attack);
 	DrawFormatString(1000, 800, 0xffffff, "hit : %d", m_anim.s_hit);

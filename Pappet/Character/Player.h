@@ -7,6 +7,7 @@ class Armor;
 class EnemyManager;
 class CoreManager;
 class GameManager;
+class Tool;
 
 class Player : public CharacterBase
 {
@@ -52,8 +53,8 @@ public:
 	void Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* manager, Weapon& weapon, Shield& shield, Armor& armor, bool anim);
 	void GameInit(std::shared_ptr<MyLibrary::Physics> physics);
 	void Finalize();
-	void Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos);
-	void Action(VECTOR restpos);
+	void Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool);
+	void Action(VECTOR restpos, Tool& tool, Shield& shield);
 	void EffectAction();
 	void WarpMap();
 	void NotWeaponAnimation();
@@ -90,11 +91,13 @@ public:
 	//‹x‘§ŠÖŒW
 	bool GetRest() { return m_rest; }
 	bool GetBigRest() { return m_bigRest; }
+	bool GetRestTouch() { return m_restTouch; }
 	bool SetRest(bool set) { return m_restTouch = set; }
 	bool SetNotRest(bool set) { return m_rest = set; }
 
 	//ƒ}ƒbƒvƒAƒCƒeƒ€ŠÖŒW
 	bool SetItemPick(bool set) { return m_itemPick = set; }
+	bool GetItemPick() { return m_itemPick; }
 	bool GetTaking() { return m_animChange.sa_taking; }
 
 	//ƒ[ƒvŠÖŒW
@@ -103,6 +106,7 @@ public:
 
 	//ƒ{ƒX•”‰®‚É“ü‚é‚½‚ß‚Ì”»’èŠÖŒW
 	bool SetBossStart(bool set) { return m_bossStart = set; }
+	bool GetBossEnter() { return m_bossStart; }
 	bool GetBossStart() { return m_animChange.sa_bossEnter; }
 
 	//€–SŠÖŒW

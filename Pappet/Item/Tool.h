@@ -6,6 +6,7 @@
 /// </summary>
 class Tool : public ItemBase
 {
+public:
 	//コンストラクタ
 	Tool();
 	//デストラクタ
@@ -17,5 +18,12 @@ class Tool : public ItemBase
 	void ItemInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::Physics> physics);
 	//マップアイテムとしての更新処理
 	void ItemUpdate(bool taking);
+
+	//回復アイテム関係を返す
+	sTool GetHeel() { return m_heel; }
+	int SetHeel(int item) { return m_heel.sa_number -= item; }
+
+private:
+	sTool m_heel;        //回復アイテムとしての構造体
 };
 

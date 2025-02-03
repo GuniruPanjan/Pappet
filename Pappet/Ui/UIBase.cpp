@@ -29,7 +29,9 @@ UIBase::UIBase() :
 	m_staminaBar(0),
 	m_coreBackBar(0),
 	m_statusIcon(0),
-	m_equipmentFrame(0)
+	m_equipmentFrame(0),
+	m_actionUI(0),
+	m_yButton(0)
 {
 	//‰æ‘œ“Ç‚İ‚İ
 	//m_heelStone = MyLoadGraph("Data/UI/HeelStoneMini.png", 6, 6);

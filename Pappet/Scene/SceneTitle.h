@@ -40,6 +40,9 @@ private:
 	int m_start;      //スタートボタン画像格納変数
 	int m_setting;    //設定ボタン画像格納変数
 	int m_end;        //終了ボタン画像格納変数
+	int m_hand;       //選択してる画像描画
+	int m_BButton;    //Bボタン画像格納変数
+	int m_AButton;    //Aボタン画像格納変数
 	int m_button;    //押した時間を得る
 	int m_select[3];    //選択用の変数
 	int m_pal[3];      //ブレンド描画用
