@@ -330,9 +330,9 @@ void SceneTitle::Draw()
 
 	SetFontSize(35);
 
-	DrawGraph(1150, 900, m_BButton, true);
+	DrawGraph(1150, 900, m_AButton, true);
 	DrawFormatString(1210, 910, 0xffffff, "Œˆ’è");
-	DrawGraph(1350, 900, m_AButton, true);
+	DrawGraph(1350, 900, m_BButton, true);
 	DrawFormatString(1410, 910, 0xffffff, "ƒLƒƒƒ“ƒZƒ‹");
 
 	SetFontSize(40);

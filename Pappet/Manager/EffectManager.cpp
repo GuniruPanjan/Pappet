@@ -32,6 +32,8 @@ void EffectManager::Init()
 	EffectLoad("Smoke", "Data/Effect/Smoke.efkefc", 50, 30.0f);
 	//歪みエフェクト
 	EffectLoad("Distortion", "Data/Effect/effect2.efkefc", 120, 10.0f);
+	//メッセージエフェクト
+	EffectLoad("Message", "Data/Effect/message.efkefc", 50, 10.0f);
 }
 
 /// <summary>

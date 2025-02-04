@@ -240,6 +240,15 @@
     <ClCompile Include="Object\ItemObject.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
+    <ClCompile Include="Object\MessageObject.cpp">
+      <Filter>ソース ファイル\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager\MessageManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Ui\Message.cpp">
+      <Filter>ソース ファイル\Ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Icon\Icon.h">
@@ -415,6 +424,15 @@
     </ClInclude>
     <ClInclude Include="Object\ItemObject.h">
       <Filter>ヘッダー ファイル\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\MessageObject.h">
+      <Filter>ヘッダー ファイル\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager\MessageManager.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Ui\Message.h">
+      <Filter>ヘッダー ファイル\Ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -178,6 +178,13 @@ void ItemManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManage
 			m_item.Distorted += item->GetItemKinds().Distorted;
 			m_item.ArmorNormal += item->GetItemKinds().ArmorNormal;
 
+			m_uiItem.u_SmallCore += item->GetItemKinds().SmallCore;
+			m_uiItem.u_MediumCore += item->GetItemKinds().MediumCore;
+			m_uiItem.u_Rubbish += item->GetItemKinds().Rubbish;
+			m_uiItem.u_BlackSword += item->GetItemKinds().BlackSword;
+			m_uiItem.u_Distorted += item->GetItemKinds().Distorted;
+			m_uiItem.u_ArmorNormal += item->GetItemKinds().ArmorNormal;
+
 			item->SetItemBox(false);
 
 			//アイテムが取得されたことを記録

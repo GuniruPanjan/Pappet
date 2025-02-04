@@ -269,3 +269,58 @@ void CsvLoad::ItemDataLoad(const char* stageName, std::list<std::shared_ptr<Item
 	return;
 }
 
+/// <summary>
+/// メッセージの情報ロード
+/// </summary>
+/// <param name="stageName"></param>
+/// <param name="pGenerateInfo"></param>
+void CsvLoad::MessageDataLoad(const char* stageName, std::list<std::shared_ptr<MessageManager::MessageGenerateInfo>>& pGenerateInfo)
+{
+	//一時保存用string
+	std::string strBuf;
+	//カンマ分け一時保存用string
+	std::vector<std::string> strConmaBuf;
+
+	std::string csvName = cFrontPathName + "Message" + cBackPathName;
+
+	//ファイル読み込み
+	std::ifstream ifs(csvName);
+	if (!ifs)
+	{
+		assert(false);
+		return;
+	}
+
+	//最初は対応表情報が入っているだけなので無視する
+	std::getline(ifs, strBuf);
+
+	while (getline(ifs, strBuf))
+	{
+		//所得した文字列をカンマ区切りの配列(情報群)にする
+		strConmaBuf = Split(strBuf, ',');
+
+		//0 : 生成されるマップ
+		//1 : X座標
+		//2 : Y座標
+		//3 : Z座標
+		//4 : 公式かの判断
+		//5 : 一つ目の言葉
+		//6 : 二つ目の言葉
+		//7 : 三つ目の言葉
+
+		std::shared_ptr<MessageManager::MessageGenerateInfo> add = std::make_shared<MessageManager::MessageGenerateInfo>();
+		add->mapNumber = std::stoi(strConmaBuf[DataLoad::CsvMessageStage::messageMap]);
+		add->posx = std::stoi(strConmaBuf[DataLoad::CsvMessageStage::messageX]);
+		add->posy = std::stoi(strConmaBuf[DataLoad::CsvMessageStage::messageY]);
+		add->posz = std::stoi(strConmaBuf[DataLoad::CsvMessageStage::messageZ]);
+		add->official = std::stoi(strConmaBuf[DataLoad::CsvMessageStage::official]);
+		add->one = std::stoi(strConmaBuf[DataLoad::CsvMessageStage::one]);
+		add->two = std::stoi(strConmaBuf[DataLoad::CsvMessageStage::two]);
+		add->three = std::stoi(strConmaBuf[DataLoad::CsvMessageStage::three]);
+
+		pGenerateInfo.emplace_back(add);
+	}
+
+	return;
+}
+

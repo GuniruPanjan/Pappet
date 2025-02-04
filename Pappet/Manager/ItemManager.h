@@ -29,6 +29,17 @@ public:
 		int ArmorNormal = 0;     //普通の鎧
 	}m_item;
 
+	//UI表示用の構造体
+	struct UIItem
+	{
+		int u_SmallCore = 0;     //小型コア
+		int u_MediumCore = 0;    //中型コア
+		int u_Rubbish = 0;       //ゴミ
+		int u_BlackSword = 0;    //黒い剣
+		int u_Distorted = 0;     //歪んだ盾
+		int u_ArmorNormal = 0;   //普通の鎧
+	}m_uiItem;
+
 	//アイテム生成情報
 	struct ItemGenerateInfo
 	{

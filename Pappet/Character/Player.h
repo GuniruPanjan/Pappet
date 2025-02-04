@@ -100,6 +100,12 @@ public:
 	bool GetItemPick() { return m_itemPick; }
 	bool GetTaking() { return m_animChange.sa_taking; }
 
+	//メッセージ関係
+	bool SetMessegePick(bool set) { return m_message = set; }
+	bool GetMessagePick() { return m_message; }
+	bool SetMessageRead(bool set) { return m_read = set; }
+	bool GetMessageRead() { return m_read; }
+
 	//ワープ関係
 	bool SetWarp(bool set) { return m_warp = set; }
 	bool GetWarp() { return m_warp; }
@@ -167,6 +173,8 @@ private:
 	bool m_shieldOne;                   //盾の判定初期化
 	bool m_armorOne[10];                //防具の初期化(適当に作っておく)
 	bool m_staminaBreak;                //スタミナ切れの状態
+	bool m_message;                     //メッセージ変数
+	bool m_read;                        //読む変数
 
 	//アニメーション用変数
 	int m_attackNumber;                 //現在の攻撃段階の代入

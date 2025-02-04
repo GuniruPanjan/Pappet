@@ -11,13 +11,16 @@ namespace
 {
 	int c_maxHP = 800;
 	int c_maxHPWidth = 1000;
+
+	bool c_itemTakingUI = false;
 }
 
 /// <summary>
 /// コンストラクタ
 /// </summary>
 UI::UI() :
-	m_equipmentReturn(false)
+	m_equipmentReturn(false),
+	m_xpad()
 {
 }
 
@@ -57,7 +60,9 @@ void UI::Init()
 	m_statusIcon = MyLoadGraph("Data/UI/StatusIcon.png", 1, 1);
 	m_equipmentFrame = MyLoadGraph("Data/UI/Frame.png", 1, 1);
 	m_actionUI = MyLoadGraph("Data/UI/Action.png", 1, 1);
+	m_itemTaking = MyLoadGraph("Data/UI/アイテム取得囲い.png", 1, 1);
 	m_yButton = MyLoadGraph("Data/UI/YButton.png", 1, 1);
+	m_bButton = MyLoadGraph("Data/UI/BButton.png", 1, 1);
 }
 
 /// <summary>
@@ -70,6 +75,9 @@ void UI::Init()
 /// <param name="item"></param>
 void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map, ItemManager& item, Weapon& weapon, Shield& shield, Armor& armor, Tool& tool)
 {
+	//パッド入力取得
+	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
+
 	//ステータスバーの描画
 	StatusDraw(180, 30, player);
 
@@ -94,29 +102,66 @@ void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map,
 	//アイテムの時は　アイテムを取る
 	//ボス部屋に入るときは　白い光の中に入る
 	//ワープするときは　転移する
-	if (player.GetItemPick() || player.GetRestTouch() || player.GetBossEnter() || player.GetWarp())
+	if (player.GetItemPick() || player.GetRestTouch() || player.GetBossEnter() || player.GetWarp() || player.GetMessagePick())
 	{
 		DrawGraph(480, 800, m_actionUI, true);
 		DrawGraph(500, 805, m_yButton, true);
 		//休息
 		if (player.GetRestTouch())
 		{
-
+			DrawFormatString(750, 820, 0xffffff, "休息する");
 		}
 		//アイテム
 		else if (player.GetItemPick())
 		{
-
+			DrawFormatString(700, 820, 0xffffff, "アイテムを取る");
 		}
 		//ボス部屋入り口
 		else if (player.GetBossEnter())
 		{
-
+			DrawFormatString(700, 820, 0xffffff, "白い光の中に入る");
 		}
 		//ワープ
 		else if (player.GetWarp())
 		{
+			DrawFormatString(750, 820, 0xffffff, "転移する");
+		}
+		//メッセージ
+		else if (player.GetMessagePick())
+		{
+			DrawFormatString(700, 820, 0xffffff, "メッセージを読む");
+		}
+	}
 
+	//アイテムを取った時
+	if (player.GetTaking())
+	{
+		c_itemTakingUI = true;
+	}
+
+	if (c_itemTakingUI)
+	{
+		DrawGraph(480, 600, m_itemTaking, true);
+		DrawGraph(480, 800, m_actionUI, true);
+		DrawGraph(500, 805, m_bButton, true);
+
+		DrawFormatString(800, 820, 0xffffff, "O K");
+
+		ItemTakingUI(item.m_uiItem.u_BlackSword, m_blackSword, 500, 625, 800, 675, "黒い剣");
+		ItemTakingUI(item.m_uiItem.u_Distorted, m_uglyShield, 500, 645, 800, 675, "歪んだ盾");
+		ItemTakingUI(item.m_uiItem.u_ArmorNormal, m_commonArmor, 500, 635, 800, 675, "普通の鎧");
+
+		//Bbuttonを押すと閉じる
+		if (m_xpad.Buttons[13] == 1)
+		{
+			item.m_uiItem.u_SmallCore = 0;
+			item.m_uiItem.u_MediumCore = 0;
+			item.m_uiItem.u_Rubbish = 0;
+			item.m_uiItem.u_BlackSword = 0;
+			item.m_uiItem.u_Distorted = 0;
+			item.m_uiItem.u_ArmorNormal = 0;
+
+			c_itemTakingUI = false;
 		}
 	}
 
@@ -263,6 +308,24 @@ void UI::EquipmentUIDraw(Weapon& weapon, Shield& shield, Armor& armor, Tool& too
 
 		DrawFormatString(260, 930, 0xffffff, "%d", tool.GetHeel().sa_number);
 	}
+}
+
+/// <summary>
+/// アイテムを取った時の描画
+/// </summary>
+/// <param name="item"></param>
+/// <param name="handle"></param>
+void UI::ItemTakingUI(int item, int handle, int x, int y, int charX, int charY, const char* letter)
+{
+	if (item > 0)
+	{
+		DrawGraph(x, y, handle, true);
+
+		DrawFormatString(charX, charY, 0xffffff, letter);
+
+		DrawFormatString(1100, 675, 0xffffff, "%d", item);
+	}
+
 }
 
 /// <summary>

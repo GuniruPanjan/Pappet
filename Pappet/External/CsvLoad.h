@@ -2,6 +2,7 @@
 #include "Character/CharacterBase.h"
 #include "Manager/EnemyManager.h"
 #include "Manager/ItemManager.h"
+#include "Manager/MessageManager.h"
 #include <string>
 #include <memory>
 
@@ -49,6 +50,19 @@ namespace DataLoad
 		ItemBlackSword,  //黒い剣
 		ItemDistorted,   //歪んだ盾
 		ItemArmorNormal, //普通の鎧
+	};
+
+	//メッセージの生成場所の列挙型
+	enum CsvMessageStage : int
+	{
+		messageMap,          //出現マップ
+		messageX,            //x座標
+		messageY,            //y座標
+		messageZ,            //z座標
+		official,     //公式かの判断
+		one,          //最初の言葉
+		two,          //二つ目の言葉
+		three,        //三つ目の言葉
 	};
 }
 
@@ -103,6 +117,9 @@ public:
 
 	//アイテム生成情報ロード
 	void ItemDataLoad(const char* stageName, std::list<std::shared_ptr<ItemManager::ItemGenerateInfo>>& pGenerateInfo);
+
+	//メッセージ生成情報ロード
+	void MessageDataLoad(const char* stageName, std::list<std::shared_ptr<MessageManager::MessageGenerateInfo>>& pGenerateInfo);
 
 private:
 	//Singletonのポインタがプログラム起動時に一つ作られるようにする

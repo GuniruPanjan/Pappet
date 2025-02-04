@@ -6,6 +6,7 @@
 #include "Item/Shield.h"
 #include "Item/Armor.h"
 #include "Manager/CoreManager.h"
+#include "Manager/MessageManager.h"
 #include "ItemManager.h"
 #include "BgmManager.h"
 #include<memory>
@@ -84,6 +85,7 @@ private:
 	std::shared_ptr<ItemManager> m_pItem;
 	std::shared_ptr<BgmManager> m_pBgm;
 	std::shared_ptr<Tool> m_pTool;
+	std::shared_ptr<MessageManager> m_pMessage;
 
 	//Œ»İ‚Ìƒ}ƒbƒv
 	eMapName m_nowMap;

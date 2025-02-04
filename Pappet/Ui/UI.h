@@ -69,6 +69,13 @@ public:
 	void EquipmentUIDraw(Weapon& weapon, Shield& shield, Armor& armor, Tool& tool);
 
 	/// <summary>
+	/// アイテム取った時の描画
+	/// </summary>
+	/// <param name="item"></param>
+	/// <param name="handle"></param>
+	void ItemTakingUI(int item, int handle, int x, int y, int charX, int charY, const char* letter);
+
+	/// <summary>
 	/// 死んだときの描画
 	/// </summary>
 	void DiedDraw();
@@ -147,6 +154,8 @@ private:
 
 	//装備画面から戻る
 	bool m_equipmentReturn;
+
+	XINPUT_STATE m_xpad;                //パッド入力
 };
 
 

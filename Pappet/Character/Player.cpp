@@ -114,6 +114,8 @@ Player::Player() :
 	m_shieldOne(false),
 	m_animReverse(false),
 	m_deadReset(false),
+	m_message(false),
+	m_read(false),
 	m_moveWeaponFrameMatrix(),
 	m_moveShieldFrameMatrix(),
 	m_rollMove(VGet(0.0f,0.0f,0.0f)),
@@ -169,6 +171,8 @@ Player::Player() :
 	{
 		m_armorOne[i] = false;
 	}
+
+	cEquipmentOne = false;
 }
 
 Player::~Player()
@@ -1221,6 +1225,16 @@ void Player::Action(VECTOR restpos, Tool& tool, Shield& shield)
 		}
 	}
 
+	//メッセージを読める
+	if (m_message)
+	{
+		//Yボタンを押したら
+		if (m_xpad.Buttons[15] == 1)
+		{
+			m_read = true;
+		}
+	}
+
 
 	//メニューを開く
 	if (m_xpad.Buttons[4] == 1)
@@ -1665,8 +1679,17 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 		message += "ボスの入口";
 #endif
 		break;
+	case ObjectTag::Message:
+#if _DEBUG
+		message += "メッセージ";
+#endif
+
+		m_message = true;
+
+		break;
 	}
 #if _DEBUG
+
 	message += "と当たった\n";
 	printfDx(message.c_str());
 #endif

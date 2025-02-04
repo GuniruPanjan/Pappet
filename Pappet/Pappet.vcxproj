@@ -169,6 +169,7 @@
     <ClCompile Include="Manager\HandleManager.cpp" />
     <ClCompile Include="Manager\ItemManager.cpp" />
     <ClCompile Include="Manager\MapManager.cpp" />
+    <ClCompile Include="Manager\MessageManager.cpp" />
     <ClCompile Include="Manager\SelectManager.cpp" />
     <ClCompile Include="Manager\SEManager.cpp" />
     <ClCompile Include="Map\Map.cpp" />
@@ -178,6 +179,7 @@
     <ClCompile Include="Object\AttackObject.cpp" />
     <ClCompile Include="Object\EnemyAttackObject.cpp" />
     <ClCompile Include="Object\ItemObject.cpp" />
+    <ClCompile Include="Object\MessageObject.cpp" />
     <ClCompile Include="Object\ObjectBase.cpp" />
     <ClCompile Include="Object\PlayerSearchObject.cpp" />
     <ClCompile Include="Object\RectObject.cpp" />
@@ -189,6 +191,7 @@
     <ClCompile Include="Scene\SceneGame.cpp" />
     <ClCompile Include="Scene\SceneManager.cpp" />
     <ClCompile Include="Scene\SceneTitle.cpp" />
+    <ClCompile Include="Ui\Message.cpp" />
     <ClCompile Include="Ui\Setting.cpp" />
     <ClCompile Include="Ui\UI.cpp" />
     <ClCompile Include="Ui\UIBase.cpp" />
@@ -230,6 +233,7 @@
     <ClInclude Include="Manager\HandleManager.h" />
     <ClInclude Include="Manager\ItemManager.h" />
     <ClInclude Include="Manager\MapManager.h" />
+    <ClInclude Include="Manager\MessageManager.h" />
     <ClInclude Include="Manager\SelectManager.h" />
     <ClInclude Include="Manager\SEManager.h" />
     <ClInclude Include="Map\Map.h" />
@@ -239,6 +243,7 @@
     <ClInclude Include="Object\AttackObject.h" />
     <ClInclude Include="Object\EnemyAttackObject.h" />
     <ClInclude Include="Object\ItemObject.h" />
+    <ClInclude Include="Object\MessageObject.h" />
     <ClInclude Include="Object\ObjectBase.h" />
     <ClInclude Include="Object\PlayerSearchObject.h" />
     <ClInclude Include="Object\RectObject.h" />
@@ -250,6 +255,7 @@
     <ClInclude Include="Scene\SceneGame.h" />
     <ClInclude Include="Scene\SceneManager.h" />
     <ClInclude Include="Scene\SceneTitle.h" />
+    <ClInclude Include="Ui\Message.h" />
     <ClInclude Include="Ui\Setting.h" />
     <ClInclude Include="Ui\UI.h" />
     <ClInclude Include="Ui\UIBase.h" />

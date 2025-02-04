@@ -13,4 +13,5 @@ enum class ObjectTag
 	EnemySearch,          //プレイヤー以外の索敵範囲
 	Item,                 //アイテムの所得範囲
 	Rest,                 //休息できる範囲
+	Message,              //メッセージの範囲
 };

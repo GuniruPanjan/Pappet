@@ -81,6 +81,8 @@ void GameManager::Init()
 	m_pUi->Init();
 	m_pCore->Init();
 	m_pPlayer->ChangeStatus();
+	m_pMessage = std::make_shared<MessageManager>();
+	m_pMessage->Init(m_pMap->GetStageName());
 	
 	m_pTool = std::make_shared<Tool>();
 	m_pTool->Init();
@@ -109,6 +111,7 @@ void GameManager::GameInit()
 	//m_pEnemy->GameInit(m_pPhysics, this, true);
 	//m_pItem->Init(m_pMap->GetStageName());
 	m_pItem->GameInit(m_pPhysics, this);
+	m_pMessage->GameInit(m_pPhysics, this);
 	//m_pNpc->Init(m_pPhysics);
 	m_pSetting->Init();
 	m_pUi->Init();
@@ -163,6 +166,7 @@ void GameManager::Update()
 		}
 
 		m_pItem->Update(m_pPhysics, this, m_pPlayer->GetTaking());
+		m_pMessage->Update(m_pPhysics, this, m_pPlayer->GetMessageRead());
 		m_pEnemy->Update(m_pPhysics, this, *m_pCore, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->GetShieldPos(), !m_pPlayer->IsGetPlayerDead(), m_init);
 
 		m_pMap->JudgeUpdate();
@@ -174,6 +178,8 @@ void GameManager::Update()
 		m_pPlayer->SetRest(m_pMap->GetRest());
 		//アイテムを拾えるかどうか
 		m_pPlayer->SetItemPick(m_pItem->GetItemPick());
+		//メッセージを読めるかどうか
+		m_pPlayer->SetMessegePick(false);
 		//ボス部屋に入ったか
 		m_pEnemy->SetBossRoom(m_pMap->GetBossRoom());
 		//ボス部屋に入ったら
@@ -368,6 +374,7 @@ void GameManager::Draw()
 	}
 
 	m_pCamera->Draw();
+	m_pMessage->Draw();
 
 	cEffect.Draw();
 
