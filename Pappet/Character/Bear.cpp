@@ -1,6 +1,7 @@
 #include "Bear.h"
 #include "Ui/UI.h"
 #include "Manager/EffectManager.h"
+#include "Manager/SEManager.h"
 
 namespace
 {
@@ -40,7 +41,8 @@ namespace
 /// </summary>
 Bear::Bear() :
 	EnemyBase(Collidable::Priority::High),
-	m_attackPos()
+	m_attackPos(),
+	m_walk(0)
 {
 	//当たり判定の設定
 	InitCollision(MyLibrary::LibVec3(0.0f, 2.0f, 0.0f), cCapsuleLen, cCapsuleRadius);
@@ -110,13 +112,15 @@ void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::P
 	//最大HPを取得
 	m_maxHP = m_status.s_hp;
 
-	//m_status.s_hp = 1.0f;
+	m_status.s_hp = 1.0f;
 
 	m_bossName = "熊の傀儡人形";
 	m_subName = "H A R I B O";
 
 	cOne = false;
 	m_deadOne = false;
+
+	m_walk = 0;
 }
 
 /// <summary>
@@ -163,6 +167,8 @@ void Bear::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 
 	cOne = false;
 	m_deadOne = false;
+
+	m_walk = 0;
 }
 
 /// <summary>
@@ -170,7 +176,7 @@ void Bear::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 /// </summary>
 /// <param name="playerPos"></param>
 /// <param name="isChase"></param>
-void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChase)
+void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChase, SEManager& se)
 {
 	//アニメーションの更新
 	if (!cDead)
@@ -204,18 +210,41 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bo
 
 			cOne = true;
 		}
-		
+
 	}
+
+	//歩いている時
+	if (m_anim.s_moveflag)
+	{
+		m_walk++;
+
+		if (m_walk >= 30)
+		{
+			//歩くSE再生
+			PlaySoundMem(se.GetBossWalkSE(), DX_PLAYTYPE_BACK, true);
+
+			m_walk = 0;
+		}
+	}
+	else
+	{
+		m_walk = 0;
+	}
+
 
 	//攻撃を受けた時
 	if (m_isEnterHit)
 	{
 		m_status.s_hp -= m_col->GetAttack() - m_status.s_defense;
+		//Hitエフェクト
+		cEffect.EffectCreate("Hit", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y + 30.0f, rigidbody.GetPos().z));
+		//HitSE再生
+		PlaySoundMem(se.GetHitSE(), DX_PLAYTYPE_BACK, true);
 	}
 	//プレイヤーがボス部屋に入ったら
 	if (m_isBossDiscovery && !cDead)
 	{
-		Action(playerPos, isChase);
+		Action(playerPos, isChase, se);
 	}
 
 	TriggerUpdate();
@@ -234,6 +263,13 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bo
 		m_anim.s_moveflag = false;
 
 		Death();
+
+		if (m_nowFrame == 60)
+		{
+			//死亡SE再生
+			PlaySoundMem(se.GetDiedSE(), DX_PLAYTYPE_BACK, true);
+		}
+
 		cDead = true;
 		m_isBossDead = true;
 	}
@@ -249,7 +285,7 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bo
 /// </summary>
 /// <param name="playerPos">プレイヤーのポジション</param>
 /// <param name="isChase">プレイヤー</param>
-void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
+void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 {
 	//敵がプレイヤーの位置によって方向を補正する
 	float Cx = m_modelPos.x - playerPos.x;
@@ -421,6 +457,9 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 			//アニメーションフレーム中に攻撃判定を出す
 			if (m_nowFrame == 7.0f)
 			{
+				//攻撃SE再生
+				PlaySoundMem(se.GetBossAttackSE1(), DX_PLAYTYPE_BACK, true);
+
 				InitAttackUpdate(m_status.s_attack);
 			}
 			else if (m_nowFrame >= 12.0f)
@@ -456,6 +495,9 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 			//アニメーションフレーム宙に攻撃判定を出す
 			else if (m_nowFrame == 38.0f)
 			{
+				//攻撃SE再生
+				PlaySoundMem(se.GetBossAttackSE2(), DX_PLAYTYPE_BACK, true);
+
 				InitAttackUpdate(m_status.s_attack1);
 			}
 			else if (m_nowFrame >= 45.0f)
@@ -474,6 +516,9 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 				InitAttack(cAttackRadius3);
 
 				InitAttackDamage(m_status.s_attack2);
+
+				//咆哮SE再生
+				PlaySoundMem(se.GetBossVoiceSE(), DX_PLAYTYPE_BACK, true);
 			}
 			else if (m_nowFrame > 5.0f)
 			{
@@ -485,6 +530,9 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 			//エフェクトを出す
 			if (m_nowFrame == 25.0f)
 			{
+				//攻撃SE再生
+				PlaySoundMem(se.GetBossAttackSE3(), DX_PLAYTYPE_BACK, true);
+
 				cEffect.EffectCreate("BearLance", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y - 25.0f, rigidbody.GetPos().z));
 			}
 

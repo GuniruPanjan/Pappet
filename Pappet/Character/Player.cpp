@@ -9,6 +9,7 @@
 #include "Item/Armor.h"
 #include "Item/Tool.h"
 #include "Manager/GameManager.h"
+#include "Manager/SEManager.h"
 
 #include <cassert>
 
@@ -306,7 +307,7 @@ void Player::Finalize()
 	m_pSearch->Finalize(m_pPhysics);
 }
 
-void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool)
+void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool, SEManager& se)
 {
 	//とりあえずやっとく
 	m_status.s_core = core.GetCore();
@@ -565,6 +566,10 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 					m_status.s_hp -= damage - (m_status.s_defense / 10);
 				}
 			}
+			//Hitエフェクト
+			cEffect.EffectCreate("Hit", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y + 20.0f, rigidbody.GetPos().z));
+			//HitSe再生
+			PlaySoundMem(se.GetPlayerHitSE(), DX_PLAYTYPE_BACK, true);
 
 			cHit = false;
 		}
@@ -591,7 +596,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			if (!m_animChange.sa_avoidance && !m_anim.s_hit && !m_animChange.sa_recovery && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact
 				&& !m_rest && !m_animChange.sa_strengthAttack)
 			{
-				Action(restpos, tool, shield);
+				Action(restpos, tool, shield, se);
 			}
 		}
 
@@ -786,6 +791,9 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 25.0f)
 			{
+				//攻撃SE再生
+				PlaySoundMem(se.GetAttackSE(), DX_PLAYTYPE_BACK, true);
+
 				m_status.s_stamina -= 25.0f;
 				m_pAttack->Init(m_pPhysics);
 				//m_pPartAttack->Init(m_pPhysics);
@@ -815,6 +823,9 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 55.0f)
 			{
+				//攻撃SE再生
+				PlaySoundMem(se.GetAttackSE(), DX_PLAYTYPE_BACK, true);
+
 				m_status.s_stamina -= 25.0f;
 				m_pAttack->Init(m_pPhysics);
 				//m_pPartAttack->Init(m_pPhysics);
@@ -844,6 +855,9 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			//攻撃判定発生フレーム
 			if (m_nowFrame == 85.0f)
 			{
+				//攻撃SE再生
+				PlaySoundMem(se.GetAttackSE(), DX_PLAYTYPE_BACK, true);
+
 				m_status.s_stamina -= 25.0f;
 				m_pAttack->Init(m_pPhysics);
 				//m_pPartAttack->Init(m_pPhysics);
@@ -892,6 +906,9 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		//エフェクトを出す
 		if (m_nowFrame == 25.0f)
 		{
+			//攻撃SE再生
+			PlaySoundMem(se.GetBossAttackSE3(), DX_PLAYTYPE_BACK, true);
+
 			cEffect.EffectCreate("BearLance", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y - 12.0f, rigidbody.GetPos().z));
 		}
 
@@ -978,7 +995,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 /// <summary>
 /// プレイヤーのアクション実装
 /// </summary>
-void Player::Action(VECTOR restpos, Tool& tool, Shield& shield)
+void Player::Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se)
 {
 	//ターゲットできる時
 	if (!m_lockonTarget && m_pSearch->GetIsStay())
@@ -1166,6 +1183,9 @@ void Player::Action(VECTOR restpos, Tool& tool, Shield& shield)
 		{
 			tool.SetHeel(1);
 
+			//回復SE再生
+			PlaySoundMem(se.GetHeelSE(), DX_PLAYTYPE_BACK, true);
+
 			m_effect.s_heel = true;
 			m_animChange.sa_recovery = true;
 		}
@@ -1186,6 +1206,9 @@ void Player::Action(VECTOR restpos, Tool& tool, Shield& shield)
 			m_rest = true;
 
 			cEffect.EffectCreate("Rest", restpos);
+
+			//休息SE再生
+			PlaySoundMem(se.GetRestSE(), DX_PLAYTYPE_BACK, true);
 		}
 	}
 	else if(m_mapNow != 0)
@@ -1209,6 +1232,9 @@ void Player::Action(VECTOR restpos, Tool& tool, Shield& shield)
 			m_bigRest = true;
 
 			cEffect.EffectCreate("Rest", restpos);
+
+			//休息SE再生
+			PlaySoundMem(se.GetRestSE(), DX_PLAYTYPE_BACK, true);
 		}
 	}
 	else if(m_mapNow == 0)

@@ -4,6 +4,7 @@
 #include "External/CsvLoad.h"
 #include "GameManager.h"
 #include "Manager/CoreManager.h"
+#include "Manager/SEManager.h"
 
 namespace
 {
@@ -122,7 +123,7 @@ void EnemyManager::GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameMan
 /// <param name="playerPos">プレイヤーポジション</param>
 /// <param name="playerDir">プレイヤーの方向</param>
 /// <param name="isPlayerChase">プレイヤーを発見したかどうか</param>
-void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, CoreManager& core, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, MyLibrary::LibVec3 shieldPos, bool isPlayerChase, bool init)
+void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, CoreManager& core, MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 playerDir, MyLibrary::LibVec3 shieldPos, bool isPlayerChase, SEManager& se, bool init)
 {
 	m_enemyPos.clear();
 	m_enemyTarget.clear();
@@ -170,7 +171,7 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 		for (auto& enemy : m_pEnemys)
 		{
 			//ここで無限に繰り返しているバグ
-			enemy->Update(playerPos, shieldPos, isPlayerChase);
+			enemy->Update(playerPos, shieldPos, isPlayerChase, se);
 
 			m_enemyPos.emplace_back(enemy->GetPos());
 			m_enemyTarget.emplace_back(enemy->GetTarget());

@@ -68,7 +68,7 @@ void MessageManager::GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameM
 /// </summary>
 /// <param name="physics"></param>
 /// <param name="gameManager"></param>
-void MessageManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, bool taking)
+void MessageManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, Player& player)
 {
 	//今のマップがどのマップか取得する
 	auto thisMapName = gameManager->GetThisMapName();
@@ -89,7 +89,7 @@ void MessageManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameMan
 	}
 
 	//マップのメッセージとして更新する
-	m_pMessage->Update(taking);
+	m_pMessage->Update(player);
 }
 
 void MessageManager::Draw()
@@ -103,6 +103,19 @@ void MessageManager::Draw()
 
 void MessageManager::End()
 {
+	m_pMessage->End();
+}
+
+bool MessageManager::GetDraw()
+{
+	if (cMessage)
+	{
+		return m_pMessage->GetDraw();
+	}
+	else
+	{
+		return false;
+	}
 }
 
 void MessageManager::CreateMessage(float posx, float posy, float posz, bool official, int one, int two, int three, std::shared_ptr<MyLibrary::Physics> physics)

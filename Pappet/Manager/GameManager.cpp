@@ -7,6 +7,7 @@
 #include "Ui/Setting.h"
 #include "Ui/UI.h"
 #include "EffectManager.h"
+#include "Manager/SEManager.h"
 #include "Item/Tool.h"
 
 //カメラの初期化で描画バグが発生する
@@ -43,6 +44,7 @@ GameManager::GameManager() :
 	m_pCore = std::make_shared<CoreManager>();
 	m_pBgm = std::make_shared<BgmManager>();
 	m_pMap = std::make_shared<MapManager>();
+	m_pSe = std::make_shared<SEManager>();
 }
 
 /// <summary>
@@ -78,6 +80,8 @@ void GameManager::Init()
 	//m_pNpc->Init(m_pPhysics);
 	m_pSetting = std::make_shared<Setting>();
 	m_pSetting->Init();
+	m_pSe->CharaInit();
+	m_pSe->BossInit();
 	m_pUi->Init();
 	m_pCore->Init();
 	m_pPlayer->ChangeStatus();
@@ -153,7 +157,7 @@ void GameManager::Update()
 
 		m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
-		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, *m_pEnemy, *m_pCore, m_pMap->GetRestPos(), *m_pTool);
+		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, *m_pEnemy, *m_pCore, m_pMap->GetRestPos(), *m_pTool, *m_pSe);
 		//ロックオンしてない時
 		if (!m_pPlayer->GetLock())
 		{
@@ -166,8 +170,8 @@ void GameManager::Update()
 		}
 
 		m_pItem->Update(m_pPhysics, this, m_pPlayer->GetTaking());
-		m_pMessage->Update(m_pPhysics, this, m_pPlayer->GetMessageRead());
-		m_pEnemy->Update(m_pPhysics, this, *m_pCore, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->GetShieldPos(), !m_pPlayer->IsGetPlayerDead(), m_init);
+		m_pMessage->Update(m_pPhysics, this, *m_pPlayer);
+		m_pEnemy->Update(m_pPhysics, this, *m_pCore, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->GetShieldPos(), !m_pPlayer->IsGetPlayerDead(), *m_pSe, m_init);
 
 		m_pMap->JudgeUpdate();
 
@@ -375,11 +379,10 @@ void GameManager::Draw()
 	}
 
 	m_pCamera->Draw();
-	m_pMessage->Draw();
 
 	cEffect.Draw();
 
-	m_pUi->Draw(*m_pPlayer, *m_pEnemy, *m_pSetting, *m_pMap, *m_pItem, *m_pWeapon, *m_pShield, *m_pArmor, *m_pTool);
+	m_pUi->Draw(*m_pPlayer, *m_pEnemy, *m_pSetting, *m_pMap, *m_pItem, *m_pWeapon, *m_pShield, *m_pArmor, *m_pTool, *m_pMessage);
 
 	//メニューの背景描画
 	if (m_pPlayer->GetMenu())
@@ -439,6 +442,9 @@ void GameManager::Draw()
 	}
 
 	m_pItem->Draw();
+
+	m_pMessage->Draw();
+
 }
 
 /// <summary>
@@ -471,6 +477,7 @@ void GameManager::End()
 	m_pMap->End(m_pPhysics);
 	m_pSetting->End();
 	m_pEnemy->End();
+	m_pMessage->End();
 }
 
 /// <summary>

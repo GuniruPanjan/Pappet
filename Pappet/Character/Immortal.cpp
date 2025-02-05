@@ -1,5 +1,7 @@
 #include "Immortal.h"
 #include "Ui/UI.h"
+#include "Manager/EffectManager.h"
+#include "Manager/SEManager.h"
 
 //アタックのCollidableが登録されていない
 
@@ -27,6 +29,9 @@ namespace
 	constexpr float cNear = 50.0f;
 	//攻撃判定の半径
 	constexpr float cAttackRadius = 18.0f;
+
+	//シングルトン
+	EffectManager& cEffect = EffectManager::GetInstance();
 }
 
 /// <summary>
@@ -153,7 +158,7 @@ void Immortal::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLi
 /// </summary>
 /// <param name="playerPos">プレイヤー座標</param>
 /// <param name="isChase">プレイヤーと戦えるかどうか</param>
-void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChase)
+void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChase, SEManager& se)
 {
 
 	float totalAnimFrame = MV1GetAttachAnimTotalTime(m_modelHandle, m_nowAnimNo);
@@ -202,7 +207,7 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos
 	if (!m_anim.s_hit && !m_anim.s_isDead)
 	{
 		//アクション
-		Action(playerPos, isChase);
+		Action(playerPos, isChase, se);
 	}
 
 	//移動処理
@@ -213,9 +218,15 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos
 	//攻撃を受けた時
 	//攻撃が当たっているとき
 	//怯んでいる時は当たらない
-	if (m_isEnterHit && !m_anim.s_hit)
+	if (m_isEnterHit)
 	{
 		m_status.s_hp -= m_col->GetAttack() - m_status.s_defense;
+
+		//Hitエフェクト
+		cEffect.EffectCreate("Hit", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y + 20.0f, rigidbody.GetPos().z));
+
+		//HitSE再生
+		PlaySoundMem(se.GetHitSE(), DX_PLAYTYPE_BACK, true);
 
 		//HPが0になるとヒットしない
 		if (m_status.s_hp > 0.0f)
@@ -244,6 +255,13 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos
 
 		Death();
 
+		if (m_nowFrame == 50)
+		{
+			//死亡SE再生
+			PlaySoundMem(se.GetDiedSE(), DX_PLAYTYPE_BACK, true);
+		}
+		
+
 		cDead = true;
 	}
 }
@@ -253,7 +271,7 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos
 /// </summary>
 /// <param name="playerPos">プレイヤーのポジション</param>
 /// <param name="isChase">プレイヤーと戦えるかどうか</param>
-void Immortal::Action(MyLibrary::LibVec3 playerPos, bool isChase)
+void Immortal::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 {
 	//プレイヤーを見つけた時
 	if (m_pSearch->GetIsStay())
@@ -336,6 +354,9 @@ void Immortal::Action(MyLibrary::LibVec3 playerPos, bool isChase)
 				//アニメーションフレーム中に攻撃判定を出す
 				if (m_nowFrame == 22)
 				{
+					//攻撃SE再生
+					PlaySoundMem(se.GetAttackSE(), DX_PLAYTYPE_BACK, true);
+
 					InitAttackUpdate(m_status.s_attack);
 				}
 				else if (m_nowFrame >= 35.0f)

@@ -3,6 +3,7 @@
 #include "Library/MyLibrary.h"
 
 class MessageObject;
+class Player;
 
 class Message : public UIBase
 {
@@ -28,7 +29,7 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void Update(bool taking);
+	void Update(Player& player);
 
 	/// <summary>
 	/// 描画処理
@@ -43,6 +44,9 @@ public:
 	//処理ができるのかの判断
 	bool GetCan() { return m_can; }
 	bool SetCan(bool set) { return m_can = set; }
+
+	//メッセージを表示できるかの判断
+	bool GetDraw() { return m_draw; }
 
 private:
 	XINPUT_STATE m_xpad;                           //パッド入力

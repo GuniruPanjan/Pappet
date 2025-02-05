@@ -83,7 +83,6 @@ void SEManager::BossInit()
 	m_bossAttackSE[1] = LoadSoundMem("Data/SE/BossAttack2SE.mp3");
 	m_bossAttackSE[2] = LoadSoundMem("Data/SE/BossAttack3SE.mp3");
 	m_bossWalkSE = LoadSoundMem("Data/SE/BossWalkSE.mp3");
-	m_diedSE = LoadSoundMem("Data/SE/DiedSE.mp3");
 }
 
 /// <summary>

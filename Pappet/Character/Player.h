@@ -8,6 +8,7 @@ class EnemyManager;
 class CoreManager;
 class GameManager;
 class Tool;
+class SEManager;
 
 class Player : public CharacterBase
 {
@@ -53,8 +54,8 @@ public:
 	void Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* manager, Weapon& weapon, Shield& shield, Armor& armor, bool anim);
 	void GameInit(std::shared_ptr<MyLibrary::Physics> physics);
 	void Finalize();
-	void Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool);
-	void Action(VECTOR restpos, Tool& tool, Shield& shield);
+	void Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool, SEManager& se);
+	void Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se);
 	void EffectAction();
 	void WarpMap();
 	void NotWeaponAnimation();

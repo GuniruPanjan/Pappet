@@ -33,7 +33,8 @@ UIBase::UIBase() :
 	m_actionUI(0),
 	m_itemTaking(0),
 	m_yButton(0),
-	m_bButton(0)
+	m_bButton(0),
+	m_messageUI(0)
 {
 	//‰æ‘œ“Ç‚İ‚İ
 	//m_heelStone = MyLoadGraph("Data/UI/HeelStoneMini.png", 6, 6);

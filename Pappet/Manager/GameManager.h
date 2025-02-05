@@ -20,6 +20,7 @@ class Setting;
 class ItemManager;
 class UI;
 class Tool;
+class SEManager;
 
 /// <summary>
 /// ゲームの内容を管理するクラス
@@ -86,6 +87,7 @@ private:
 	std::shared_ptr<BgmManager> m_pBgm;
 	std::shared_ptr<Tool> m_pTool;
 	std::shared_ptr<MessageManager> m_pMessage;
+	std::shared_ptr<SEManager> m_pSe;
 
 	//現在のマップ
 	eMapName m_nowMap;

@@ -11,6 +11,7 @@ class Weapon;
 class Shield;
 class Armor;
 class Tool;
+class MessageManager;
 
 /// <summary>
 /// UI関係のクラス
@@ -43,7 +44,7 @@ public:
 	/// <param name="eq">装備の呼び出し</param>
 	/// <param name="map">マップの呼び出し</param>
 	/// <param name="item">アイテムの呼び出し</param>
-	void Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map, ItemManager& item, Weapon& weapon, Shield& shield, Armor& armor, Tool& tool);
+	void Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map, ItemManager& item, Weapon& weapon, Shield& shield, Armor& armor, Tool& tool, MessageManager& message);
 
 	/// <summary>
 	/// 装備の描画処理

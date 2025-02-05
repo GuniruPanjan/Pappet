@@ -7,6 +7,7 @@
 #include "Ui/Message.h"
 
 class GameManager;
+class Player;
 
 /// <summary>
 /// メッセージを管理するクラス
@@ -41,7 +42,7 @@ public:
 	//ゲーム内での初期化処理
 	void GameInit(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager);
 	//更新処理
-	void Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, bool taking);
+	void Update(std::shared_ptr<MyLibrary::Physics> physics, GameManager* gameManager, Player& player);
 
 	//描画処理
 	void Draw();
@@ -51,6 +52,8 @@ public:
 
 	//メッセージを読めるか返す
 	bool GetMessagePick() { return m_messagePick; }
+	//メッセージを表示中か返す
+	bool GetDraw();
 
 private:
 	//メッセージ生成

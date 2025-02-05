@@ -400,7 +400,7 @@ bool MyLibrary::Physics::IsCollide(const Rigidbody& rigidA, const Rigidbody& rig
 		isCollide = sqLen < ar;
 	}
 	//カプセルと球体の当たり判定
-	else if(kindA == MyLibrary::CollidableData::Kind::Capsule && kindB == MyLibrary::CollidableData::Kind::Sphere)
+	if(kindA == MyLibrary::CollidableData::Kind::Capsule && kindB == MyLibrary::CollidableData::Kind::Sphere)
 	{
 		auto colA = dynamic_cast<MyLibrary::CollidableDataCapsule*>(colliderA);
 		auto colB = dynamic_cast<MyLibrary::CollidableDataSphere*>(colliderB);
@@ -434,7 +434,7 @@ bool MyLibrary::Physics::IsCollide(const Rigidbody& rigidA, const Rigidbody& rig
 		isCollide = sqLen < radius;
 	}
 	//矩形とカプセルの当たり判定
-	else if (kindA == MyLibrary::CollidableData::Kind::Rect && kindB == MyLibrary::CollidableData::Kind::Capsule)
+	if (kindA == MyLibrary::CollidableData::Kind::Rect && kindB == MyLibrary::CollidableData::Kind::Capsule)
 	{
 		auto colA = dynamic_cast<MyLibrary::CollidableDataRect*>(colliderA);
 		auto colB = dynamic_cast<MyLibrary::CollidableDataCapsule*>(colliderB);
@@ -464,7 +464,7 @@ bool MyLibrary::Physics::IsCollide(const Rigidbody& rigidA, const Rigidbody& rig
 		isCollide = isHitX && isHitY && isHitZ;
 	}
 	//矩形と球体の当たり判定
-	else if (kindA == MyLibrary::CollidableData::Kind::Rect && kindB == MyLibrary::CollidableData::Kind::Sphere)
+	if (kindA == MyLibrary::CollidableData::Kind::Rect && kindB == MyLibrary::CollidableData::Kind::Sphere)
 	{
 		auto colA = dynamic_cast<MyLibrary::CollidableDataRect*>(colliderA);
 		auto colB = dynamic_cast<MyLibrary::CollidableDataSphere*>(colliderB);

@@ -2,6 +2,7 @@
 #include "CharacterBase.h"
 
 class UI;
+class SEManager;
 
 /// <summary>
 /// エネミーの基盤となるクラス
@@ -29,7 +30,7 @@ public:
 	//終了
 	virtual void Finalize(std::shared_ptr<MyLibrary::Physics> physics);
 	//更新
-	virtual void Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChange) {};
+	virtual void Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChange, SEManager& se) {};
 	//描画
 	virtual void Draw(UI& ui) {};
 	//終了処理

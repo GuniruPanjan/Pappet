@@ -34,6 +34,8 @@ void EffectManager::Init()
 	EffectLoad("Distortion", "Data/Effect/effect2.efkefc", 120, 10.0f);
 	//メッセージエフェクト
 	EffectLoad("Message", "Data/Effect/message.efkefc", 50, 10.0f);
+	//Hitエフェクト
+	EffectLoad("Hit", "Data/Effect/HitEffect.efkefc", 30, 15.0f);
 }
 
 /// <summary>

@@ -1,6 +1,7 @@
 #include "Message.h"
 #include "Object/MessageObject.h"
 #include "Manager/EffectManager.h"
+#include "Character/Player.h"
 
 namespace
 {
@@ -34,6 +35,8 @@ void Message::DataInit()
 
 void Message::Init(float posX, float posY, float posZ, bool official, int one, int two, int three, std::shared_ptr<MyLibrary::Physics> physics)
 {
+	m_messageUI = MyLoadGraph("Data/UI/操作説明ウィンドウ.png", 3, 3);
+
 	m_pMessage = std::make_shared<MessageObject>(50.0f);
 
 	m_centerPos = MyLibrary::LibVec3(posX, posY, posZ);
@@ -46,7 +49,7 @@ void Message::Init(float posX, float posY, float posZ, bool official, int one, i
 	m_three = three;
 }
 
-void Message::Update(bool taking)
+void Message::Update(Player& player)
 {
 	//パッド入力取得
 	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
@@ -54,14 +57,19 @@ void Message::Update(bool taking)
 	m_pMessage->Update(m_centerPos);
 
 	//メッセージを読む
-	if (taking)
+	if (player.GetMessageRead())
 	{
 		m_draw = true;
+	}
 
+	if (m_draw)
+	{
 		//Bボタンを押すと戻る
 		if (m_xpad.Buttons[13] == 1)
 		{
 			m_draw = false;
+
+			player.SetMessageRead(false);
 		}
 	}
 }
@@ -80,19 +88,21 @@ void Message::Draw()
 	}
 
 	//説明描画
-	//if (m_draw)
-	//{
-	//	if (m_official)
-	//	{
-	//		int a = 1;
-	//	}
-	//	else
-	//	{
+	if (m_draw)
+	{
+		//公式メッセージ描画
+		if (m_official)
+		{
+			DrawGraph(130, 100, m_messageUI, false);
+		}
+		else
+		{
 
-	//	}
-	//}
+		}
+	}
 }
 
 void Message::End()
 {
+	DeleteGraph(m_messageUI);
 }

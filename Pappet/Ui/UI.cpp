@@ -7,6 +7,7 @@
 #include "Manager/ItemManager.h"
 #include "Manager/MapManager.h"
 #include "Item/Tool.h"
+#include "Manager/MessageManager.h"
 
 namespace
 {
@@ -74,7 +75,7 @@ void UI::Init()
 /// <param name="eq"></param>
 /// <param name="map"></param>
 /// <param name="item"></param>
-void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map, ItemManager& item, Weapon& weapon, Shield& shield, Armor& armor, Tool& tool)
+void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map, ItemManager& item, Weapon& weapon, Shield& shield, Armor& armor, Tool& tool, MessageManager& message)
 {
 	//パッド入力取得
 	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
@@ -103,7 +104,7 @@ void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map,
 	//アイテムの時は　アイテムを取る
 	//ボス部屋に入るときは　白い光の中に入る
 	//ワープするときは　転移する
-	if (player.GetItemPick() || player.GetRestTouch() || player.GetBossEnter() || player.GetWarp() || player.GetMessagePick())
+	if (player.GetItemPick() || player.GetRestTouch() || player.GetBossEnter() || map.GetCore() || player.GetMessagePick())
 	{
 		DrawGraph(480, 800, m_actionUI, true);
 		DrawGraph(500, 805, m_yButton, true);
@@ -164,6 +165,14 @@ void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map,
 
 			c_itemTakingUI = false;
 		}
+	}
+
+	if (message.GetDraw())
+	{
+		DrawGraph(480, 800, m_actionUI, true);
+		DrawGraph(500, 805, m_bButton, true);
+
+		DrawFormatString(800, 820, 0xffffff, "O K");
 	}
 
 	//コア数描画

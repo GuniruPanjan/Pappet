@@ -67,6 +67,7 @@ protected:
 	int m_itemTaking;     //アイテムを取得した変数
 	int m_yButton;        //Yボタン画像格納変数
 	int m_bButton;        //Bボタン画像格納変数
+	int m_messageUI;      //メッセージ画像格納変数
 
 	//スマートポインタ
 	std::shared_ptr<SEManager> pse = std::make_shared<SEManager>();
