@@ -40,6 +40,10 @@ public:
 	/// </summary>
 	void End();
 
+	//処理ができるのかの判断
+	bool GetCan() { return m_can; }
+	bool SetCan(bool set) { return m_can = set; }
+
 private:
 	XINPUT_STATE m_xpad;                           //パッド入力
 	std::shared_ptr<MessageObject> m_pMessage;     //メッセージの判定
@@ -53,5 +57,6 @@ private:
 	int m_three;           //三つ目
 
 	bool m_draw;           //メッセージを表示する
+	bool m_can;            //描画処理を実行できるか
 };
 

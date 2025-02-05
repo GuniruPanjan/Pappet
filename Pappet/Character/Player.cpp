@@ -72,6 +72,8 @@ namespace
 	constexpr const char* cPath = "Data/Player/PlayerModelPuppet.mv1";
 	//装備を一回だけ初期化する
 	bool cEquipmentOne = false;
+	//光の中に入る時のポジション設定
+	bool cEnterPos = false;
 
 	//シングルトン
 	auto& handle = HandleManager::GetInstance();
@@ -942,6 +944,16 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	{
 		//とりあえず妥協点で後で直す
 		//主にプレイヤーの当たり判定を消し、モデルだけを動かしモデルの最終地点に当たり判定を出す
+		//一回実行
+		if (cEnterPos)
+		{
+			rigidbody.SetPos(MyLibrary::LibVec3(15.0f, 12.0f, 0.0f));
+
+			m_angle = 1.5f;
+
+			cEnterPos = false;
+		}
+
 
 		//回避で移動する距離
 		m_moveVector = VScale(VGet(sinf(m_angle), 0.0f, cosf(m_angle)), cMove);
@@ -1212,6 +1224,8 @@ void Player::Action(VECTOR restpos, Tool& tool, Shield& shield)
 		if (m_xpad.Buttons[15] == 1)
 		{
 			m_animChange.sa_bossEnter = true;
+
+			cEnterPos = true;
 		}
 	}
 	
@@ -1549,6 +1563,13 @@ void Player::Draw(Armor& armor)
 	DrawFormatString(1000, 550, 0xffffff, "taking : %d", m_animChange.sa_taking);
 	DrawFormatString(1000, 650, 0xffffff, "touch : %d", m_animChange.sa_touch);
 #endif
+#if false
+	DrawFormatString(1000, 150, 0xffffff, "posx : %f", rigidbody.GetPos().x);   //15
+	DrawFormatString(1000, 200, 0xffffff, "posy : %f", rigidbody.GetPos().y);   //12
+	DrawFormatString(1000, 250, 0xffffff, "posz : %f", rigidbody.GetPos().z);   //0
+	DrawFormatString(1000, 300, 0xffffff, "m_angle : %f", m_angle);             //1.5
+#endif
+
 #if false
 	DrawFormatString(0, 400, 0xffffff, "m_nowAnim : %d", m_nowAnimIdx);
 	DrawFormatString(0, 500, 0xffffff, "m_nowSpeed : %f", m_nowFrame);

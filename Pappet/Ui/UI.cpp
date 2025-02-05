@@ -5,6 +5,7 @@
 #include "Character/Player.h"
 #include "Manager/EnemyManager.h"
 #include "Manager/ItemManager.h"
+#include "Manager/MapManager.h"
 #include "Item/Tool.h"
 
 namespace
@@ -122,7 +123,7 @@ void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map,
 			DrawFormatString(700, 820, 0xffffff, "”’‚¢Œõ‚Ì’†‚É“ü‚é");
 		}
 		//ƒ[ƒv
-		else if (player.GetWarp())
+		else if (map.GetCore())
 		{
 			DrawFormatString(750, 820, 0xffffff, "“]ˆÚ‚·‚é");
 		}
@@ -271,23 +272,23 @@ void UI::EquipmentUIDraw(Weapon& weapon, Shield& shield, Armor& armor, Tool& too
 	if (weapon.GetFist())
 	{
 		//Œ
-		DrawGraph(5, 700, m_fist, true);
+		DrawGraph(305, 700, m_fist, true);
 	}
 	else if (weapon.GetBlack())
 	{
 		//•‚¢Œ•
-		DrawGraph(20, 700, m_blackSword, true);
+		DrawGraph(317, 700, m_blackSword, true);
 	}
 	//¶•Ší
 	if (shield.GetFist())
 	{
 		//Œ
-		DrawGraph(305, 700, m_fist, true);
+		DrawGraph(5, 700, m_fist, true);
 	}
 	else if (shield.GetUgly())
 	{
 		//X‚¢‚
-		DrawGraph(317, 720, m_uglyShield, true);
+		DrawGraph(20, 720, m_uglyShield, true);
 	}
 	//–h‹ï
 	if (armor.GetBody())
@@ -525,5 +526,7 @@ void UI::End()
 	DeleteGraph(m_statusIcon);
 	DeleteGraph(m_equipmentFrame);
 	DeleteGraph(m_actionUI);
+	DeleteGraph(m_itemTaking);
 	DeleteGraph(m_yButton);
+	DeleteGraph(m_bButton);
 }

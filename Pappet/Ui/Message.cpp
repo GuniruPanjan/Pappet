@@ -17,7 +17,8 @@ Message::Message() :
 	m_one(0),
 	m_two(0),
 	m_three(0),
-	m_draw(false)
+	m_draw(false),
+	m_can(false)
 {
 	
 }
@@ -79,17 +80,17 @@ void Message::Draw()
 	}
 
 	//à–¾•`‰æ
-	if (m_draw)
-	{
-		if (m_official)
-		{
-			int a = 1;
-		}
-		else
-		{
+	//if (m_draw)
+	//{
+	//	if (m_official)
+	//	{
+	//		int a = 1;
+	//	}
+	//	else
+	//	{
 
-		}
-	}
+	//	}
+	//}
 }
 
 void Message::End()

@@ -211,6 +211,7 @@ void GameManager::Update()
 				m_bossEnd.sBear = true;
 			}
 
+			//ƒ[ƒv‚·‚é
 			if (m_pMap->GetCore())
 			{
 				m_pPlayer->WarpMap();

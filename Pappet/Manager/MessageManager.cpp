@@ -2,6 +2,11 @@
 #include "External/CsvLoad.h"
 #include "Manager/GameManager.h"
 
+namespace
+{
+	bool cMessage = false;
+}
+
 MessageManager::MessageManager() :
 	m_stageName("")
 {
@@ -89,8 +94,11 @@ void MessageManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameMan
 
 void MessageManager::Draw()
 {
-	//生成される前にここが動く事で例外スローされる
-	m_pMessage->Draw();
+	if (cMessage)
+	{
+		//生成される前にここが動く事で例外スローされる
+		m_pMessage->Draw();
+	}
 }
 
 void MessageManager::End()
@@ -101,4 +109,6 @@ void MessageManager::CreateMessage(float posx, float posy, float posz, bool offi
 {
 	m_pMessage = std::make_shared<Message>();
 	m_pMessage->Init(posx, posy, posz, official, one, two, three, physics);
+	//m_pMessage->SetCan(true);
+	cMessage = true;
 }
