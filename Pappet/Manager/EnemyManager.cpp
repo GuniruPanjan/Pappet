@@ -170,7 +170,6 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 		//“G‚ÌXV‚·‚é
 		for (auto& enemy : m_pEnemys)
 		{
-			//‚±‚±‚Å–³ŒÀ‚ÉŒJ‚è•Ô‚µ‚Ä‚¢‚éƒoƒO
 			enemy->Update(playerPos, shieldPos, isPlayerChase, se);
 
 			m_enemyPos.emplace_back(enemy->GetPos());

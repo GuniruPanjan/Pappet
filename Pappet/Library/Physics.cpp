@@ -163,6 +163,9 @@ void MyLibrary::Physics::Update()
 
 	//当たり判定チェック（nextPos指定）
 	CheckCollide();
+	CheckCollide1();
+	CheckCollide2();
+	CheckCollide3();
 
 	for (auto& item : m_collidables)
 	{
@@ -185,6 +188,8 @@ void MyLibrary::Physics::Update()
 		{
 			continue;
 		}
+
+		//敵キャラだけ一番最初に作られたやつ以外は落ちて最後に作ったキャラは落ちない感じになっているバグ
 
 		//壁と床の当たり判定を行う
 		CheckWallAndFloor(item);
@@ -263,6 +268,246 @@ void MyLibrary::Physics::CheckCollide()
 					for (const auto& colB : objB->m_colliders)
 					{
 						if (!IsCollide(objA->rigidbody, objB->rigidbody, colA.get(), colB.get())) continue;
+
+						bool isTrigger = colA->IsTrigger() || colB->IsTrigger();
+
+						if (isTrigger)
+						{
+							AddNewCollideInfo(objA, objB, m_newTriggerInfo);
+						}
+						else
+						{
+							AddNewCollideInfo(objA, objB, m_newCollideInfo);
+						}
+
+						//Triggerの場合は位置補正はしない
+						if (isTrigger) continue;
+
+						auto primary = objA;
+						auto secondary = objB;
+
+						if (primary == secondary)
+						{
+							break;
+						}
+
+						auto primaryCollider = colA;
+						auto secondaryCollider = colB;
+						if (objA->priority < objB->priority)
+						{
+							primary = objB;
+							secondary = objA;
+							primaryCollider = colB;
+							secondaryCollider = colA;
+						}
+
+						FixNextPosition(primary->rigidbody, secondary->rigidbody, primaryCollider.get(), secondaryCollider.get());
+						//位置補正をしたらもう一度初めから行う
+						doCheck = true;
+						break;
+					}
+					if (doCheck) break;
+				}
+				if (doCheck) break;
+			}
+			if (doCheck) break;
+		}
+		if (doCheck && checkCount > 800)
+		{
+#if _DEBUG
+			printfDx("規定回数を超えました");
+#endif
+			break;
+		}
+	}
+}
+
+void MyLibrary::Physics::CheckCollide1()
+{
+	std::vector<OnCollideInfoData> onCollideInfo;
+	//衝突通知、ポジション補正
+	bool doCheck = true;
+	int checkCount = 0;     //チャック回数
+	while (doCheck)
+	{
+		doCheck = false;
+		checkCount++;
+
+		//2重ループで全オブジェクト当たり判定
+		//FIXME : 重いので近いオブジェクト同士のみ当たり判定するなど工夫がいる
+		for (const auto& objA : m_collidables)
+		{
+			for (const auto& objB : m_collidables)
+			{
+				//同一オブジェクトなら早期リターン
+				if (objA == objB)
+					continue;
+
+				for (const auto& colA : objA->m_colliders)
+				{
+					for (const auto& colB : objB->m_colliders)
+					{
+						if (!IsCollide1(objA->rigidbody, objB->rigidbody, colA.get(), colB.get())) continue;
+
+						bool isTrigger = colA->IsTrigger() || colB->IsTrigger();
+
+						if (isTrigger)
+						{
+							AddNewCollideInfo(objA, objB, m_newTriggerInfo);
+						}
+						else
+						{
+							AddNewCollideInfo(objA, objB, m_newCollideInfo);
+						}
+
+						//Triggerの場合は位置補正はしない
+						if (isTrigger) continue;
+
+						auto primary = objA;
+						auto secondary = objB;
+
+						if (primary == secondary)
+						{
+							break;
+						}
+
+						auto primaryCollider = colA;
+						auto secondaryCollider = colB;
+						if (objA->priority < objB->priority)
+						{
+							primary = objB;
+							secondary = objA;
+							primaryCollider = colB;
+							secondaryCollider = colA;
+						}
+
+						FixNextPosition(primary->rigidbody, secondary->rigidbody, primaryCollider.get(), secondaryCollider.get());
+						//位置補正をしたらもう一度初めから行う
+						doCheck = true;
+						break;
+					}
+					if (doCheck) break;
+				}
+				if (doCheck) break;
+			}
+			if (doCheck) break;
+		}
+		if (doCheck && checkCount > 800)
+		{
+#if _DEBUG
+			printfDx("規定回数を超えました");
+#endif
+			break;
+		}
+	}
+}
+
+void MyLibrary::Physics::CheckCollide2()
+{
+	std::vector<OnCollideInfoData> onCollideInfo;
+	//衝突通知、ポジション補正
+	bool doCheck = true;
+	int checkCount = 0;     //チャック回数
+	while (doCheck)
+	{
+		doCheck = false;
+		checkCount++;
+
+		//2重ループで全オブジェクト当たり判定
+		//FIXME : 重いので近いオブジェクト同士のみ当たり判定するなど工夫がいる
+		for (const auto& objA : m_collidables)
+		{
+			for (const auto& objB : m_collidables)
+			{
+				//同一オブジェクトなら早期リターン
+				if (objA == objB)
+					continue;
+
+				for (const auto& colA : objA->m_colliders)
+				{
+					for (const auto& colB : objB->m_colliders)
+					{
+						if (!IsCollide2(objA->rigidbody, objB->rigidbody, colA.get(), colB.get())) continue;
+
+						bool isTrigger = colA->IsTrigger() || colB->IsTrigger();
+
+						if (isTrigger)
+						{
+							AddNewCollideInfo(objA, objB, m_newTriggerInfo);
+						}
+						else
+						{
+							AddNewCollideInfo(objA, objB, m_newCollideInfo);
+						}
+
+						//Triggerの場合は位置補正はしない
+						if (isTrigger) continue;
+
+						auto primary = objA;
+						auto secondary = objB;
+
+						if (primary == secondary)
+						{
+							break;
+						}
+
+						auto primaryCollider = colA;
+						auto secondaryCollider = colB;
+						if (objA->priority < objB->priority)
+						{
+							primary = objB;
+							secondary = objA;
+							primaryCollider = colB;
+							secondaryCollider = colA;
+						}
+
+						FixNextPosition(primary->rigidbody, secondary->rigidbody, primaryCollider.get(), secondaryCollider.get());
+						//位置補正をしたらもう一度初めから行う
+						doCheck = true;
+						break;
+					}
+					if (doCheck) break;
+				}
+				if (doCheck) break;
+			}
+			if (doCheck) break;
+		}
+		if (doCheck && checkCount > 800)
+		{
+#if _DEBUG
+			printfDx("規定回数を超えました");
+#endif
+			break;
+		}
+	}
+}
+
+void MyLibrary::Physics::CheckCollide3()
+{
+	std::vector<OnCollideInfoData> onCollideInfo;
+	//衝突通知、ポジション補正
+	bool doCheck = true;
+	int checkCount = 0;     //チャック回数
+	while (doCheck)
+	{
+		doCheck = false;
+		checkCount++;
+
+		//2重ループで全オブジェクト当たり判定
+		//FIXME : 重いので近いオブジェクト同士のみ当たり判定するなど工夫がいる
+		for (const auto& objA : m_collidables)
+		{
+			for (const auto& objB : m_collidables)
+			{
+				//同一オブジェクトなら早期リターン
+				if (objA == objB)
+					continue;
+
+				for (const auto& colA : objA->m_colliders)
+				{
+					for (const auto& colB : objB->m_colliders)
+					{
+						if (!IsCollide3(objA->rigidbody, objB->rigidbody, colA.get(), colB.get())) continue;
 
 						bool isTrigger = colA->IsTrigger() || colB->IsTrigger();
 
@@ -399,8 +644,22 @@ bool MyLibrary::Physics::IsCollide(const Rigidbody& rigidA, const Rigidbody& rig
 
 		isCollide = sqLen < ar;
 	}
+	
+	
+	
+
+	return isCollide;
+}
+
+bool MyLibrary::Physics::IsCollide1(const Rigidbody& rigidA, const Rigidbody& rigidB, CollidableData* colliderA, CollidableData* colliderB) const
+{
+	bool isCollide = false;
+
+	auto kindA = colliderA->GetKind();
+	auto kindB = colliderB->GetKind();
+
 	//カプセルと球体の当たり判定
-	if(kindA == MyLibrary::CollidableData::Kind::Capsule && kindB == MyLibrary::CollidableData::Kind::Sphere)
+	if (kindA == MyLibrary::CollidableData::Kind::Capsule && kindB == MyLibrary::CollidableData::Kind::Sphere)
 	{
 		auto colA = dynamic_cast<MyLibrary::CollidableDataCapsule*>(colliderA);
 		auto colB = dynamic_cast<MyLibrary::CollidableDataSphere*>(colliderB);
@@ -433,6 +692,17 @@ bool MyLibrary::Physics::IsCollide(const Rigidbody& rigidA, const Rigidbody& rig
 
 		isCollide = sqLen < radius;
 	}
+
+	return isCollide;
+}
+
+bool MyLibrary::Physics::IsCollide2(const Rigidbody& rigidA, const Rigidbody& rigidB, CollidableData* colliderA, CollidableData* colliderB) const
+{
+	bool isCollide = false;
+
+	auto kindA = colliderA->GetKind();
+	auto kindB = colliderB->GetKind();
+
 	//矩形とカプセルの当たり判定
 	if (kindA == MyLibrary::CollidableData::Kind::Rect && kindB == MyLibrary::CollidableData::Kind::Capsule)
 	{
@@ -463,6 +733,17 @@ bool MyLibrary::Physics::IsCollide(const Rigidbody& rigidA, const Rigidbody& rig
 		//判定
 		isCollide = isHitX && isHitY && isHitZ;
 	}
+
+	return isCollide;
+}
+
+bool MyLibrary::Physics::IsCollide3(const Rigidbody& rigidA, const Rigidbody& rigidB, CollidableData* colliderA, CollidableData* colliderB) const
+{
+	bool isCollide = false;
+
+	auto kindA = colliderA->GetKind();
+	auto kindB = colliderB->GetKind();
+
 	//矩形と球体の当たり判定
 	if (kindA == MyLibrary::CollidableData::Kind::Rect && kindB == MyLibrary::CollidableData::Kind::Sphere)
 	{
@@ -817,7 +1098,7 @@ void MyLibrary::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 			m_ret = VScale(m_pPoly->Normal, 3.0f);
 
 			//進行方向ベクトルと壁ポリゴンの法線ベクトルに垂直なベクトルを算出
-			SlideVec = MyLibrary::LibVec3(ret.x, ret.y, ret.z);
+			SlideVec = MyLibrary::LibVec3(ret.x, 0, ret.z);
 
 			//それを移動前の座標に足したものを新たな座標とする
 			col->rigidbody.SetNextPos(col->rigidbody.GetPos() + SlideVec);

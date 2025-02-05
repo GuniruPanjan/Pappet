@@ -22,6 +22,8 @@ void MessageManager::Init(const char* stageName)
 
 	m_stageName = stageName;
 
+	cMessage = false;
+
 	//メッセージ生成情報を取得する
 	CsvLoad::GetInstance().MessageDataLoad(m_stageName, m_pGenerateInfo);
 
