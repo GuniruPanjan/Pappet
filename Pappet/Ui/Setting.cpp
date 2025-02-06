@@ -286,7 +286,7 @@ void Setting::Update()
 /// <summary>
 /// メニュー更新処理
 /// </summary>
-void Setting::MenuUpdate()
+void Setting::MenuUpdate(Player& player)
 {
 	//パッド入力所得
 	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
@@ -332,6 +332,8 @@ void Setting::MenuUpdate()
 			if (selectDecision == 9)
 			{
 				m_returnMenu = false;
+
+				player.SetRoll(0);
 			}
 			//タイトルに戻る
 			if (selectDecision == 10)
@@ -351,6 +353,9 @@ void Setting::MenuUpdate()
 			m_returnMenu = false;
 			//リセット
 			cWaitTime = 0;
+
+			player.SetRoll(0);
+
 		}
 	}
 	else

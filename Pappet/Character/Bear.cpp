@@ -112,7 +112,7 @@ void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::P
 	//Å‘åHP‚ðŽæ“¾
 	m_maxHP = m_status.s_hp;
 
-	m_status.s_hp = 1.0f;
+	//m_status.s_hp = 1.0f;
 
 	m_bossName = "ŒF‚Ì˜ø™SlŒ`";
 	m_subName = "H A R I B O";
@@ -121,6 +121,8 @@ void Bear::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrary::P
 	m_deadOne = false;
 
 	m_walk = 0;
+
+	m_bossjudg = true;
 }
 
 /// <summary>
@@ -169,6 +171,8 @@ void Bear::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 	m_deadOne = false;
 
 	m_walk = 0;
+
+	m_bossjudg = true;
 }
 
 /// <summary>

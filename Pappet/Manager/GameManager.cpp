@@ -157,17 +157,24 @@ void GameManager::Update()
 
 		m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
-		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, *m_pEnemy, *m_pCore, m_pMap->GetRestPos(), *m_pTool, *m_pSe);
+		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, *m_pEnemy, *m_pCore, m_pMap->GetRestPos(), *m_pTool, *m_pSe, m_pMap->GetBossRoom());
+
 		//ロックオンしてない時
 		if (!m_pPlayer->GetLock())
 		{
 			m_pCamera->Update(*m_pPlayer);
+		}
+		//ボス部屋に入ったらボスをロックオンするようにする
+		else if (m_pMap->GetBossRoom() && m_pPlayer->GetLock() && !m_pEnemy->GetBossDead())
+		{
+			m_pCamera->LockBossUpdate(*m_pPlayer, *m_pEnemy);
 		}
 		//ロックオンしてる時
 		else if (m_pPlayer->GetLock())
 		{
 			m_pCamera->LockUpdate(*m_pPlayer, *m_pEnemy);
 		}
+		
 
 		m_pItem->Update(m_pPhysics, this, m_pPlayer->GetTaking());
 		m_pMessage->Update(m_pPhysics, this, *m_pPlayer);
@@ -227,7 +234,7 @@ void GameManager::Update()
 		//メニューを開く
 		if (m_pPlayer->GetMenu() && !m_pSetting->GetEquipment() && !m_pSetting->GetItem())
 		{
-			m_pSetting->MenuUpdate();
+			m_pSetting->MenuUpdate(*m_pPlayer);
 
 			m_title = m_pSetting->GetTitle();
 

@@ -112,6 +112,7 @@ void MapRest::Init(std::shared_ptr<MyLibrary::Physics> physics)
 std::shared_ptr<MapBase> MapRest::Update(bool warp, bool enter, bool Dead)
 {
 	m_pSearch->Update(m_mapRestPos);
+	m_pCore->Update(m_mapCoreCollisionePos);
 
 	if (cEffectPlay >= 500)
 	{

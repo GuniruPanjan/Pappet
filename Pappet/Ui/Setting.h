@@ -67,7 +67,7 @@ public:
 	/// <summary>
 	/// メニューの更新処理
 	/// </summary>
-	void MenuUpdate();
+	void MenuUpdate(Player& player);
 
 	/// <summary>
 	/// ステータス画面を変える更新処理

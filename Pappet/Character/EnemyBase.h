@@ -83,6 +83,8 @@ public:
 	bool SetBossRoom(bool set) { return m_isBossDiscovery = set; }
 	//ボスの死んだ判定
 	bool GetBossDead() { return m_isBossDead; }
+	
+	bool GetBossJudg() { return m_bossjudg; }
 
 protected:
 	//ほかのオブジェクトと押し出し判定をする当たり判定を作成
@@ -167,6 +169,7 @@ protected:
 	bool m_isExitTarget = false; //プレイヤーの索敵から外れたかどうか
 	bool m_isEnterHit = false;   //プレイヤーの攻撃が当たっているかどうか
 	bool m_isExitHit = false;    //プレイヤーの攻撃が外れたかどうか
+	bool m_bossjudg = false;     //ボスかの判断
 
 	MyLibrary::LibVec3 m_centerPos;     //中心座標
 	VECTOR m_move;

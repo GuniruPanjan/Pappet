@@ -308,7 +308,7 @@ void Player::Finalize()
 	m_pSearch->Finalize(m_pPhysics);
 }
 
-void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool, SEManager& se)
+void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool, SEManager& se, bool boss)
 {
 	//とりあえずやっとく
 	m_status.s_core = core.GetCore();
@@ -597,7 +597,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			if (!m_animChange.sa_avoidance && !m_anim.s_hit && !m_animChange.sa_recovery && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact
 				&& !m_rest && !m_animChange.sa_strengthAttack)
 			{
-				Action(restpos, tool, shield, se);
+				Action(restpos, tool, shield, se, boss);
 			}
 		}
 
@@ -996,42 +996,76 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 /// <summary>
 /// プレイヤーのアクション実装
 /// </summary>
-void Player::Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se)
+void Player::Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, bool boss)
 {
-	//ターゲットできる時
-	if (!m_lockonTarget && m_pSearch->GetIsStay())
+	
+	if (boss)
 	{
-		//一回だけ押す
-		if (m_xpad.Buttons[7] == 1 && !cRstickButton)
+		if (!m_lockonTarget)
 		{
-			m_lockonTarget = true;
-			cRstickButton = true;
+			//一回だけ押す
+			if (m_xpad.Buttons[7] == 1 && !cRstickButton)
+			{
+				m_lockonTarget = true;
+				cRstickButton = true;
+			}
+			else if (m_xpad.Buttons[7] == 0)
+			{
+				cRstickButton = false;
+			}
 		}
-		else if(m_xpad.Buttons[7] == 0)
+		else if (m_lockonTarget)
 		{
-			cRstickButton = false;
+			//一回だけ押す
+			if (m_xpad.Buttons[7] == 1 && !cRstickButton)
+			{
+				m_lockonTarget = false;
+				cRstickButton = true;
+			}
+			else if (m_xpad.Buttons[7] == 0)
+			{
+				cRstickButton = false;
+			}
 		}
 	}
-	//ターゲットを外す
-	else if (m_lockonTarget == true && m_pSearch->GetIsStay())
+	else
 	{
-		//一回だけ押す
-		if (m_xpad.Buttons[7] == 1 && !cRstickButton)
+		//ターゲットできる時
+		if (!m_lockonTarget && m_pSearch->GetIsStay())
+		{
+			//一回だけ押す
+			if (m_xpad.Buttons[7] == 1 && !cRstickButton)
+			{
+				m_lockonTarget = true;
+				cRstickButton = true;
+			}
+			else if (m_xpad.Buttons[7] == 0)
+			{
+				cRstickButton = false;
+			}
+		}
+		//ターゲットを外す
+		else if (m_lockonTarget == true && m_pSearch->GetIsStay())
+		{
+			//一回だけ押す
+			if (m_xpad.Buttons[7] == 1 && !cRstickButton)
+			{
+				m_lockonTarget = false;
+				cRstickButton = true;
+			}
+			else if (m_xpad.Buttons[7] == 0)
+			{
+				cRstickButton = false;
+			}
+		}
+		//ターゲットを無理やり外す
+		else if (m_pSearch->GetIsExit())
 		{
 			m_lockonTarget = false;
-			cRstickButton = true;
-		}
-		else if (m_xpad.Buttons[7] == 0)
-		{
 			cRstickButton = false;
 		}
 	}
-	//ターゲットを無理やり外す
-	else if (m_pSearch->GetIsExit())
-	{
-		m_lockonTarget = false;
-		cRstickButton = false;
-	}
+	
 
 	//Aボタンが押されたらダッシュか回避
 	//スタミナがあれば

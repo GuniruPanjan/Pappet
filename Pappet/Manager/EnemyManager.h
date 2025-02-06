@@ -68,10 +68,11 @@ public:
 	const std::list<float> GetEnemyDamage() const { return m_damage; }
 	//コア取得
 	const std::list<int> GetDropCore() const { return m_dropCore; }
-	//プレイヤーが入ったかを判断する
 	bool SetBossRoom(bool set);
 	//ボスが死んだかの判定
 	bool GetBossDead();
+	//ボスかの判断
+	const std::list<bool> GetJudg() const { return m_bossJudg; }
 private:
 	//敵の生成
 	void CreateEnemy(float posX, float posY, float posZ, std::string name, std::shared_ptr<MyLibrary::Physics> physics);
@@ -107,5 +108,7 @@ private:
 	std::list<float> m_damage;
 	//コア取得
 	std::list<int> m_dropCore;
+	//ボスかの判断
+	std::list<bool> m_bossJudg;
 };
 

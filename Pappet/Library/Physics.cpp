@@ -26,6 +26,9 @@ namespace
 	const int kBeforePlanColor = 0x00ff00;
 	//ï‚ê≥å„èÓïÒêF
 	const int kAfterColor = 0xffff00;
+
+	float cSlidex = 0.0f;
+	float cSlidez = 0.0f;
 }
 
 /// <summary>
@@ -854,24 +857,32 @@ void MyLibrary::Physics::FixNextPosition(const Rigidbody& primaryRigid, Rigidbod
 		if (secondaryRigid.GetDirVECTOR().x <= -0.6f)
 		{
 			z = -slide;
+
+			cSlidez = -1.0f;
 		}
 		else if (secondaryRigid.GetDirVECTOR().x >= 0.6f)
 		{
 			z = slide;
+
+			cSlidez = 1.0f;
 		}
 
 		if (secondaryRigid.GetDirVECTOR().z <= -0.6f)
 		{
 			x = -slide;
+
+			cSlidex = -1.0f;
 		}
 		else if (secondaryRigid.GetDirVECTOR().z >= 0.6f)
 		{
 			x = slide;
+
+			cSlidex = 1.0f;
 		}
 
 		ret = VCross(secondaryRigid.GetVelocityVECTOR(), VGet(x, y, z));
 
-		SlideVec = MyLibrary::LibVec3(ret.x, ret.y, ret.z);
+		SlideVec = MyLibrary::LibVec3(ret.x + cSlidex, ret.y, ret.z + cSlidez);
 
 		secondaryRigid.SetNextPos(secondaryRigid.GetPos() + SlideVec);
 	}

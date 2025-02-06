@@ -24,6 +24,8 @@ public:
 	void Update(Player& player);
 	//ロックオン処理
 	void LockUpdate(Player& player, EnemyManager& enemy);
+	//ボスのロックオン処理
+	void LockBossUpdate(Player& player, EnemyManager& enemy);
 	//描画処理
 	void Draw();
 	//終了処理

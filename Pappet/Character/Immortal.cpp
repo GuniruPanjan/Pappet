@@ -109,6 +109,8 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 	m_anim.s_isDead = false;
 	cDead = false;
 	m_deadOne = false;
+
+	m_bossjudg = false;
 }
 
 /// <summary>
@@ -151,6 +153,9 @@ void Immortal::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLi
 	m_anim.s_isDead = false;
 	cDead = false;
 	m_deadOne = false;
+
+	m_bossjudg = false;
+
 }
 
 /// <summary>
