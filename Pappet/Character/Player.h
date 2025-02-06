@@ -119,6 +119,8 @@ public:
 	//死亡関係
 	bool GetDead() { return m_deadReset; }
 
+	int SetRoll(int set) { return m_notRoll = set; }
+
 	//ステータス関係
 	Status GetStatus() { return m_status; }
 	LevelUpStatus GetLevelStatus() { return m_levelStatus; }
@@ -189,6 +191,7 @@ private:
 	int m_moveAnimFrameRight;
 	int m_moveAnimShieldFrameIndex;     //盾を構えるときのアニメーションのフレーム取得
 	int m_moveAnimShieldFrameHandIndex;
+	int m_notRoll;                      //ローリングできないようにする
 	MATRIX m_moveWeaponFrameMatrix;     //武器をアタッチするフレームのローカル座標をワールド変換行列を取得する
 	MATRIX m_moveShieldFrameMatrix;
 	VECTOR m_rollMove;                  //回避で移動する距離

@@ -522,10 +522,19 @@ void Setting::RestUpdate(Player& player, CoreManager& core)
 				if (selectDecision == 10)
 				{
 					player.SetNotRest(false);
+
+					player.SetRoll(0);
 				}
 
 				//ƒŠƒZƒbƒg
 				cWaitTime = 0;
+			}
+
+			if (m_xpad.Buttons[13] == 1)
+			{
+				PlaySoundMem(pse->GetButtonSE(), DX_PLAYTYPE_BACK, true);
+
+				player.SetNotRest(false);
 			}
 		}
 		else

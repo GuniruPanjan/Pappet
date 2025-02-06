@@ -125,7 +125,8 @@ Player::Player() :
 	m_moveVector(VGet(0.0f,0.0f,0.0f)),
 	m_shieldPos(),
 	m_shieldSize(),
-	m_shieldSearchPos()
+	m_shieldSearchPos(),
+	m_notRoll(0)
 {
 
 	//カプセル型
@@ -1058,17 +1059,24 @@ void Player::Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se)
 
 		m_status.s_speed = cWalkSpeed;
 
-		//回避に必要なスタミナがある場合
-		if (m_status.s_stamina >= 20 && !m_staminaBreak)
+		if (m_notRoll >= 10)
 		{
-			//回避
-		    //離した瞬間
-			if (cAbutton > 0 && cAbutton < 30 && m_animChange.sa_avoidance == false)
+			//回避に必要なスタミナがある場合
+			if (m_status.s_stamina >= 20 && !m_staminaBreak)
 			{
-				m_status.s_stamina -= 20;
+				//回避
+				//離した瞬間
+				if (cAbutton > 0 && cAbutton < 30 && m_animChange.sa_avoidance == false)
+				{
+					m_status.s_stamina -= 20;
 
-				m_animChange.sa_avoidance = true;
+					m_animChange.sa_avoidance = true;
+				}
 			}
+		}
+		else
+		{
+			m_notRoll++;
 		}
 		
 
@@ -1589,7 +1597,7 @@ void Player::Draw(Armor& armor)
 	DrawFormatString(1000, 550, 0xffffff, "taking : %d", m_animChange.sa_taking);
 	DrawFormatString(1000, 650, 0xffffff, "touch : %d", m_animChange.sa_touch);
 #endif
-#if true
+#if false
 	DrawFormatString(1000, 150, 0xffffff, "posx : %f", rigidbody.GetPos().x);   //15
 	DrawFormatString(1000, 200, 0xffffff, "posy : %f", rigidbody.GetPos().y);   //12
 	DrawFormatString(1000, 250, 0xffffff, "posz : %f", rigidbody.GetPos().z);   //0
