@@ -126,7 +126,6 @@ std::shared_ptr<MapBase> MapFirst::Update(bool warp, bool enter, bool Dead)
 	m_pSearch->Update(m_mapRestPos);
 	m_pBossRoom->Update(m_mapBossRoomPos);
 	m_pRect->Update(m_mapBossEnterPos, size);
-	m_pCore->Update(m_mapCoreCollisionePos);
 	m_pRectTrigger->Update(m_mapBossEnterTriggerPos, triggerSize);
 
 	//ƒ{ƒX‚ªŽ€‚ñ‚¾‚Æ‚«
@@ -135,6 +134,12 @@ std::shared_ptr<MapBase> MapFirst::Update(bool warp, bool enter, bool Dead)
 		m_mapBossRoomPos = MyLibrary::LibVec3(-80.0f, 400.0f, 0.0f);
 		m_mapBossEnterTriggerPos = MyLibrary::LibVec3(10.0f, 400.0f, 0.0f);
 
+		m_pCore->Update(m_mapCoreCollisionePos);
+
+	}
+	else if (!Dead)
+	{
+		m_pCore->Update(MyLibrary::LibVec3(-1000.0f, -1000.0f, -1000.0f));
 	}
 
 	if (enter || Dead)

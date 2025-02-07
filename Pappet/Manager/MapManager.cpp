@@ -1,5 +1,6 @@
 #include "MapManager.h"
 #include "Map/MapFirst.h"
+#include "Map/MapRest.h"
 
 /// <summary>
 /// コンストラクタ
@@ -20,12 +21,23 @@ MapManager::~MapManager()
 /// <summary>
 /// データの初期化
 /// </summary>
-void MapManager::DataInit()
+void MapManager::DataInit(int map)
 {
-	//最初のシーンのメモリを解放する
-	m_pMap = std::make_shared<MapFirst>();
+	if (map == 0)
+	{
+		//最初のシーンのメモリを解放する
+		m_pMap = std::make_shared<MapRest>();
 
-	m_pMap->DataInit();
+		m_pMap->DataInit();
+	}
+	else if (map == 1)
+	{
+		//最初のシーンのメモリを解放する
+		m_pMap = std::make_shared<MapFirst>();
+
+		m_pMap->DataInit();
+	}
+	
 }
 
 /// <summary>

@@ -65,13 +65,13 @@ void Camera::Update(Player& player)
 	//左キー
 	if (input.Rx < 0)
 	{
-		m_cameraAngle.y -= D2R(1.0f);
+		m_cameraAngle.y -= D2R(2.0f);
 
 	}
 	//右キー
 	if (input.Rx > 0)
 	{
-		m_cameraAngle.y += D2R(1.0f);
+		m_cameraAngle.y += D2R(2.0f);
 
 	}
 	//上キー
@@ -80,7 +80,7 @@ void Camera::Update(Player& player)
 		//カメラが地面にめりこまないように
 		if (m_cameraPos.y >= 15.2f + player.GetPos().y)
 		{
-			m_cameraAngle.x -= D2R(1.0f);
+			m_cameraAngle.x -= D2R(2.0f);
 		}
 
 	}
@@ -90,7 +90,7 @@ void Camera::Update(Player& player)
 		//カメラがプレイヤーを超えないくらいまで
 		if (m_cameraAngle.x <= 0.7f)
 		{
-			m_cameraAngle.x += D2R(1.0f);
+			m_cameraAngle.x += D2R(2.0f);
 		}
 	}
 

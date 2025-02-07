@@ -15,7 +15,7 @@ public:
 	virtual ~MapManager();
 
 	//データの初期化
-	void DataInit();
+	void DataInit(int map);
 	//初期化処理
 	void Init(std::shared_ptr<MyLibrary::Physics> physics);
 	//更新処理

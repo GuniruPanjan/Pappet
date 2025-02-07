@@ -62,7 +62,7 @@ void GameManager::Init()
 	cGameBGMOne = false;
 	cBossBGMOne = false;
 
-	m_pMap->DataInit();
+	m_pMap->DataInit(1);
 
 	m_pPhysics = std::make_shared<MyLibrary::Physics>(m_pMap->GetCollisionMap());
 
@@ -90,6 +90,8 @@ void GameManager::Init()
 	
 	m_pTool = std::make_shared<Tool>();
 	m_pTool->Init();
+
+	cWarp = false;
 
 	m_pBgm->GameOneInit();
 }

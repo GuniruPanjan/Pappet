@@ -882,7 +882,7 @@ void MyLibrary::Physics::FixNextPosition(const Rigidbody& primaryRigid, Rigidbod
 
 		ret = VCross(secondaryRigid.GetVelocityVECTOR(), VGet(x, y, z));
 
-		SlideVec = MyLibrary::LibVec3(ret.x + cSlidex, ret.y, ret.z + cSlidez);
+		SlideVec = MyLibrary::LibVec3(ret.x + 1.0f, ret.y, ret.z + 1.0f);
 
 		secondaryRigid.SetNextPos(secondaryRigid.GetPos() + SlideVec);
 	}

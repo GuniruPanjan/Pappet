@@ -4,19 +4,27 @@
 #include "Manager/SelectManager.h"
 #include "Map/Map.h"
 #include "Manager/MapManager.h"
+#include "Manager/EffectManager.h"
 
 namespace
 {
 	int selectDecision = 0;  //選択し、決定したもの
 
-	float cCameraTargetx = 485.0f;
-	float cCameraTargety = 80.0f;
-	float cCameraTargetz = -550.0f;
+	//float cCameraTargetx = 485.0f;
+	//float cCameraTargety = 80.0f;
+	//float cCameraTargetz = -550.0f;
+
+	float cCameraTargetx = -250.0f;
+	float cCameraTargety = 115.0f;
+	float cCameraTargetz = -270.0f;
+
+	bool cCameraTrun = false;
 
 	int cHandY = 600;
 
 	//シングルトン
 	auto& handle = HandleManager::GetInstance();
+	auto& cEffect = EffectManager::GetInstance();
 }
 
 /// <summary>
@@ -90,7 +98,8 @@ void SceneTitle::Init()
 	m_playerHandle = handle.GetModelHandle("Data/Player/PuppetPlayerModel.mv1");
 	m_anim = handle.GetModelHandle("Data/PlayerAnimation/JumpingDown.mv1");
 
-	m_pMap->DataInit();
+	m_pMap->DataInit(0);
+	cEffect.Init();
 
 	m_pPhysics = std::make_shared<MyLibrary::Physics>(m_pMap->GetCollisionMap());
 
@@ -107,7 +116,7 @@ void SceneTitle::Init()
 
 	m_playTime = 28.0f;
 
-	m_pos = VGet(485.0f, 0.0f, -800.0f);
+	m_pos = VGet(-145.0f, 0.0f, -270.0f);
 
 	m_select[0] = 1;
 	m_select[1] = 0;
@@ -118,7 +127,11 @@ void SceneTitle::Init()
 		m_pal[i] = 255;
 	}
 
-	m_cameraPos = VGet(550.0f, 20.0f, -450.0f);
+	cCameraTrun = false;
+
+
+	//m_cameraPos = VGet(550.0f, 20.0f, -450.0f);
+	m_cameraPos = VGet(-80.0f, 35.0f, 80.0f);
 	m_cameraTarget = VGet(cCameraTargetx, cCameraTargety, cCameraTargetz);
 
 	//設定関係
@@ -137,8 +150,29 @@ void SceneTitle::Init()
 /// <returns>シーンを返す</returns>
 std::shared_ptr<SceneBase> SceneTitle::Update()
 {
-
+	cEffect.Update();
 	m_pMap->Update(m_pPhysics, false, false, false);
+
+	//カメラ上下に動く用
+	if (cCameraTargety >= 140.0f)
+	{
+		cCameraTrun = false;
+	}
+	else if (cCameraTargety <= 100.0f)
+	{
+		cCameraTrun = true;
+	}
+
+	if (!cCameraTrun)
+	{
+		cCameraTargety -= 0.2f;
+	}
+	else if (cCameraTrun)
+	{
+		cCameraTargety += 0.2f;
+	}
+
+	m_cameraTarget = VGet(cCameraTargetx, cCameraTargety, cCameraTargetz);
 
 	if (m_pSetting->GetSettingScene() == false)
 	{
@@ -304,6 +338,7 @@ void SceneTitle::Draw()
 {
 	//pmap->Draw();
 	m_pMap->Draw();
+	cEffect.Draw();
 
 	MV1SetPosition(m_playerHandle, m_pos);
 
@@ -369,6 +404,8 @@ void SceneTitle::End()
 	m_pSetting->End();
 	m_pBgm->End();
 	pse->End();
+	m_pMap->End(m_pPhysics);
+	cEffect.End();
 
 	handle.Clear();
 }
