@@ -37,7 +37,7 @@ public:
 	//コアの描画
 	virtual void CoreDraw() = 0;
 	//終了
-	virtual void End(std::shared_ptr<MyLibrary::Physics> physics) = 0;
+	virtual void End(std::shared_ptr<MyLibrary::Physics> physics, bool title) = 0;
 
 	//終了処理
 	void MapEnd(std::shared_ptr<MyLibrary::Physics> physics);

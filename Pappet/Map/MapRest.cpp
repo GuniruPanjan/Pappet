@@ -182,7 +182,7 @@ void MapRest::CoreDraw()
 /// I—¹ˆ—
 /// </summary>
 /// <param name="physics"></param>
-void MapRest::End(std::shared_ptr<MyLibrary::Physics> physics)
+void MapRest::End(std::shared_ptr<MyLibrary::Physics> physics, bool title)
 {
 	//ƒƒ‚ƒŠ‰ğ•ú
 	MV1DeleteModel(m_handle);
@@ -190,5 +190,8 @@ void MapRest::End(std::shared_ptr<MyLibrary::Physics> physics)
 	MV1DeleteModel(m_coreHandle);
 	DeleteLightHandle(m_light);
 
-	Finalize(physics);
+	if (!title)
+	{
+		Finalize(physics);
+	}
 }

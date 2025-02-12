@@ -132,7 +132,7 @@ void MapManager::CoreDraw()
 /// <summary>
 /// I—¹ˆ—
 /// </summary>
-void MapManager::End(std::shared_ptr<MyLibrary::Physics> physics)
+void MapManager::End(std::shared_ptr<MyLibrary::Physics> physics, bool title)
 {
-	m_pMap->End(physics);
+	m_pMap->End(physics, title);
 }

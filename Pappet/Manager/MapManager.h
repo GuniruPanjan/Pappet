@@ -33,7 +33,7 @@ public:
 	//コアの描画
 	void CoreDraw();
 	//終了処理
-	void End(std::shared_ptr<MyLibrary::Physics> physics);
+	void End(std::shared_ptr<MyLibrary::Physics> physics, bool title);
 
 	//コリジョンマップを返す
 	int GetCollisionMap() { return m_pMap->GetCollisionMap(); }

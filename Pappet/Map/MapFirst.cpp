@@ -263,7 +263,7 @@ void MapFirst::CoreDraw()
 /// <summary>
 /// I—¹ˆ—
 /// </summary>
-void MapFirst::End(std::shared_ptr<MyLibrary::Physics> physics)
+void MapFirst::End(std::shared_ptr<MyLibrary::Physics> physics, bool title)
 {
 	//ƒƒ‚ƒŠ‰ğ•ú
 	MV1DeleteModel(m_handle);
@@ -271,5 +271,9 @@ void MapFirst::End(std::shared_ptr<MyLibrary::Physics> physics)
 	MV1DeleteModel(m_coreHandle);
 	DeleteLightHandle(m_light);
 
-	Finalize(physics);
+	if (!title)
+	{
+		Finalize(physics);
+	}
+	
 }

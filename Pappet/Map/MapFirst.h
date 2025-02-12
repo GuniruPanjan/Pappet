@@ -29,7 +29,7 @@ public:
 	//ÉRÉAï`âÊ
 	virtual void CoreDraw();
 	//èIóπ
-	virtual void End(std::shared_ptr<MyLibrary::Physics> physics);
+	virtual void End(std::shared_ptr<MyLibrary::Physics> physics, bool title);
 
 };
 
