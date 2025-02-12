@@ -54,8 +54,8 @@ public:
 	void Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* manager, Weapon& weapon, Shield& shield, Armor& armor, bool anim);
 	void GameInit(std::shared_ptr<MyLibrary::Physics> physics);
 	void Finalize();
-	void Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool, SEManager& se, bool boss);
-	void Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, bool boss);
+	void Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool, SEManager& se, bool boss, bool dead);
+	void Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, bool boss, bool dead);
 	void EffectAction();
 	void WarpMap();
 	void NotWeaponAnimation();
@@ -100,6 +100,7 @@ public:
 	bool SetItemPick(bool set) { return m_itemPick = set; }
 	bool GetItemPick() { return m_itemPick; }
 	bool GetTaking() { return m_animChange.sa_taking; }
+	float GetNowFrame() { return m_nowFrame; }
 
 	//メッセージ関係
 	bool SetMessegePick(bool set) { return m_message = set; }

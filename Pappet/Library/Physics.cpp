@@ -842,49 +842,79 @@ void MyLibrary::Physics::FixNextPosition(const Rigidbody& primaryRigid, Rigidbod
 	//矩形とカプセルとの当たり判定
 	else if (primaryKind == MyLibrary::CollidableData::Kind::Rect && secondaryKind == MyLibrary::CollidableData::Kind::Capsule)
 	{
-		/*↓多少バグがあるため今後も修正していく*/
+		auto rectCollider = dynamic_cast<MyLibrary::CollidableDataRect*>(primaryCollider);
+		auto capsuleCollider = dynamic_cast<MyLibrary::CollidableDataCapsule*>(secondaryCollider);
 
-		//外積を使って算出
-		MyLibrary::LibVec3 SlideVec;
+		//矩形と中心のカプセルの中心の相対位置を計算
+		auto rectCenter = primaryRigid.GetNextPos();
+		auto capsuleCenter = secondaryRigid.GetNextPos();
+		auto relativePos = capsuleCenter - rectCenter;
 
-		VECTOR ret;
-		float x = 0.0f;
-		float y = 0.0f;
-		float z = 0.0f;
+		//矩形のの半分のサイズを取得
+		auto halfSize = primaryRigid.GetSize() * 0.5f;
 
-		float slide = 15.0f;
+		//カプセルの半径を取得
+		float capsuleRadius = capsuleCollider->m_radius;
 
-		if (secondaryRigid.GetDirVECTOR().x <= -0.6f)
+		//押し出し方向を決定
+		LibVec3 pushDir;
+		if (fabs(relativePos.x) > fabs(relativePos.z))
 		{
-			z = -slide;
-
-			cSlidez = -1.0f;
+			//X方向に押し出す
+			pushDir = LibVec3((relativePos.x > 0 ? 1 : -1) * (halfSize.width + capsuleRadius - fabs(relativePos.x)), 0, 0);
 		}
-		else if (secondaryRigid.GetDirVECTOR().x >= 0.6f)
+		else
 		{
-			z = slide;
-
-			cSlidez = 1.0f;
-		}
-
-		if (secondaryRigid.GetDirVECTOR().z <= -0.6f)
-		{
-			x = -slide;
-
-			cSlidex = -1.0f;
-		}
-		else if (secondaryRigid.GetDirVECTOR().z >= 0.6f)
-		{
-			x = slide;
-
-			cSlidex = 1.0f;
+			//Z方向に押し出す
+			pushDir = LibVec3(0, 0, (relativePos.z > 0 ? 1 : -1) * (halfSize.depth + capsuleRadius - fabs(relativePos.z)));
 		}
 
-		ret = VCross(secondaryRigid.GetVelocityVECTOR(), VGet(x, y, z));
+		//新しい位置を設定
+		secondaryRigid.SetNextPos(capsuleCenter + pushDir);
 
-		SlideVec = MyLibrary::LibVec3(ret.x + 1.0f, ret.y, ret.z + 1.0f);
+		///*↓多少バグがあるため今後も修正していく*/
 
-		secondaryRigid.SetNextPos(secondaryRigid.GetPos() + SlideVec);
+		////外積を使って算出
+		//MyLibrary::LibVec3 SlideVec;
+
+		//VECTOR ret;
+		//float x = 0.0f;
+		//float y = 0.0f;
+		//float z = 0.0f;
+
+		//float slide = 15.0f;
+
+		//if (secondaryRigid.GetDirVECTOR().x <= -0.6f)
+		//{
+		//	z = -slide;
+
+		//	cSlidez = -1.0f;
+		//}
+		//else if (secondaryRigid.GetDirVECTOR().x >= 0.6f)
+		//{
+		//	z = slide;
+
+		//	cSlidez = 1.0f;
+		//}
+
+		//if (secondaryRigid.GetDirVECTOR().z <= -0.6f)
+		//{
+		//	x = -slide;
+
+		//	cSlidex = -1.0f;
+		//}
+		//else if (secondaryRigid.GetDirVECTOR().z >= 0.6f)
+		//{
+		//	x = slide;
+
+		//	cSlidex = 1.0f;
+		//}
+
+		//ret = VCross(secondaryRigid.GetVelocityVECTOR(), VGet(x, y, z));
+
+		//SlideVec = MyLibrary::LibVec3(ret.x + 1.0f, ret.y, ret.z + 1.0f);
+
+		//secondaryRigid.SetNextPos(secondaryRigid.GetPos() + SlideVec);
 	}
 
 }

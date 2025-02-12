@@ -10,12 +10,12 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	//名前変更
-	SetWindowText("PuppetNuclear");
+	SetWindowText("Puppet Graves");
 
 	//画面の大きさ
 	// windowモード設定
 	SetGraphMode(1600, 1000, 32);
-	ChangeWindowMode(true);
+	ChangeWindowMode(false);
 
 	SetWindowIconID(IDI_ICON1);    //アイコンの設定
 

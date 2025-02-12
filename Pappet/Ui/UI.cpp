@@ -138,7 +138,10 @@ void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map,
 	//ƒAƒCƒeƒ€‚ğæ‚Á‚½
 	if (player.GetTaking())
 	{
-		c_itemTakingUI = true;
+		if (player.GetNowFrame() == 2.0f)
+		{
+			c_itemTakingUI = true;
+		}
 	}
 
 	if (c_itemTakingUI)

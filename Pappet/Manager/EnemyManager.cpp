@@ -196,7 +196,7 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 			
 		}
 	}
-	
+
 }
 
 /// <summary>

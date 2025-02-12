@@ -159,8 +159,6 @@ void GameManager::Update()
 
 		m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
-		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, *m_pEnemy, *m_pCore, m_pMap->GetRestPos(), *m_pTool, *m_pSe, m_pMap->GetBossRoom());
-
 		//ロックオンしてない時
 		if (!m_pPlayer->GetLock())
 		{
@@ -181,6 +179,9 @@ void GameManager::Update()
 		m_pItem->Update(m_pPhysics, this, m_pPlayer->GetTaking());
 		m_pMessage->Update(m_pPhysics, this, *m_pPlayer);
 		m_pEnemy->Update(m_pPhysics, this, *m_pCore, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->GetShieldPos(), !m_pPlayer->IsGetPlayerDead(), *m_pSe, m_init);
+
+		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, *m_pEnemy, *m_pCore, m_pMap->GetRestPos(), *m_pTool, *m_pSe, m_pMap->GetBossRoom(), m_pEnemy->GetBossDead());
+
 
 		m_pMap->JudgeUpdate();
 
@@ -346,7 +347,7 @@ void GameManager::Update()
 	//ワープしたとき
 	else if (m_pPlayer->GetWarp())
 	{
-		m_pMap->WarpUpdate(m_pPhysics, m_pPlayer->GetWarp());
+		m_pMap->WarpUpdate(m_pPhysics, m_pPlayer->GetWarp(), false);
 
 		//一回だけ実行
 		if (!cOne)
@@ -483,7 +484,7 @@ void GameManager::End()
 {
 	m_pPlayer->End();
 	m_pCamera->End();
-	m_pMap->End(m_pPhysics);
+	m_pMap->End(m_pPhysics, false);
 	m_pSetting->End();
 	m_pEnemy->End();
 	m_pMessage->End();

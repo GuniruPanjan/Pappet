@@ -228,7 +228,7 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 				//ゲームスタート
 				if (selectDecision == 8)
 				{
-					m_pMap->End(m_pPhysics);
+					m_pMap->End(m_pPhysics, true);
 					m_pSetting->End();
 
 					return std::make_shared<SceneGame>();
@@ -404,7 +404,7 @@ void SceneTitle::End()
 	m_pSetting->End();
 	m_pBgm->End();
 	pse->End();
-	m_pMap->End(m_pPhysics);
+	m_pMap->End(m_pPhysics, true);
 	cEffect.End();
 
 	handle.Clear();

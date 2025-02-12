@@ -286,7 +286,7 @@ void Player::GameInit(std::shared_ptr<MyLibrary::Physics> physics)
 	CsvLoad::GetInstance().StatusLoad(m_status, "Player");
 
 	//プレイヤーの初期位置設定
-	rigidbody.Init(false);
+	rigidbody.Init(true);
 	rigidbody.SetPos(MyLibrary::LibVec3(m_updateX, m_updateY, m_updateZ));
 	rigidbody.SetNextPos(rigidbody.GetPos());
 	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
@@ -308,7 +308,7 @@ void Player::Finalize()
 	m_pSearch->Finalize(m_pPhysics);
 }
 
-void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool, SEManager& se, bool boss)
+void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool, SEManager& se, bool boss, bool dead)
 {
 	//とりあえずやっとく
 	m_status.s_core = core.GetCore();
@@ -597,7 +597,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			if (!m_animChange.sa_avoidance && !m_anim.s_hit && !m_animChange.sa_recovery && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact
 				&& !m_rest && !m_animChange.sa_strengthAttack)
 			{
-				Action(restpos, tool, shield, se, boss);
+				Action(restpos, tool, shield, se, boss, dead);
 			}
 		}
 
@@ -989,17 +989,22 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		{
 			m_animChange.sa_taking = false;
 		}
-		
+		//取得中に間違って回避を押したらアイテム取得を終了する
+		if (m_animChange.sa_avoidance)
+		{
+			m_animChange.sa_taking = false;
+		}
+
 	}
 }
 
 /// <summary>
 /// プレイヤーのアクション実装
 /// </summary>
-void Player::Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, bool boss)
+void Player::Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, bool boss, bool dead)
 {
 	
-	if (boss)
+	if (boss && !dead)
 	{
 		if (!m_lockonTarget)
 		{

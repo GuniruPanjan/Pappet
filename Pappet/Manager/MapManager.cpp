@@ -73,13 +73,13 @@ void MapManager::Update(std::shared_ptr<MyLibrary::Physics> physics, bool warp, 
 /// </summary>
 /// <param name="physics"></param>
 /// <param name="warp"></param>
-void MapManager::WarpUpdate(std::shared_ptr<MyLibrary::Physics> physics, bool warp)
+void MapManager::WarpUpdate(std::shared_ptr<MyLibrary::Physics> physics, bool warp, bool title)
 {
 	std::shared_ptr<MapBase> pNext = m_pMap->WarpUpdate(warp);
 	if (pNext != m_pMap)
 	{
 		//現在のマップの終了処理
-		m_pMap->End(physics);
+		m_pMap->End(physics, title);
 		m_pMap->MapEnd(physics);
 
 		m_pMap = pNext;
