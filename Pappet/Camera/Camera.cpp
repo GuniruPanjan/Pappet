@@ -127,8 +127,6 @@ void Camera::LockUpdate(Player& player, EnemyManager& enemy)
 	m_enemyPos = VGet(0, 0, 0);
 	m_cameraTarget = VGet(0, 0, 0);
 	float minDistance = FLT_MAX;
-	//cTargetSize = 0;
-	//cSize = 0;
 
 	for (const auto& enemyPos : enemy.GetEnemyPos())
 	{

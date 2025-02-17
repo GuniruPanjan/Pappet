@@ -35,6 +35,9 @@ public:
 	//終了処理
 	void End(std::shared_ptr<MyLibrary::Physics> physics, bool title);
 
+	//マップハンドルを返す
+	int GetMap() { return m_pMap->GetMap(); }
+
 	//コリジョンマップを返す
 	int GetCollisionMap() { return m_pMap->GetCollisionMap(); }
 

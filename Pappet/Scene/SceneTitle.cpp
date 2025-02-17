@@ -180,12 +180,12 @@ std::shared_ptr<SceneBase> SceneTitle::Update()
 		GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
 
 		//ã
-		if (m_xpad.ThumbLY > 2000)
+		if (m_xpad.ThumbLY > 2000 || m_xpad.Buttons[0] == 1)
 		{
 			m_button++;
 		}
 		//‰º
-		else if (m_xpad.ThumbLY < 0)
+		else if (m_xpad.ThumbLY < 0 || m_xpad.Buttons[1] == 1)
 		{
 			m_button--;
 		}

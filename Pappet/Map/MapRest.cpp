@@ -103,6 +103,8 @@ void MapRest::Init(std::shared_ptr<MyLibrary::Physics> physics)
 	InitCore(cCoreRadius, m_mapCoreCollisionePos);
 	//ƒ{ƒX•”‰®‚Ì”»’è‰Šú‰»
 	InitBossEnter(cBossWidth, cBossHight, cBossDepth, m_mapBossEnterTriggerPos);
+
+	cEffectPlay = 500.0f;
 }
 
 /// <summary>

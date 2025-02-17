@@ -42,6 +42,8 @@ public:
 	//終了処理
 	void MapEnd(std::shared_ptr<MyLibrary::Physics> physics);
 
+	//マップハンドルを返す
+	int GetMap() { return m_handle; }
 	//コリジョンのマップハンドルを返す
 	int GetCollisionMap() { return m_collisionHandle; }
 	//休息できるように当たっているかを返す

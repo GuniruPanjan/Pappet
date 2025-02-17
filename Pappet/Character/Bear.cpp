@@ -611,7 +611,7 @@ void Bear::Draw(UI& ui)
 		ui.BossHPDraw(m_status.s_hp, m_maxHP, m_bossName, m_subName);
 	}
 
-#if true
+#if false
 	DrawFormatString(200, 300, 0xffffff, "m_angle : %f", m_angle);
 	DrawFormatString(200, 350, 0xffffff, "m_correctionAngle : %f", m_correctionAngle);
 	DrawFormatString(200, 400, 0xffffff, "m_left : %d", m_enemyAnim.s_turnLeft);
