@@ -1355,7 +1355,7 @@ void Setting::RestDraw(bool rest)
 /// レベルアップ描画
 /// </summary>
 /// <param name="player"></param>
-void Setting::LevelUpDraw(Player& playe, CoreManager& core)
+void Setting::LevelUpDraw(Player& player, CoreManager& core)
 {
 
 	DrawGraph(-50, 0, m_levelUp, true);
@@ -1363,7 +1363,7 @@ void Setting::LevelUpDraw(Player& playe, CoreManager& core)
 
 	if (pselect->NowSelect == pselect->Six)
 	{
-		m_selectX = 335;
+		m_selectX = 300;
 		m_selectY = 540;
 		cGraphSize = 1.0f;
 
@@ -1375,7 +1375,7 @@ void Setting::LevelUpDraw(Player& playe, CoreManager& core)
 	}
 	else if (pselect->NowSelect == pselect->Seven)
 	{
-		m_selectX = 335;
+		m_selectX = 300;
 		m_selectY = 635;
 		cGraphSize = 1.0f;
 
@@ -1387,7 +1387,7 @@ void Setting::LevelUpDraw(Player& playe, CoreManager& core)
 	}
 	else if (pselect->NowSelect == pselect->Eight)
 	{
-		m_selectX = 335;
+		m_selectX = 300;
 		m_selectY = 730;
 		cGraphSize = 1.0f;
 
@@ -1399,7 +1399,7 @@ void Setting::LevelUpDraw(Player& playe, CoreManager& core)
 	}
 	else if (pselect->NowSelect == pselect->Nine)
 	{
-		m_selectX = 335;
+		m_selectX = 300;
 		m_selectY = 825;
 		cGraphSize = 1.0f;
 
@@ -1427,14 +1427,19 @@ void Setting::LevelUpDraw(Player& playe, CoreManager& core)
 	SetFontSize(40);
 
 	DrawFormatString(90, 150, 0xffffff, "レベル      %d", ms_levelUP.sl_all);
-	DrawFormatString(90, 250, 0xffffff, "所持ソウル  %d", m_core);
-	DrawFormatString(90, 300, 0xffffff, "必要ソウル  %d", core.NeedCore(ms_levelUP.sl_all));
+	DrawFormatString(90, 250, 0xffffff, "所持コア  %d", m_core);
+	DrawFormatString(90, 300, 0xffffff, "必要コア  %d", core.NeedCore(ms_levelUP.sl_all));
 
 	//左の変数がレベル上げる前のレベルで右の変数がレベルを上げた後のレベル
-	DrawFormatString(270, 520, m_menuColor[0], "%d", ms_levelUP.sl_hp);
-	DrawFormatString(270, 615, m_menuColor[1], "%d", ms_levelUP.sl_stamina);
-	DrawFormatString(270, 710, m_menuColor[2], "%d", ms_levelUP.sl_muscle);
-	DrawFormatString(270, 805, m_menuColor[3], "%d", ms_levelUP.sl_skill);
+	DrawFormatString(290, 520, m_menuColor[0], "%d", ms_levelUP.sl_hp);
+	DrawFormatString(290, 615, m_menuColor[1], "%d", ms_levelUP.sl_stamina);
+	DrawFormatString(290, 710, m_menuColor[2], "%d", ms_levelUP.sl_muscle);
+	DrawFormatString(290, 805, m_menuColor[3], "%d", ms_levelUP.sl_skill);
+
+	//レベルを上げた時のステータス変動
+	DrawFormatString(600, 200, 0xffffff, "最大生命力 :   %d", static_cast<int>(player.GetStatus().s_hp + ((ms_levelUP.sl_hp - 1) * 30.0f)));
+	DrawFormatString(600, 400, 0xffffff, "最大体力   :   %d", static_cast<int>(player.GetStatus().s_stamina + ((ms_levelUP.sl_stamina - 1) * 10.0f)));
+	DrawFormatString(600, 600, 0xffffff, "攻撃力     :   %d", static_cast<int>(player.GetAttackDamage() + ((ms_levelUP.sl_muscle - 1) * player.GetAttackMuscle()) + ((ms_levelUP.sl_skill - 1) * player.GetAttackSkill())));
 
 	//フォントのサイズ変更
 	SetFontSize(60);

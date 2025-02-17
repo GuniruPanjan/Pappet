@@ -126,32 +126,21 @@ void Camera::LockUpdate(Player& player, EnemyManager& enemy)
 {
 	m_enemyPos = VGet(0, 0, 0);
 	m_cameraTarget = VGet(0, 0, 0);
-	cTargetSize = 0;
-	cSize = 0;
+	float minDistance = FLT_MAX;
+	//cTargetSize = 0;
+	//cSize = 0;
 
-	for (auto& enemyTarget : enemy.GetEnemyTarget())
+	for (const auto& enemyPos : enemy.GetEnemyPos())
 	{
-		cTargetSize++;
+		VECTOR enemyVector = VGet(enemyPos.x, enemyPos.y, enemyPos.z);
+		float distance = VSize(VSub(player.GetPos().GetVector(), enemyVector));
 
-		if (enemyTarget == true)
+		if (distance < minDistance)
 		{
-			for (auto& enemyPos : enemy.GetEnemyPos())
-			{
-				cSize++;
-
-				if (cTargetSize == cSize)
-				{
-					//ここがターゲットになるやつ
-					m_enemyPos = VGet(enemyPos.x, enemyPos.y, enemyPos.z);
-
-					break;
-				}
-			}
+			minDistance = distance;
+			m_enemyPos = enemyVector;
 		}
-
 	}
-
-	
 
 	VECTOR pPos = VGet(player.GetPos().x, player.GetPos().y, player.GetPos().z);
 
@@ -188,46 +177,6 @@ void Camera::LockUpdate(Player& player, EnemyManager& enemy)
 
 	//プレイヤーの座標に求めたベクトルを足してカメラの座標とする
 	m_cameraPos = VAdd(pPos, posTarget);
-
-	//for (auto& enemyPos : enemy.GetEnemyPos())
-	//{
-	//	VECTOR ePos = VGet(enemyPos.x, enemyPos.y, enemyPos.z);
-	//	VECTOR pPos = VGet(player.GetPos().x, player.GetPos().y, player.GetPos().z);
-
-	//	//注視点は敵の座標にする
-	//	m_cameraTarget = VAdd(ePos, VGet(0.0, 20.0f, 0.0f));
-
-	//	//プレイヤーとエネミーのX座標の差を求める
-	//	float X = ePos.x - pPos.x;
-	//	float lockX = pPos.x - ePos.x;
-
-	//	//プレイヤーとエネミーのZ座標の差を求める
-	//	float Z = ePos.z - pPos.z;
-	//	float lockZ = pPos.z - ePos.z;
-
-	//	//角度を出す
-	//	float angle = atan2f(X, Z);
-
-	//	//プレイヤーの方向も変える
-	//	player.SetCameraAngle(atan2f(lockX, lockZ));
-
-	//	//敵からプレイヤーに伸びる基準のベクトルを求める
-	//	VECTOR pos = VSub(pPos, ePos);
-
-	//	//ベクトルの正規化
-	//	VECTOR posTarget = VNorm(pos);
-
-	//	posTarget.x *= 130.0f;
-	//	posTarget.z *= 130.0f;
-
-	//	//カメラがどれだけプレイヤーの座標より高いかを設定
-	//	posTarget.y = 80.0f;
-
-	//	m_cameraAngle.y = angle;
-
-	//	//プレイヤーの座標に求めたベクトルを足してカメラの座標とする
-	//	m_cameraPos = VAdd(pPos, posTarget);
-	//}
 
 	SetCameraPositionAndTarget_UpVecY(m_cameraPos, m_cameraTarget);
 }

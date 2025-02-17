@@ -57,6 +57,10 @@ namespace MyLibrary
 		//更新(登録オブジェクトの物理移動、衝突通知)
 		void Update();
 
+		void CheckUpdate();
+
+		void CheckEnemyUpdate();
+
 		bool GetFlag() { return m_isHitWallFlag; }
 
 		VECTOR GetVECTOR() { return m_ret; }
@@ -98,6 +102,16 @@ namespace MyLibrary
 		void FixPositionWithWallInternal(std::shared_ptr<Collidable>& col);
 		//床ポリゴンとの当たり判定をチェックし、移動させる
 		void FixNowPositionWithFloor(std::shared_ptr<Collidable>& col);
+
+		//チェックしたポリゴンが壁ポリゴンか床ポリゴンかを判断し保持する
+		void CheckWallAndFloorEnemy(std::shared_ptr<Collidable>& col);
+		//壁ポリゴンとの当たり判定をチェックし、移動させる
+		void FixPositionWithWallEnemy(std::shared_ptr<Collidable>& col);
+		//壁の中から押し出す
+		void FixPositionWithWallInternalEnemy(std::shared_ptr<Collidable>& col);
+		//床ポリゴンとの当たり判定をチェックし、移動させる
+		void FixNowPositionWithFloorEnemy(std::shared_ptr<Collidable>& col);
+
 
 	private:
 		//登録されたCollidableのリスト

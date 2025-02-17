@@ -174,13 +174,12 @@ void GameManager::Update()
 		{
 			m_pCamera->LockUpdate(*m_pPlayer, *m_pEnemy);
 		}
-		
 
 		m_pItem->Update(m_pPhysics, this, m_pPlayer->GetTaking());
 		m_pMessage->Update(m_pPhysics, this, *m_pPlayer);
 		m_pEnemy->Update(m_pPhysics, this, *m_pCore, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->GetShieldPos(), !m_pPlayer->IsGetPlayerDead(), *m_pSe, m_init);
 
-		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, *m_pEnemy, *m_pCore, m_pMap->GetRestPos(), *m_pTool, *m_pSe, m_pMap->GetBossRoom(), m_pEnemy->GetBossDead());
+		m_pPlayer->Update(*m_pWeapon, *m_pShield, *m_pArmor, *m_pEnemy, *m_pCore, m_pMap->GetRestPos(), *m_pTool, *m_pSe, m_pMap->GetBossRoom(), m_pEnemy->GetBossDead(), m_pPhysics);
 
 
 		m_pMap->JudgeUpdate();

@@ -54,7 +54,7 @@ public:
 	void Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* manager, Weapon& weapon, Shield& shield, Armor& armor, bool anim);
 	void GameInit(std::shared_ptr<MyLibrary::Physics> physics);
 	void Finalize();
-	void Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool, SEManager& se, bool boss, bool dead);
+	void Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool, SEManager& se, bool boss, bool dead, std::shared_ptr<MyLibrary::Physics> physics);
 	void Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, bool boss, bool dead);
 	void EffectAction();
 	void WarpMap();
@@ -140,6 +140,9 @@ public:
 	int SetMuscleLevel(int set) { return m_levelStatus.sl_muscle = set; }
 	int GetSkillLevel() { return m_levelStatus.sl_skill; }
 	int SetSkillLevel(int set) { return m_levelStatus.sl_skill = set; }
+	float GetAttackDamage() { return m_attackDamage; }
+	float GetAttackMuscle() { return m_equipmentMuscle; }
+	float GetAttackSkill() { return m_equipmentSkill; }
 
 	const MyLibrary::LibVec3 GetPos() const { return rigidbody.GetPos(); }
 	const MyLibrary::LibVec3 GetShieldPos() const { return m_shieldPos; }
@@ -166,6 +169,9 @@ private:
 	float m_updateX;                    //‹x‘§‚µ‚½‚Æ‚«‚Ì‰Šú‰»ˆÊ’uX
 	float m_updateY;                    //‹x‘§‚µ‚½‚Æ‚«‚Ì‰Šú‰»ˆÊ’uY
 	float m_updateZ;                    //‹x‘§‚µ‚½‚Æ‚«‚Ì‰Šú‰»ˆÊ’uZ
+	float m_attackDamage;               //UŒ‚—Í‚ğŠi”[‚·‚é•Ï”
+	float m_equipmentMuscle;            //•Ší‚Ì‹Ø—Í•â³•Ï”
+	float m_equipmentSkill;             //•Ší‚Ì‹Z—Ê•â³•Ï”
 	bool m_menuOpen;                    //ƒƒjƒ…[‚ğŠJ‚­”»’è
 	bool m_restTouch;                   //‹x‘§‚Å‚«‚é‚©‚Ì”»’è
 	bool m_rest;                        //‹x‘§”»’è

@@ -41,6 +41,8 @@ void Weapon::Init()
 	if (m_black.sw_equipment)
 	{
 		m_black.sw_attack = 30.0f;
+		m_black.sw_muscle = 2.0f;   //ï‚ê≥B
+		m_black.sw_skill = 1.5f;    //ï‚ê≥C
 		m_black.sw_radius = 25.0f;
 		m_itemHandle = handle.GetModelHandle("Data/Weapon/Sword.mv1");
 

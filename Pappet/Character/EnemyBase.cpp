@@ -516,6 +516,14 @@ void EnemyBase::HitTriggerUpdate()
 	m_isEnterHit = false;
 }
 
+float EnemyBase::CalculateAngleDifference(float angle1, float angle2)
+{
+	float diff = angle2 - angle1;
+	while (diff < -DX_PI_F) diff += 2.0f * DX_PI_F;
+	while (diff > DX_PI_F) diff -= 2.0f * DX_PI_F;
+	return diff;
+}
+
 /// <summary>
 /// Ž€–S‚µ‚½Žž
 /// </summary>

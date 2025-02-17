@@ -178,7 +178,7 @@ void Bear::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 /// </summary>
 /// <param name="playerPos"></param>
 /// <param name="isChase"></param>
-void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChase, SEManager& se)
+void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChase, SEManager& se, std::shared_ptr<MyLibrary::Physics> physics)
 {
 	//アニメーションの更新
 	if (!cDead)
@@ -294,6 +294,7 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 	float Cz = m_modelPos.z - playerPos.z;
 
 	m_correctionAngle = atan2f(Cx, Cz);
+	//m_correctionAngle = NormalizeAngle(m_correctionAngle);
 
 	//攻撃2を行った後に回転がおかしくなる
 
@@ -610,7 +611,7 @@ void Bear::Draw(UI& ui)
 		ui.BossHPDraw(m_status.s_hp, m_maxHP, m_bossName, m_subName);
 	}
 
-#if false
+#if true
 	DrawFormatString(200, 300, 0xffffff, "m_angle : %f", m_angle);
 	DrawFormatString(200, 350, 0xffffff, "m_correctionAngle : %f", m_correctionAngle);
 	DrawFormatString(200, 400, 0xffffff, "m_left : %d", m_enemyAnim.s_turnLeft);

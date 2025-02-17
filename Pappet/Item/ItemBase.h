@@ -27,6 +27,8 @@ public:
 	struct sWeapon
 	{
 		float sw_attack;               //UŒ‚—Í
+		float sw_muscle;               //‹Ø—Í•â³
+		float sw_skill;                //‹Z—Ê•â³
 		float sw_radius;               //•Ší‚Ì“–‚½‚è”»’è
 		bool sw_equipment = false;     //‘•”õ‚µ‚½‚©‚Ì”»’è
 	};

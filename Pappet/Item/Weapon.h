@@ -28,6 +28,8 @@ public:
 	//ステータスの判定
 	float GetFistAttack() { return m_fist.sw_attack; }
 	float GetBlackAttack() { return m_black.sw_attack; }
+	float GetBlackMuscle() { return m_black.sw_muscle; }
+	float GetBlackSkill() { return m_black.sw_skill; }
 
 	//装備したかの判定
 	bool GetFist() { return m_fist.sw_equipment; }

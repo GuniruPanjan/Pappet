@@ -23,7 +23,7 @@ namespace
 	//アニメーションブレンド率の最大
 	constexpr float cAnimBlendRateMax = 1.0f;
 	//歩きにより代入される速度
-	constexpr float cWalkSpeed = 2.0f;
+	constexpr float cWalkSpeed = 1.5f;
 	//ダッシュにより代入される速度
 	constexpr float cDashSpeed = 4.0f;
 	//歩くモーションのプレイタイム
@@ -98,6 +98,9 @@ Player::Player() :
 	m_updateX(0.0f),
 	m_updateY(0.0f),
 	m_updateZ(0.0f),
+	m_attackDamage(0.0f),
+	m_equipmentMuscle(0.0f),
+	m_equipmentSkill(0.0f),
 	m_menuOpen(false),
 	m_restTouch(false),
 	m_rest(false),
@@ -308,7 +311,7 @@ void Player::Finalize()
 	m_pSearch->Finalize(m_pPhysics);
 }
 
-void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool, SEManager& se, bool boss, bool dead)
+void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool, SEManager& se, bool boss, bool dead, std::shared_ptr<MyLibrary::Physics> physics)
 {
 	//とりあえずやっとく
 	m_status.s_core = core.GetCore();
@@ -523,21 +526,6 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 				m_shieldOne = true;
 			}
 
-			//修正案として盾を構えた先にサーチオブジェクトをつけてその範囲に入っているやつの攻撃は受けないようにすればいい
-			//これがおかしいから盾受けがちゃんとしていない
-			//for (auto enemy : enemy.GetEnemyAttackHit())
-			//{
-			//	if (!enemy)
-			//	{
-					//盾受けした時
-			//		if (m_pShield->GetIsStay())
-			//		{
-			//			m_animChange.sa_imapact = true;
-			//			cHit = false;
-			//		}
-			//	}
-			//}
-
 			//結構適当にしたけどこれでいいと思う
 			if (m_pShieldSearch->GetIsStay())
 			{
@@ -649,10 +637,14 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	if (weapon.GetFist())
 	{
 		cEquipmentAttack = 0.0f;
+		m_equipmentMuscle = 0.0f;
+		m_equipmentSkill = 0.0f;
 	}
 	else if (weapon.GetBlack())
 	{
 		cEquipmentAttack = weapon.GetBlackAttack();
+		m_equipmentMuscle = weapon.GetBlackMuscle();
+		m_equipmentSkill = weapon.GetBlackSkill();
 	}
 
 	if (armor.GetBody())
@@ -777,6 +769,9 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		m_animChange.sa_avoidance = false;
 	}
 
+	//攻撃力格納
+	m_attackDamage = (m_status.s_attack + (m_status.s_muscle * 0.5f) + (m_status.s_skill * 0.5f)) + (cEquipmentAttack + ((m_status.s_muscle - 1) * m_equipmentMuscle) + ((m_status.s_skill - 1) * m_equipmentSkill));
+
 	//攻撃中
 	if (!m_isAnimationFinish && m_anim.s_attack)
 	{
@@ -786,7 +781,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			//現在のアタックナンバー
 			cNowAttackNumber = 1;
 
-			m_pAttack->SetAttack(m_status.s_attack + cEquipmentAttack);
+			m_pAttack->SetAttack(m_attackDamage);
 			//m_pPartAttack->SetAttack(m_status.s_attack + cEquipmentAttack);
 
 			//攻撃判定発生フレーム
@@ -818,7 +813,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			//現在のアタックナンバー
 			cNowAttackNumber = 2;
 
-			m_pAttack->SetAttack((m_status.s_attack + cEquipmentAttack) * 1.1);
+			m_pAttack->SetAttack((m_attackDamage) * 1.1);
 			//m_pPartAttack->SetAttack(m_status.s_attack + cEquipmentAttack * 1.1);
 
 			//攻撃判定発生フレーム
@@ -850,7 +845,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			//現在のアタックナンバー
 			cNowAttackNumber = 3;
 
-			m_pAttack->SetAttack((m_status.s_attack + cEquipmentAttack) * 1.2);
+			m_pAttack->SetAttack((m_attackDamage) * 1.2);
 			//m_pPartAttack->SetAttack(m_status.s_attack + cEquipmentAttack * 1.2);
 
 			//攻撃判定発生フレーム
@@ -996,6 +991,8 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		}
 
 	}
+
+	physics->CheckUpdate();
 }
 
 /// <summary>

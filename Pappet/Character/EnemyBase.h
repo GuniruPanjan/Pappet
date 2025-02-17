@@ -30,7 +30,7 @@ public:
 	//終了
 	virtual void Finalize(std::shared_ptr<MyLibrary::Physics> physics);
 	//更新
-	virtual void Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChange, SEManager& se) {};
+	virtual void Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChange, SEManager& se, std::shared_ptr<MyLibrary::Physics> physics) {};
 	//描画
 	virtual void Draw(UI& ui) {};
 	//終了処理
@@ -133,6 +133,8 @@ protected:
 	void HitTriggerUpdate();
 	//ダメージを受けたとき
 	void OnDamage();
+	//角度の差を計算する関数を追加
+	float CalculateAngleDifference(float angle1, float angle2);
 	//死亡した時
 	void Death();
 	//アニメーションブレンドの更新

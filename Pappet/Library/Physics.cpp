@@ -170,41 +170,7 @@ void MyLibrary::Physics::Update()
 	CheckCollide2();
 	CheckCollide3();
 
-	for (auto& item : m_collidables)
-	{
-		if (item->GetTag() == ObjectTag::Player || item->GetTag() == ObjectTag::Enemy)
-		{
-			float rad = 0;
-			int modelHandle = -1;
-
-			for (auto& col : item->m_colliders)
-			{
-				rad = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_radius;
-
-				modelHandle = m_stageCollisionHandle;
-			}
-			//m_hitDim = MV1CollCheck_Sphere(modelHandle, -1, item->rigidbody.GetNextPosVECTOR(), rad);
-			m_hitDim = MV1CollCheck_Capsule(modelHandle, -1, VAdd(item->rigidbody.GetNextPosVECTOR(), item->rigidbody.GetVec()),
-				VSub(item->rigidbody.GetNextPosVECTOR(), item->rigidbody.GetVec()), rad);
-		}
-		else
-		{
-			continue;
-		}
-
-		//敵キャラだけ一番最初に作られたやつ以外は落ちて最後に作ったキャラは落ちない感じになっているバグ
-
-		//壁と床の当たり判定を行う
-		CheckWallAndFloor(item);
-		//壁との当たり判定処理
-		FixPositionWithWall(item);
-		//床との当たり判定処理
-		FixNowPositionWithFloor(item);
-
-		//検出したプレイヤーの周囲のポリゴン情報を解放する
-		MV1CollResultPolyDimTerminate(m_hitDim);
-
-	}
+	CheckUpdate();
 
 	CheckSendOnCollideInfo(m_preCollideInfo, m_newCollideInfo, false);
 	CheckSendOnCollideInfo(m_preTriggerInfo, m_newTriggerInfo, true);
@@ -240,6 +206,81 @@ void MyLibrary::Physics::Update()
 		}
 	}
 
+}
+
+void MyLibrary::Physics::CheckUpdate()
+{
+	for (auto& item : m_collidables)
+	{
+		if (item->GetTag() == ObjectTag::Player)
+		{
+			float rad = 0;
+			int modelHandle = -1;
+
+			for (auto& col : item->m_colliders)
+			{
+				rad = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_radius;
+
+				modelHandle = m_stageCollisionHandle;
+			}
+			//m_hitDim = MV1CollCheck_Sphere(modelHandle, -1, item->rigidbody.GetNextPosVECTOR(), rad);
+			m_hitDim = MV1CollCheck_Capsule(modelHandle, -1, VAdd(item->rigidbody.GetNextPosVECTOR(), item->rigidbody.GetVec()),
+				VSub(item->rigidbody.GetNextPosVECTOR(), item->rigidbody.GetVec()), rad);
+		}
+		else
+		{
+			continue;
+		}
+
+		//壁と床の当たり判定を行う
+		CheckWallAndFloor(item);
+		//壁との当たり判定処理
+		FixPositionWithWall(item);
+		//床との当たり判定処理
+		FixNowPositionWithFloor(item);
+
+		//検出したプレイヤーの周囲のポリゴン情報を解放する
+		MV1CollResultPolyDimTerminate(m_hitDim);
+
+	}
+}
+
+void MyLibrary::Physics::CheckEnemyUpdate()
+{
+	for (auto& item : m_collidables)
+	{
+		if (item->GetTag() == ObjectTag::Enemy)
+		{
+			float rad = 0;
+			int modelHandle = -1;
+
+			for (auto& col : item->m_colliders)
+			{
+				rad = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_radius;
+
+				modelHandle = m_stageCollisionHandle;
+			}
+			//m_hitDim = MV1CollCheck_Sphere(modelHandle, -1, item->rigidbody.GetNextPosVECTOR(), rad);
+			m_hitDim = MV1CollCheck_Capsule(modelHandle, -1, VAdd(item->rigidbody.GetNextPosVECTOR(), item->rigidbody.GetVec()),
+				VSub(item->rigidbody.GetNextPosVECTOR(), item->rigidbody.GetVec()), rad);
+		}
+		else
+		{
+			continue;
+		}
+
+		//敵キャラだけ一番最初に作られたやつ以外は落ちて最後に作ったキャラは落ちない感じになっているバグ
+
+		//壁と床の当たり判定を行う
+		CheckWallAndFloorEnemy(item);
+		//壁との当たり判定処理
+		FixPositionWithWallEnemy(item);
+		//床との当たり判定処理
+		FixNowPositionWithFloorEnemy(item);
+
+		//検出したプレイヤーの周囲のポリゴン情報を解放する
+		MV1CollResultPolyDimTerminate(m_hitDim);
+	}
 }
 
 /// <summary>
@@ -871,50 +912,6 @@ void MyLibrary::Physics::FixNextPosition(const Rigidbody& primaryRigid, Rigidbod
 
 		//新しい位置を設定
 		secondaryRigid.SetNextPos(capsuleCenter + pushDir);
-
-		///*↓多少バグがあるため今後も修正していく*/
-
-		////外積を使って算出
-		//MyLibrary::LibVec3 SlideVec;
-
-		//VECTOR ret;
-		//float x = 0.0f;
-		//float y = 0.0f;
-		//float z = 0.0f;
-
-		//float slide = 15.0f;
-
-		//if (secondaryRigid.GetDirVECTOR().x <= -0.6f)
-		//{
-		//	z = -slide;
-
-		//	cSlidez = -1.0f;
-		//}
-		//else if (secondaryRigid.GetDirVECTOR().x >= 0.6f)
-		//{
-		//	z = slide;
-
-		//	cSlidez = 1.0f;
-		//}
-
-		//if (secondaryRigid.GetDirVECTOR().z <= -0.6f)
-		//{
-		//	x = -slide;
-
-		//	cSlidex = -1.0f;
-		//}
-		//else if (secondaryRigid.GetDirVECTOR().z >= 0.6f)
-		//{
-		//	x = slide;
-
-		//	cSlidex = 1.0f;
-		//}
-
-		//ret = VCross(secondaryRigid.GetVelocityVECTOR(), VGet(x, y, z));
-
-		//SlideVec = MyLibrary::LibVec3(ret.x + 1.0f, ret.y, ret.z + 1.0f);
-
-		//secondaryRigid.SetNextPos(secondaryRigid.GetPos() + SlideVec);
 	}
 
 }
@@ -1337,5 +1334,289 @@ void MyLibrary::Physics::FixNowPositionWithFloor(std::shared_ptr<Collidable>& co
 		auto set = col->rigidbody.GetNextPos();
 		set.y = PolyMaxPosY + radius;
 		col->rigidbody.SetNextPos(set);
+	}
+}
+
+void MyLibrary::Physics::CheckWallAndFloorEnemy(std::shared_ptr<Collidable>& col)
+{
+	//壁ポリゴンと床ポリゴンの数を初期化する
+	m_wallNum = 0;
+	m_floorNum = 0;
+
+	//検出されたポリゴンの数だけ繰り返し
+	for (int i = 0; i < m_hitDim.HitNum; i++)
+	{
+		//ポリゴンの法線のY成分が壁ポリゴンボーダーに達しているかどうかで壁ポリゴンか床ポリゴンかを判断する
+		if (m_hitDim.Dim[i].Normal.y < kWallPolyBorder && m_hitDim.Dim[i].Normal.y > -kWallPolyBorder)
+		{
+			//壁ポリゴンと判断された場合でも、プレイヤーのY座標より高いポリゴンのみ当たり判定を行う
+			if (m_hitDim.Dim[i].Position[0].y > col->rigidbody.GetPos().y + kWallPolyHeight ||
+				m_hitDim.Dim[i].Position[1].y > col->rigidbody.GetPos().y + kWallPolyHeight ||
+				m_hitDim.Dim[i].Position[2].y > col->rigidbody.GetPos().y + kWallPolyHeight)
+			{
+				//ポリゴンの数が限界数に達していなかったらポリゴンを配列に追加
+				if (m_wallNum < ColInfo::kMaxColHitPoly)
+				{
+					//ポリゴンの構造体のアドレスを壁ポリゴンポインタ配列に追加する
+					m_pWallPoly[m_wallNum] = &m_hitDim.Dim[i];
+
+					//壁ポリゴンの数を加算する
+					m_wallNum++;
+				}
+			}
+		}
+		else
+		{
+			//ポリゴンの数が限界数に達していなかったらポリゴンを配列に追加
+			if (m_floorNum < ColInfo::kMaxColHitPoly)
+			{
+				//ポリゴンの構造体のアドレスを床ポリゴンポインタ配列に保存する
+				m_pFloorPoly[m_floorNum] = &m_hitDim.Dim[i];
+
+				//床ポリゴンの数を加算する
+				m_floorNum++;
+			}
+		}
+	}
+}
+
+void MyLibrary::Physics::FixPositionWithWallEnemy(std::shared_ptr<Collidable>& col)
+{
+	float radius = 0.0f;
+	MyLibrary::LibVec3 vec;
+	float len = 0.0f;
+	for (auto& col : col->m_colliders)
+	{
+		radius = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_radius;
+		len = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_len;
+
+		vec = vec.GetNormalized() * len * 0.5f;
+	}
+
+	//壁ポリゴンがない場合は何もしない
+	if (m_wallNum == 0) return;
+
+	//壁ポリゴンとの当たり判定処理
+	//壁に当たったかどうかのフラグは初期状態では「当たっていない」にしておく
+	m_isHitFlag = false;
+	m_isHitWallFlag = false;
+
+
+	//移動したかどうかで処理を分岐
+	if (col->rigidbody.GetDir().Length() != 0.0f)
+	{
+		//壁ポリゴンの数だけ繰り返し
+		for (int i = 0; i < m_wallNum; i++)
+		{
+			//i番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
+			m_pPoly = m_pWallPoly[i];
+
+			//ポリゴンとプレイヤーが当たっていなかったら次のカウントへ
+			if (!HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), VSub(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), radius,
+				m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2])) continue;
+
+			//ここにきたらポリゴンとプレイヤーが当たっているということなので、ポリゴンに当たったフラグを立てる
+			m_isHitFlag = true;
+			m_isHitWallFlag = true;
+
+			//壁を考慮した移動を外積を使って算出
+			MyLibrary::LibVec3 SlideVec;
+
+			VECTOR ret;
+			ret = VCross(col->rigidbody.GetVelocityVECTOR(), m_pPoly->Normal);
+
+			m_ret = VScale(m_pPoly->Normal, 3.0f);
+
+			//進行方向ベクトルと壁ポリゴンの法線ベクトルに垂直なベクトルを算出
+			SlideVec = MyLibrary::LibVec3(ret.x, 0, ret.z);
+
+			//それを移動前の座標に足したものを新たな座標とする
+			col->rigidbody.SetPos(col->rigidbody.GetPos() + SlideVec);
+
+			//新たな移動座標で壁ポリゴンと当たっていないかどうかを判定する
+			bool isHitWallPolygon = false;
+			for (int j = 0; j < m_wallNum; j++)
+			{
+				//j番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
+				m_pPoly = m_pWallPoly[j];
+
+				//当たっていたらループから抜ける
+				if (HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), VSub(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), radius,
+					m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2]))
+				{
+					//trueにする
+					isHitWallPolygon = true;
+					break;
+				}
+			}
+
+			//全てのポリゴンと当たっていなかったらここでループ終了
+			if (!isHitWallPolygon)
+			{
+				//ヒットフラグを倒す
+				m_isHitFlag = false;
+				m_isHitWallFlag = false;
+				break;
+			}
+		}
+
+		//壁に当たっていたら壁から押し出す処理を行う
+		if (m_isHitFlag)
+		{
+			FixPositionWithWallInternal(col);
+		}
+
+	}
+	else
+	{
+		//移動していない場合の処理
+
+		//壁ポリゴンの数だけ繰り返し
+		for (int i = 0; i < m_wallNum; i++)
+		{
+			//i番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
+			m_pPoly = m_pWallPoly[i];
+
+			//ポリゴンに当たっていたら当たったフラグを立てた上でループから抜ける
+			if (HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), VSub(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), radius,
+				m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2]))
+			{
+				m_isHitFlag = true;
+				m_isHitWallFlag = true;
+				break;
+			}
+		}
+
+
+		//壁に当たっていたら壁から押し出す処理を行う
+		if (m_isHitFlag)
+		{
+			FixPositionWithWallInternal(col);
+		}
+	}
+}
+
+void MyLibrary::Physics::FixPositionWithWallInternalEnemy(std::shared_ptr<Collidable>& col)
+{
+	float radius = 0.0f;
+	MyLibrary::LibVec3 vec;
+	float len = 0.0f;
+	for (auto& col : col->m_colliders)
+	{
+		radius = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_radius;
+		len = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_len;
+
+		vec = vec.GetNormalized() * len * 0.5f;
+	}
+
+	//壁からの押し出し処理を試みる最大数だけ繰り返し
+	for (int i = 0; i < ColInfo::kMaxColHitTry; i++)
+	{
+		//当たる可能性のある壁ポリゴンを全て見る
+		bool isHitWall = false;
+		//壁ポリゴンの数だけ繰り返し
+		for (int j = 0; j < m_wallNum; j++)
+		{
+			//j番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
+			m_pPoly = m_pWallPoly[j];
+
+			//ポリゴンとプレイヤーが当たっていなかったら次のカウントへ
+			if (!HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), VSub(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), radius,
+				m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2])) continue;
+
+			auto ret = VAdd(col->rigidbody.GetNextPosVECTOR(), VScale(m_pPoly->Normal, kColHitSlideLength));
+
+			MyLibrary::LibVec3 set;
+			set = MyLibrary::LibVec3(ret.x, ret.y, ret.z);
+
+			//当たっていたら規定距離分プレイヤーを壁の法線方向に移動させる
+			col->rigidbody.SetPos(set);
+
+			//移動したうえで壁ポリゴンと接続しているかどうかを判定
+			for (int k = 0; k < m_wallNum; k++)
+			{
+				//当たっていたらループを抜ける
+				m_pPoly = m_pWallPoly[k];
+				if (HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), VSub(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), radius,
+					m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2]))
+				{
+					isHitWall = true;
+					break;
+				}
+
+			}
+
+			//全てのポリゴンと当たっていなかったらここでループ終了
+			if (!isHitWall) break;
+		}
+
+		//ループ終了
+		if (!isHitWall) break;
+	}
+}
+
+void MyLibrary::Physics::FixNowPositionWithFloorEnemy(std::shared_ptr<Collidable>& col)
+{
+	//床ポリゴンがない場合は何もしない
+	if (m_floorNum == 0) return;
+
+	float radius = 0.0f;
+	MyLibrary::LibVec3 vec;
+	float len = 0.0f;
+	for (auto& col : col->m_colliders)
+	{
+		radius = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_radius;
+		len = dynamic_cast<MyLibrary::CollidableDataCapsule*> (col.get())->m_len;
+
+		vec = vec.GetNormalized() * len * 0.5f;
+	}
+
+	//床ポリゴンとの当たり判定処理
+	//あたったかどうかのフラグ初期化
+	bool isHitFlag = false;
+
+	//床ポリゴンとの当たり判定
+	//一番高い床ポリゴンにぶつける為の判定用変数を初期化
+	float PolyMaxPosY = 0.0f;
+
+	//床ポリゴンの数だけ繰り返し
+	for (int i = 0; i < m_floorNum; i++)
+	{
+		//i番目の床ポリゴンのアドレスを床ポリゴンポインタ配列から取得
+		m_pPoly = m_pFloorPoly[i];
+
+		//ポリゴンとプレイヤーが当たっていなかったら次のカウントへ
+		if (HitCheck_Capsule_Triangle(VAdd(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), VSub(col->rigidbody.GetNextPosVECTOR(), vec.ConversionToVECTOR()), radius,
+			m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2])) continue;
+
+		float mostHeightY = m_pPoly->Position[0].y;
+
+		if (mostHeightY < m_pPoly->Position[1].y)
+		{
+			mostHeightY = m_pPoly->Position[1].y;
+		}
+
+		if (mostHeightY < m_pPoly->Position[2].y)
+		{
+			mostHeightY = m_pPoly->Position[2].y;
+		}
+
+		//既に当たったポリゴンがあり、且つ今まで検出した床ポリゴンより低い場合は何もしない
+		if (m_isHitFlag && PolyMaxPosY > mostHeightY) continue;
+
+		//ポリゴンに当たったフラグを立てる
+		m_isHitFlag = true;
+
+		//接触したY座標を保持する
+		PolyMaxPosY = mostHeightY;
+	}
+
+	//床ポリゴンの当たり判定かつ、ジャンプ力が0よりも小さい(下降中の場合)どうかで処理を分岐
+	if (m_isHitFlag)
+	{
+		//接触したポリゴンで一番高いY座標をプレイヤーのY座標にする
+		auto set = col->rigidbody.GetNextPos();
+		set.y = PolyMaxPosY + radius;
+		col->rigidbody.SetPos(set);
 	}
 }

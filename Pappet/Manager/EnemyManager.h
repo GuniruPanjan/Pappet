@@ -59,7 +59,7 @@ public:
 	//³–Ê‚Ì“G‚ÌÅ‘åHP‚ğ•Ô‚·
 	const int GetFrontEnemyMaxHp() const { return m_frontEnemyMaxHp; }
 	//“G‚ÌÀ•W‚ğ•Ô‚·
-	const std::list<MyLibrary::LibVec3> GetEnemyPos() const { return m_enemyPos; }
+	const std::list<MyLibrary::LibVec3>& GetEnemyPos() const { return m_enemyPos; }
 	//“G‚Ìƒ^[ƒQƒbƒg‚ğ•Ô‚·
 	const std::list<bool> GetEnemyTarget() const { return m_enemyTarget; }
 	//“G‚ªƒvƒŒƒCƒ„[‚ÉUŒ‚‚Å‚«‚é‚©‚ğ•Ô‚·

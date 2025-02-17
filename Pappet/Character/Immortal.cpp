@@ -163,7 +163,7 @@ void Immortal::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLi
 /// </summary>
 /// <param name="playerPos">プレイヤー座標</param>
 /// <param name="isChase">プレイヤーと戦えるかどうか</param>
-void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChase, SEManager& se)
+void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChase, SEManager& se, std::shared_ptr<MyLibrary::Physics> physics)
 {
 
 	float totalAnimFrame = MV1GetAttachAnimTotalTime(m_modelHandle, m_nowAnimNo);
