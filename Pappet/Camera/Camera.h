@@ -22,6 +22,10 @@ public:
 	void Init();
 	//更新処理
 	void Update(Player& player);
+	//敵を選択する処理
+	void SelectNextTarget();
+	void SelectPreviousTarget();
+	void FilterEnemiesInRange(Player& player, float range);
 	//ロックオン処理
 	void LockUpdate(Player& player, EnemyManager& enemy);
 	//ボスのロックオン処理
@@ -49,6 +53,10 @@ private:
 
 	//エネミーのポジション代入
 	VECTOR m_enemyPos = VGet(0.0f, 0.0f, 0.0f);
+
+	int m_currentTargetIndex;
+	std::vector<MyLibrary::LibVec3> m_enemyPositions;
+	std::vector<MyLibrary::LibVec3> m_filterEnemyPositions;
 
 	float m_x, m_z;
 	float m_radius;

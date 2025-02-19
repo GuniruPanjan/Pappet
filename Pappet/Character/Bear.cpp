@@ -30,6 +30,9 @@ namespace
 	//UŒ‚”ÍˆÍ3
 	constexpr float cAttackRadius3 = 130.0f;
 
+	//“G‚ð‰ñ“]‚³‚¹‚È‚¢
+	bool cTurn = false;
+
 	//ƒVƒ“ƒOƒ‹ƒgƒ“
 	EffectManager& cEffect = EffectManager::GetInstance();
 
@@ -296,22 +299,51 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 	m_correctionAngle = atan2f(Cx, Cz);
 	//m_correctionAngle = NormalizeAngle(m_correctionAngle);
 
-	//UŒ‚2‚ðs‚Á‚½Œã‚É‰ñ“]‚ª‚¨‚©‚µ‚­‚È‚é
+	if (m_correctionAngle >= 3.0f)
+	{
+		if (m_enemyAnim.s_turnRight)
+		{
+			int a = 1;
+		}
 
-	//¶‚É‰ñ“]‚·‚é
-	if (m_angle > m_correctionAngle + 0.8f)
-	{
-		m_enemyAnim.s_turnLeft = true;
-		m_enemyAnim.s_turnRight = false;
-		m_anim.s_moveflag = false;
+		cTurn = true;
 	}
-	//‰E‚É‰ñ“]‚·‚é
-	if (m_angle < m_correctionAngle - 0.8f)
+	else if (m_correctionAngle <= -3.0f)
 	{
-		m_enemyAnim.s_turnRight = true;
-		m_enemyAnim.s_turnLeft = false;
-		m_anim.s_moveflag = false;
+		if (m_enemyAnim.s_turnLeft)
+		{
+			int a = 1;
+		}
+
+		cTurn = true;
 	}
+	else
+	{
+		cTurn = false;
+		
+	}
+
+	
+	//•à‚¢‚Ä‚¢‚éŽž‚Í‰ñ“]‚µ‚È‚­‚È‚Á‚½
+	if (!cTurn)
+	{
+		//¶‚É‰ñ“]‚·‚é
+		if (m_angle > m_correctionAngle + 0.8f)
+		{
+			m_enemyAnim.s_turnLeft = true;
+			m_enemyAnim.s_turnRight = false;
+			m_anim.s_moveflag = false;
+		}
+		//‰E‚É‰ñ“]‚·‚é
+		if (m_angle < m_correctionAngle - 0.8f)
+		{
+			m_enemyAnim.s_turnRight = true;
+			m_enemyAnim.s_turnLeft = false;
+			m_anim.s_moveflag = false;
+		}
+		
+	}
+	
 
 	//¶‰ñ‚è‚µ‚Ä‚¢‚é‚Æ‚«
 	if (m_enemyAnim.s_turnLeft)

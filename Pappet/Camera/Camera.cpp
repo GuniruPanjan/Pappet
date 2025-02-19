@@ -1,12 +1,17 @@
 #include "Camera.h"
 #include "Character/Player.h"
 #include "Manager/EnemyManager.h"
+#include <algorithm>
+#include <functional>
 //度をラジアンに変換
 #define D2R(deg) ((deg)*DX_PI_F/180.0f)
 
 namespace
 {
 	VECTOR cPlayerPos = VGet(0.0f, 0.0f, 0.0f);
+
+	int cRxl = 0;
+	int cRxr = 0;
 
 	int cSize = 0;
 	int cTargetSize = 0;
@@ -22,7 +27,8 @@ Camera::Camera() :
 	m_cameraAngle(VGet(0.0f, 0.0f, 0.0f)),
 	m_x(0.0f),
 	m_z(0.0f),
-	m_radius(0.0f)
+	m_radius(0.0f),
+	m_currentTargetIndex(0)
 {
 }
 
@@ -60,61 +66,129 @@ void Camera::Update(Player& player)
 {
 	GetJoypadDirectInputState(DX_INPUT_PAD1, &input);
 
-	cPlayerPos = player.GetPos().GetVector();
-
-	//左キー
-	if (input.Rx < 0)
+	if (!player.GetLock())
 	{
-		m_cameraAngle.y -= D2R(2.0f);
+		cPlayerPos = player.GetPos().GetVector();
 
-	}
-	//右キー
-	if (input.Rx > 0)
-	{
-		m_cameraAngle.y += D2R(2.0f);
-
-	}
-	//上キー
-	if (input.Ry < 0)
-	{
-		//カメラが地面にめりこまないように
-		if (m_cameraPos.y >= 15.2f + player.GetPos().y)
+		//左キー
+		if (input.Rx < 0)
 		{
-			m_cameraAngle.x -= D2R(2.0f);
+			m_cameraAngle.y -= D2R(2.0f);
+
+		}
+		//右キー
+		if (input.Rx > 0)
+		{
+			m_cameraAngle.y += D2R(2.0f);
+
+		}
+		//上キー
+		if (input.Ry < 0)
+		{
+			//カメラが地面にめりこまないように
+			if (m_cameraPos.y >= 15.2f + player.GetPos().y)
+			{
+				m_cameraAngle.x -= D2R(2.0f);
+			}
+
+		}
+		//下キー
+		if (input.Ry > 0)
+		{
+			//カメラがプレイヤーを超えないくらいまで
+			if (m_cameraAngle.x <= 0.7f)
+			{
+				m_cameraAngle.x += D2R(2.0f);
+			}
+		}
+
+
+		//基準のベクトル
+		VECTOR Direction = VGet(0.0f, 112.0f, -112.0f);
+
+		//X軸回転行列
+		MATRIX matrixX = MGetRotX(m_cameraAngle.x);
+		//Y軸回転行列
+		MATRIX matrixY = MGetRotY(m_cameraAngle.y);
+
+		//行列の合成
+		MATRIX matrix = MMult(matrixX, matrixY);
+
+		//基準ベクトルを行列で変換
+		Direction = VTransform(Direction, matrix);
+
+		//カメラ座標はプレイヤー座標から少しはなれたところ
+		m_cameraPos = VAdd(cPlayerPos, Direction);
+
+		//注視点の座標はプレイヤー座標の少し上
+		m_cameraTarget = VAdd(cPlayerPos, VGet(0.0f, 50.0f, 0.0f));
+
+		SetCameraPositionAndTarget_UpVecY(m_cameraPos, m_cameraTarget);
+	}
+	else
+	{
+		//ターゲットの選択
+		if (input.Rx < 0)
+		{
+			cRxl++;
+			if (cRxl == 5)
+			{
+				SelectNextTarget();
+			}
+		}
+		else
+		{
+			cRxl = 0;
+		}
+
+		if (input.Rx > 0)
+		{
+			cRxr++;
+			if (cRxr == 5)
+			{
+				SelectPreviousTarget();
+			}
+		}
+		else
+		{
+			cRxr = 0;
 		}
 
 	}
-	//下キー
-	if (input.Ry > 0)
+	
+}
+
+void Camera::SelectNextTarget()
+{
+	if (!m_enemyPositions.empty())
 	{
-		//カメラがプレイヤーを超えないくらいまで
-		if (m_cameraAngle.x <= 0.7f)
+		m_currentTargetIndex = (m_currentTargetIndex + 1) % m_enemyPositions.size();
+	}
+}
+
+void Camera::SelectPreviousTarget()
+{
+	if (!m_enemyPositions.empty())
+	{
+		m_currentTargetIndex = (m_currentTargetIndex - 1 + m_enemyPositions.size()) % m_enemyPositions.size();
+	}
+}
+
+void Camera::FilterEnemiesInRange(Player& player, float range)
+{
+	m_filterEnemyPositions.clear();
+	VECTOR playerPos = player.GetPos().GetVector();
+
+	for (const auto& enemyPos : m_enemyPositions)
+	{
+		VECTOR enemyVector = VGet(enemyPos.x, enemyPos.y, enemyPos.z);
+		float distance = VSize(VSub(playerPos, enemyVector));
+
+		if (distance <= range)
 		{
-			m_cameraAngle.x += D2R(2.0f);
+			m_filterEnemyPositions.push_back(enemyPos);
 		}
 	}
-
-	//基準のベクトル
-	VECTOR Direction = VGet(0.0f, 112.0f, -112.0f);
-
-	//X軸回転行列
-	MATRIX matrixX = MGetRotX(m_cameraAngle.x);
-	//Y軸回転行列
-	MATRIX matrixY = MGetRotY(m_cameraAngle.y);
-
-	//行列の合成
-	MATRIX matrix = MMult(matrixX, matrixY);
-
-	//基準ベクトルを行列で変換
-	Direction = VTransform(Direction, matrix);
-
-	//カメラ座標はプレイヤー座標から少しはなれたところ
-	m_cameraPos = VAdd(cPlayerPos, Direction);
-
-	//注視点の座標はプレイヤー座標の少し上
-	m_cameraTarget = VAdd(cPlayerPos, VGet(0.0f, 50.0f, 0.0f));
-
-	SetCameraPositionAndTarget_UpVecY(m_cameraPos, m_cameraTarget);
 }
 
 /// <summary>
@@ -124,21 +198,31 @@ void Camera::Update(Player& player)
 /// <param name="enemy">エネミーを呼び出す</param>
 void Camera::LockUpdate(Player& player, EnemyManager& enemy)
 {
+	m_enemyPositions.clear();
 	m_enemyPos = VGet(0, 0, 0);
 	m_cameraTarget = VGet(0, 0, 0);
 	float minDistance = FLT_MAX;
 
 	for (const auto& enemyPos : enemy.GetEnemyPos())
 	{
-		VECTOR enemyVector = VGet(enemyPos.x, enemyPos.y, enemyPos.z);
-		float distance = VSize(VSub(player.GetPos().GetVector(), enemyVector));
-
-		if (distance < minDistance)
-		{
-			minDistance = distance;
-			m_enemyPos = enemyVector;
-		}
+		m_enemyPositions.push_back(enemyPos);
 	}
+
+	if (m_enemyPositions.empty())
+	{
+		return;
+	}
+
+	//フィルタリングされた敵のリストを使用
+	FilterEnemiesInRange(player, 200.0f);
+
+	if (m_filterEnemyPositions.empty())
+	{
+		return;
+	}
+
+	m_currentTargetIndex = min(m_currentTargetIndex, static_cast<int>(m_filterEnemyPositions.size()) - 1);
+	m_enemyPos = m_filterEnemyPositions[m_currentTargetIndex].GetVector();
 
 	VECTOR pPos = VGet(player.GetPos().x, player.GetPos().y, player.GetPos().z);
 

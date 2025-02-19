@@ -179,12 +179,10 @@ void GameManager::Update()
 		m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
 		//ロックオンしてない時
-		if (!m_pPlayer->GetLock())
-		{
-			m_pCamera->Update(*m_pPlayer);
-		}
+		m_pCamera->Update(*m_pPlayer);
+
 		//ボス部屋に入ったらボスをロックオンするようにする
-		else if (m_pMap->GetBossRoom() && m_pPlayer->GetLock() && !m_pEnemy->GetBossDead())
+		if (m_pMap->GetBossRoom() && m_pPlayer->GetLock() && !m_pEnemy->GetBossDead())
 		{
 			m_pCamera->LockBossUpdate(*m_pPlayer, *m_pEnemy);
 		}
