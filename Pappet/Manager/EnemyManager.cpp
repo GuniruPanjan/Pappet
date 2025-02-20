@@ -37,6 +37,7 @@ EnemyManager::~EnemyManager()
 	m_damage.clear();
 	m_enemyAttackHit.clear();
 	m_dropCore.clear();
+	m_enemyIsDead.clear();
 }
 
 /// <summary>
@@ -131,6 +132,8 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 	m_enemyAttackHit.clear();
 	m_dropCore.clear();
 	m_bossJudg.clear();
+	m_enemyIsDead.clear();
+
 
 	//今のマップがどのマップか取得する
 	auto thisMapName = gameManager->GetThisMapName();
@@ -182,6 +185,7 @@ void EnemyManager::Update(std::shared_ptr<MyLibrary::Physics> physics, GameManag
 			m_enemyAttackHit.emplace_back(enemy->GetPlayerHit());
 			m_dropCore.emplace_back(enemy->GetDropCore());
 			m_bossJudg.emplace_back(enemy->GetBossJudg());
+			m_enemyIsDead.emplace_back(enemy->GetIsDead());
 
 			if (enemy->GetIsDead())
 			{

@@ -25,7 +25,7 @@ public:
 	//敵を選択する処理
 	void SelectNextTarget();
 	void SelectPreviousTarget();
-	void FilterEnemiesInRange(Player& player, float range);
+	void FilterEnemiesInRange(Player& player, EnemyManager& enemy, float range);
 	//ロックオン処理
 	void LockUpdate(Player& player, EnemyManager& enemy);
 	//ボスのロックオン処理
@@ -54,9 +54,20 @@ private:
 	//エネミーのポジション代入
 	VECTOR m_enemyPos = VGet(0.0f, 0.0f, 0.0f);
 
+	//カメラの目標
+	VECTOR m_endPos = VGet(0.0f, 0.0f, 0.0f);
+	VECTOR m_endTargetPos = VGet(0.0f, 0.0f, 0.0f);
+
+	//イージングの代入変数
+	MyLibrary::LibVec3 m_lerp;
+	MyLibrary::LibVec3 m_lerpTarget;
+
 	int m_currentTargetIndex;
 	std::vector<MyLibrary::LibVec3> m_enemyPositions;
 	std::vector<MyLibrary::LibVec3> m_filterEnemyPositions;
+
+	float m_easingTime;
+	float m_easingDuration;
 
 	float m_x, m_z;
 	float m_radius;

@@ -81,6 +81,7 @@ public:
 	void SetCameraAngle(float angle) { m_cameraAngle = angle; }
 	float SetAngle(float angle) { return m_lockAngle = angle; }
 	bool GetLock() { return m_lockonTarget; }
+	float GetSearch() { return m_searchRadius; }
 
 	//メニュー関係
 	bool GetMenu() { return m_menuOpen; }
@@ -165,6 +166,7 @@ private:
 	XINPUT_STATE m_xpad;                //パッド入力
 	int m_mapNow;                       //現在のマップ
 	float m_cameraAngle;                //カメラ情報
+	float m_searchRadius;               //索敵範囲
 	float m_lockAngle;                  //ロックオンしたときのアングル
 	float m_updateX;                    //休息したときの初期化位置X
 	float m_updateY;                    //休息したときの初期化位置Y

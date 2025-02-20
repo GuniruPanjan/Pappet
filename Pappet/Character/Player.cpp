@@ -37,8 +37,6 @@ namespace
 	//スティックの入力を得る
 	int cAnX = 0;
 	int cAnY = 0;
-	//索敵範囲
-	constexpr float cSearchRadius = 200.0f;
 	//回避での移動距離
 	float cAvoidanceMove = 0.0f;
 	//回避の方向を一回入れる
@@ -95,6 +93,7 @@ Player::Player() :
 	m_xpad(),
 	m_attackNumber(0),
 	m_mapNow(0),
+	m_searchRadius(0.0f),
 	m_updateX(0.0f),
 	m_updateY(0.0f),
 	m_updateZ(0.0f),
@@ -223,6 +222,8 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* mana
 	m_updateY = 12.0f;
 	m_updateZ = -800.0f;
 
+	m_searchRadius = 200.0f;
+
 	//メニューを閉じる
 	m_menuOpen = false;
 
@@ -233,7 +234,7 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* mana
 	//m_pPartAttack = std::make_shared<AttackObjectPart>(cPartAttackRadius, 0.0f, 0.0f);
 	m_pStrengthAttack = std::make_shared<AttackObject>(cStrengthAttackRadius);
 
-	m_pSearch = std::make_shared<PlayerSearchObject>(cSearchRadius);
+	m_pSearch = std::make_shared<PlayerSearchObject>(m_searchRadius);
 	m_pSearch->Init(m_pPhysics, rigidbody.GetPos());
 
 	m_shieldSize = MyLibrary::LibVec3::Size(cShieldWidth, cShieldHight, cShieldDepht);
@@ -276,6 +277,8 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* mana
 void Player::GameInit(std::shared_ptr<MyLibrary::Physics> physics)
 {
 	m_pPhysics = physics;
+
+	m_searchRadius = 200.0f;
 
 	//死んでいた場合
 	if (m_anim.s_isDead)

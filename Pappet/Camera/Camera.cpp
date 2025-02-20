@@ -28,6 +28,8 @@ Camera::Camera() :
 	m_x(0.0f),
 	m_z(0.0f),
 	m_radius(0.0f),
+	m_easingTime(0.0f),
+	m_easingDuration(1.0f),
 	m_currentTargetIndex(0)
 {
 }
@@ -68,6 +70,8 @@ void Camera::Update(Player& player)
 
 	if (!player.GetLock())
 	{
+		m_easingTime = 0.0f;
+
 		cPlayerPos = player.GetPos().GetVector();
 
 		//左キー
@@ -154,7 +158,10 @@ void Camera::Update(Player& player)
 			cRxr = 0;
 		}
 
+		SetCameraPositionAndTarget_UpVecY(m_cameraPos, m_cameraTarget);
+
 	}
+	
 	
 }
 
@@ -163,6 +170,7 @@ void Camera::SelectNextTarget()
 	if (!m_enemyPositions.empty())
 	{
 		m_currentTargetIndex = (m_currentTargetIndex + 1) % m_enemyPositions.size();
+		m_easingTime = 0.0f;
 	}
 }
 
@@ -171,23 +179,26 @@ void Camera::SelectPreviousTarget()
 	if (!m_enemyPositions.empty())
 	{
 		m_currentTargetIndex = (m_currentTargetIndex - 1 + m_enemyPositions.size()) % m_enemyPositions.size();
+		m_easingTime = 0.0f;
 	}
 }
 
-void Camera::FilterEnemiesInRange(Player& player, float range)
+void Camera::FilterEnemiesInRange(Player& player, EnemyManager& enemy, float range)
 {
 	m_filterEnemyPositions.clear();
 	VECTOR playerPos = player.GetPos().GetVector();
 
+	int index = 0;
 	for (const auto& enemyPos : m_enemyPositions)
 	{
 		VECTOR enemyVector = VGet(enemyPos.x, enemyPos.y, enemyPos.z);
 		float distance = VSize(VSub(playerPos, enemyVector));
 
-		if (distance <= range)
+		if (distance <= range && !enemy.m_enemyIsDead[index])
 		{
 			m_filterEnemyPositions.push_back(enemyPos);
 		}
+		index++;
 	}
 }
 
@@ -199,8 +210,8 @@ void Camera::FilterEnemiesInRange(Player& player, float range)
 void Camera::LockUpdate(Player& player, EnemyManager& enemy)
 {
 	m_enemyPositions.clear();
-	m_enemyPos = VGet(0, 0, 0);
-	m_cameraTarget = VGet(0, 0, 0);
+	//m_enemyPos = VGet(0, 0, 0);
+	//m_cameraTarget = VGet(0, 0, 0);
 	float minDistance = FLT_MAX;
 
 	for (const auto& enemyPos : enemy.GetEnemyPos())
@@ -214,7 +225,7 @@ void Camera::LockUpdate(Player& player, EnemyManager& enemy)
 	}
 
 	//フィルタリングされた敵のリストを使用
-	FilterEnemiesInRange(player, 200.0f);
+	FilterEnemiesInRange(player, enemy, 200.0f);
 
 	if (m_filterEnemyPositions.empty())
 	{
@@ -227,7 +238,8 @@ void Camera::LockUpdate(Player& player, EnemyManager& enemy)
 	VECTOR pPos = VGet(player.GetPos().x, player.GetPos().y, player.GetPos().z);
 
 	//注視点は敵の座標にする
-	m_cameraTarget = VAdd(m_enemyPos, VGet(0.0, 20.0f, 0.0f));
+	//m_cameraTarget = VAdd(m_enemyPos, VGet(0.0, 20.0f, 0.0f));
+	m_endTargetPos = VAdd(m_enemyPos, VGet(0.0f, 20.0f, 0.0f));
 
 	//プレイヤーとエネミーのX座標の差を求める
 	float X = m_enemyPos.x - pPos.x;
@@ -258,15 +270,30 @@ void Camera::LockUpdate(Player& player, EnemyManager& enemy)
 	m_cameraAngle.y = angle;
 
 	//プレイヤーの座標に求めたベクトルを足してカメラの座標とする
-	m_cameraPos = VAdd(pPos, posTarget);
+	//m_cameraPos = VAdd(pPos, posTarget);
+	m_endPos = VAdd(pPos, posTarget);
+
+	//イージングの更新
+	if (m_easingTime < m_easingDuration)
+	{
+		m_easingTime += 0.016f;
+		float t = m_easingTime / m_easingDuration;
+		m_cameraPos = m_lerp.Lerp(MyLibrary::LibVec3(m_cameraPos.x, m_cameraPos.y, m_cameraPos.z), MyLibrary::LibVec3(m_endPos.x, m_endPos.y, m_endPos.z), t).GetVector();
+		m_cameraTarget = m_lerpTarget.Lerp(MyLibrary::LibVec3(m_cameraTarget.x, m_cameraTarget.y, m_cameraTarget.z), MyLibrary::LibVec3(m_endTargetPos.x, m_endTargetPos.y, m_endTargetPos.z), t).GetVector();
+	}
+	else
+	{
+		m_cameraTarget = VAdd(m_enemyPos, VGet(0.0, 20.0f, 0.0f));
+		m_cameraPos = VAdd(pPos, posTarget);
+	}
 
 	SetCameraPositionAndTarget_UpVecY(m_cameraPos, m_cameraTarget);
 }
 
 void Camera::LockBossUpdate(Player& player, EnemyManager& enemy)
 {
-	m_enemyPos = VGet(0, 0, 0);
-	m_cameraTarget = VGet(0, 0, 0);
+	//m_enemyPos = VGet(0, 0, 0);
+	//m_cameraTarget = VGet(0, 0, 0);
 	cTargetSize = 0;
 	cSize = 0;
 
@@ -295,7 +322,8 @@ void Camera::LockBossUpdate(Player& player, EnemyManager& enemy)
 	VECTOR pPos = VGet(player.GetPos().x, player.GetPos().y, player.GetPos().z);
 
 	//注視点は敵の座標にする
-	m_cameraTarget = VAdd(m_enemyPos, VGet(0.0, 20.0f, 0.0f));
+	//m_cameraTarget = VAdd(m_enemyPos, VGet(0.0, 20.0f, 0.0f));
+	m_endTargetPos = VAdd(m_enemyPos, VGet(0.0f, 20.0f, 0.0f));
 
 	//プレイヤーとエネミーのX座標の差を求める
 	float X = m_enemyPos.x - pPos.x;
@@ -326,7 +354,22 @@ void Camera::LockBossUpdate(Player& player, EnemyManager& enemy)
 	m_cameraAngle.y = angle;
 
 	//プレイヤーの座標に求めたベクトルを足してカメラの座標とする
-	m_cameraPos = VAdd(pPos, posTarget);
+	//m_cameraPos = VAdd(pPos, posTarget);
+	m_endPos = VAdd(pPos, posTarget);
+
+	//イージングの更新
+	if (m_easingTime < m_easingDuration)
+	{
+		m_easingTime += 0.016f;
+		float t = m_easingTime / m_easingDuration;
+		m_cameraPos = m_lerp.Lerp(MyLibrary::LibVec3(m_cameraPos.x, m_cameraPos.y, m_cameraPos.z), MyLibrary::LibVec3(m_endPos.x, m_endPos.y, m_endPos.z), t).GetVector();
+		m_cameraTarget = m_lerpTarget.Lerp(MyLibrary::LibVec3(m_cameraTarget.x, m_cameraTarget.y, m_cameraTarget.z), MyLibrary::LibVec3(m_endTargetPos.x, m_endTargetPos.y, m_endTargetPos.z), t).GetVector();
+	}
+	else
+	{
+		m_cameraTarget = VAdd(m_enemyPos, VGet(0.0, 20.0f, 0.0f));
+		m_cameraPos = VAdd(pPos, posTarget);
+	}
 
 	SetCameraPositionAndTarget_UpVecY(m_cameraPos, m_cameraTarget);
 

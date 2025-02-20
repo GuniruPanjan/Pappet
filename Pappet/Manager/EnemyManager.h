@@ -58,6 +58,8 @@ public:
 	const int GetFrontEnemyHp() const { return m_frontEnemyHp; }
 	//³–Ê‚Ì“G‚ÌÅ‘åHP‚ğ•Ô‚·
 	const int GetFrontEnemyMaxHp() const { return m_frontEnemyMaxHp; }
+	//“G‚Ìî•ñæ“¾
+	std::vector<bool> m_enemyIsDead;
 	//“G‚ÌÀ•W‚ğ•Ô‚·
 	const std::list<MyLibrary::LibVec3>& GetEnemyPos() const { return m_enemyPos; }
 	//“G‚Ìƒ^[ƒQƒbƒg‚ğ•Ô‚·

@@ -180,7 +180,6 @@ void GameManager::Update()
 
 		//ロックオンしてない時
 		m_pCamera->Update(*m_pPlayer);
-
 		//ボス部屋に入ったらボスをロックオンするようにする
 		if (m_pMap->GetBossRoom() && m_pPlayer->GetLock() && !m_pEnemy->GetBossDead())
 		{
