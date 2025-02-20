@@ -30,6 +30,8 @@ EnemyBase::EnemyBase(Priority priority) :
 	m_correctionAngle(0.0f),
 	m_difPSize(0.0f),
 	m_difSSize(0.0f),
+	m_viewAngle(0.0f),
+	m_viewDistance(0.0f),
 	m_move(VGet(0.0f,0.0f,0.0f)),
 	m_difPlayer(VGet(0.0f,0.0f,0.0f)),
 	m_difShield(VGet(0.0f,0.0f,0.0f)),
@@ -514,6 +516,69 @@ void EnemyBase::TargetNow()
 void EnemyBase::HitTriggerUpdate()
 {
 	m_isEnterHit = false;
+}
+
+/// <summary>
+/// 敵の視野
+/// </summary>
+/// <param name="playerPos"></param>
+bool EnemyBase::IsPlayerInView(MyLibrary::LibVec3& playerPos)
+{
+	//敵からプレイヤーのベクトル
+	MyLibrary::LibVec3 toPlayer = playerPos - m_modelPos;
+	toPlayer.Normalize();
+
+	//敵の前方ベクトル
+	MyLibrary::LibVec3 forward = MyLibrary::LibVec3(sinf(m_angle), 0.0f, cosf(m_angle));
+
+	//敵の前方ベクトルとプレイヤーのベクトルの内積を計算
+	float dotProduct = forward.Dot(forward, toPlayer);
+	
+	//内積の結果が視野角のコサイン値以上ならプレイヤーは正面にいる
+	float cosViewAngle = cosf(m_viewAngle / 2.0f);
+
+	//プレイヤーが視野の角度内にいるかどうかを判定
+	return dotProduct >= cosViewAngle;
+}
+
+/// <summary>
+/// 敵の右側にいる判定
+/// </summary>
+/// <param name="playerPos"></param>
+/// <returns></returns>
+bool EnemyBase::IsPlayerOnRight(MyLibrary::LibVec3& playerPos)
+{
+	//敵からプレイヤーへのベクトル
+	MyLibrary::LibVec3 toPlayer = playerPos - m_modelPos;
+
+	//敵の前方ベクトル
+	MyLibrary::LibVec3 forward = MyLibrary::LibVec3(sinf(m_angle), 0.0f, cosf(m_angle));
+
+	//前方ベクトルとプレイヤーへのベクトルのクロス積を計算
+	float crossProduct = forward.x * toPlayer.z - forward.z * toPlayer.x;
+
+	//クロス積の結果が正しいならプレイヤーは右側にいる
+	return crossProduct > 0.0f;
+}
+
+/// <summary>
+/// 敵の左側にいる判定
+/// </summary>
+/// <param name="playerPos"></param>
+/// <returns></returns>
+bool EnemyBase::IsPlayerOnLeft(MyLibrary::LibVec3& playerPos)
+{
+	//敵からプレイヤーへのベクトル
+	MyLibrary::LibVec3 toPlayer = playerPos - m_modelPos;
+
+	//敵の前方ベクトル
+	MyLibrary::LibVec3 forward = MyLibrary::LibVec3(sinf(m_angle), 0.0f, cosf(m_angle));
+
+	//前方ベクトルとプレイヤーへのベクトルのクロス積を計算
+	float crossProduct = forward.x * toPlayer.z - forward.z * toPlayer.x;
+
+	//クロス積の結果が正しいならプレイヤーは左側にいる
+	return crossProduct < 0.0f;
 }
 
 float EnemyBase::CalculateAngleDifference(float angle1, float angle2)

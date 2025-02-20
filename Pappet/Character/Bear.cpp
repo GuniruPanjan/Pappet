@@ -30,6 +30,10 @@ namespace
 	//攻撃範囲3
 	constexpr float cAttackRadius3 = 130.0f;
 
+	int a = 0;
+	int b = 0;
+	int c = 0;
+
 	//敵を回転させない
 	bool cTurn = false;
 
@@ -183,6 +187,11 @@ void Bear::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 /// <param name="isChase"></param>
 void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChase, SEManager& se, std::shared_ptr<MyLibrary::Physics> physics)
 {
+	//視野の角度を決める
+	m_viewAngle = 30.0f;
+	//視野の距離を決める
+	m_viewDistance = 500.0f;
+
 	//アニメーションの更新
 	if (!cDead)
 	{
@@ -321,6 +330,35 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 	{
 		cTurn = false;
 		
+	}
+	//正面
+	if (!IsPlayerInView(playerPos))
+	{
+		a = 1;
+	}
+	else
+	{
+		a = 0;
+	}
+
+	//右側
+	if (IsPlayerOnRight(playerPos))
+	{
+		b = 1;
+	}
+	else
+	{
+		b = 0;
+	}
+
+	//左側
+	if (IsPlayerOnLeft(playerPos))
+	{
+		c = 1;
+	}
+	else
+	{
+		c = 0;
 	}
 
 	
@@ -642,6 +680,10 @@ void Bear::Draw(UI& ui)
 	{
 		ui.BossHPDraw(m_status.s_hp, m_maxHP, m_bossName, m_subName);
 	}
+
+	DrawFormatString(200, 300, 0xffffff, "%d", a);
+	DrawFormatString(200, 400, 0xffffff, "右側 : %d", b);
+	DrawFormatString(200, 500, 0xffffff, "左側 : %d", c);
 
 #if false
 	DrawFormatString(200, 300, 0xffffff, "m_angle : %f", m_angle);

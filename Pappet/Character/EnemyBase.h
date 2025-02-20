@@ -131,8 +131,12 @@ protected:
 	void TargetNow();
 	//ヒットの更新処理
 	void HitTriggerUpdate();
-	//ダメージを受けたとき
-	void OnDamage();
+	//視野
+	bool IsPlayerInView(MyLibrary::LibVec3& playerPos);
+	//プレイヤーが右側にいる関数
+	bool IsPlayerOnRight(MyLibrary::LibVec3& playerPos);
+	//プレイヤーが左側にいる関数
+	bool IsPlayerOnLeft(MyLibrary::LibVec3& playerPos);
 	//角度の差を計算する関数を追加
 	float CalculateAngleDifference(float angle1, float angle2);
 	//死亡した時
@@ -158,6 +162,8 @@ protected:
 	float m_difPSize;            //プレイヤーとの距離のサイズを入れる
 	float m_difSSize;            //盾との距離のサイズを入れる
 	float m_correctionAngle;     //補正を行うためのアングル
+	float m_viewAngle;           //視野の角度
+	float m_viewDistance;        //視野の距離
 
 	bool m_isDroped;             //コアをドロップしたかどうか
 	bool m_isExist;              //存在するかどうか
