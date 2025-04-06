@@ -2,7 +2,6 @@
 #include "Character/Player.h"
 #include "Character/CollidableNpc.h"
 #include "Camera/Camera.h"
-#include "Map/Map.h"
 #include "Manager/EnemyManager.h"
 #include "Ui/Setting.h"
 #include "Ui/UI.h"
@@ -37,6 +36,11 @@ namespace
 
 	//シングルトン
 	auto& cEffect = EffectManager::GetInstance();
+
+	//勝利演出リセット
+	bool cWinRest[] = {
+		false,
+	};
 }
 
 /// <summary>
@@ -86,14 +90,15 @@ void GameManager::Init()
 	m_loadNow1 = m_pUi->MyLoadGraph("Data/SceneBack/NowLoading1.png", 1, 1);
 	m_loadNow2 = m_pUi->MyLoadGraph("Data/SceneBack/NowLoading2.png", 1, 1);
 	
-
+	//0が休息マップデータ
+	//1がHARIBOのマップデータ
+	//6がチュートリアルマップデータ
 	m_pMap->DataInit(6);
 
 	m_pPhysics = std::make_shared<MyLibrary::Physics>(m_pMap->GetCollisionMap());
 
 	m_pMap->Init(m_pPhysics);
 	cEffect.Init();
-	//pCamera->Init();
 
 	m_pPlayer = std::make_shared<Player>();
 	m_pPlayer->Init(m_pPhysics, this, *m_pWeapon, *m_pShield, *m_pArmor, true);
@@ -102,11 +107,11 @@ void GameManager::Init()
 	m_pEnemy->Init(m_nowMap);
 	m_pItem = std::make_shared<ItemManager>();
 	m_pItem->Init();
-	//m_pNpc->Init(m_pPhysics);
 	m_pSetting = std::make_shared<Setting>();
 	m_pSetting->Init();
 	m_pSe->CharaInit();
 	m_pSe->BossInit();
+	m_pSe->SceneInit();
 	m_pUi->Init();
 	m_pCore->Init();
 	m_pPlayer->ChangeStatus();
@@ -159,7 +164,6 @@ void GameManager::GameInit()
 	m_pEnemy->Init(m_nowMap);
 	m_pItem->GameInit(m_pPhysics, this);
 	m_pMessage->Init();
-	//m_pNpc->Init(m_pPhysics);
 	m_pSetting->Init();
 	m_pUi->Init();
 	m_pPlayer->ChangeStatus();
@@ -218,13 +222,17 @@ void GameManager::Update()
 		}
 		
 		//フェードアウトさせる
-		if (m_pPlayer->GetDead())
+		if (m_pUi->GetReset())
 		{
-			m_pFade->FadeOut(1);
+			//フェードアウト可能にする
+			m_pFade->SetOut(false);
+			m_pFade->FadeOut(5);
 		}
 		//タイトルに戻る際のフェードアウト
 		else if (m_fadeTitle)
 		{
+			//フェードアウト可能にする
+			m_pFade->SetOut(false);
 			m_pFade->FadeOut(5);
 		}
 		//ワープ時のフェードアウト
@@ -324,6 +332,14 @@ void GameManager::Update()
 				{
 					//クマ
 					m_bossEnd.sBear = true;
+					//勝利演出を一回だけ行う
+					if (!cWinRest[0])
+					{
+						m_bossEnd.sWin = true;
+
+						cWinRest[0] = true;
+					}
+
 				}
 				//ステージチュートリアルだった場合
 				else if (m_pMap->GetStageName() == "stageTutorial")
@@ -406,12 +422,11 @@ void GameManager::Update()
 			}
 
 			//死亡した場合
-			if (m_pUi->GetReset())
+			if (m_pUi->GetReset() && m_pFade->GetOut())
 			{
 				//一回だけ実行
 				if (m_deadInit == true)
 				{
-					//cEffect.End();
 					m_pPlayer->GameInit(m_pPhysics);
 					m_pEnemy->GameInit(m_pPhysics, this, *m_pEnemyWeapon, m_deadInit, cTutorial);
 					m_pMap->TriggerReset();
@@ -674,9 +689,16 @@ void GameManager::Draw()
 		//フェードアウトイン描画
 		m_pFade->Draw();
 		//死亡した時描画する
-		if (m_pPlayer->GetDead())
+		if (m_pPlayer->GetDead() && !m_pUi->GetReset())
 		{
-			m_pUi->DiedDraw();
+			m_pUi->DiedDraw(*m_pSe);
+		}
+		//勝利時の演出を描画する
+		if (m_bossEnd.sWin)
+		{
+			m_pUi->GetCoreDraw(*m_pSe);
+			//勝利演出が終わったら終了する
+			m_bossEnd.sWin = m_pUi->GetWinReset();
 		}
 
 		//ワープできない時の描画

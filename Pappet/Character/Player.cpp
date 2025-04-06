@@ -246,8 +246,6 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* mana
 	//拳だった場合
 	m_attackRadius = cFistAttackRadius;
 
-	//m_pAttack = std::make_shared<AttackObject>(m_attackRadius);
-	//m_pPartAttack = std::make_shared<AttackObjectPart>(cPartAttackRadius, 0.0f, 0.0f);
 	m_pStrengthAttack = std::make_shared<AttackObject>(cStrengthAttackRadius);
 	m_pLigAttack = std::make_shared<AttackLigObject>(MyLibrary::LibVec3(m_attackLigPos1.x, m_attackLigPos1.y, m_attackLigPos1.z), MyLibrary::LibVec3(m_attackLigPos2.x, m_attackLigPos2.y, m_attackLigPos2.z), cFistAttackRadius);
 
@@ -1344,14 +1342,14 @@ void Player::Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, b
 	//休息できたら
 	if (m_restTouch && m_mapNow != 0)
 	{
-		//初期化位置更新
-		m_updateX = m_modelPos.x;
-		m_updateY = m_modelPos.y;
-		m_updateZ = m_modelPos.z;
-
 		//Yボタンが押されたら
 		if (m_xpad.Buttons[15] == 1)
 		{
+			//初期化位置更新
+			m_updateX = m_modelPos.x;
+			m_updateY = m_modelPos.y;
+			m_updateZ = m_modelPos.z;
+
 			m_rest = true;
 
 			cEffect.EffectCreate("Rest", restpos);
@@ -1369,14 +1367,14 @@ void Player::Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, b
 	//マップで分ける
 	if (m_restTouch && m_mapNow == 0)
 	{
-		//初期化位置更新
-		m_updateX = m_modelPos.x;
-		m_updateY = m_modelPos.y;
-		m_updateZ = m_modelPos.z;
-
 		//Yボタンが押されたら
 		if (m_xpad.Buttons[15] == 1)
 		{
+			//初期化位置更新
+			m_updateX = m_modelPos.x;
+			m_updateY = m_modelPos.y;
+			m_updateZ = m_modelPos.z;
+
 			m_rest = true;
 			m_bigRest = true;
 

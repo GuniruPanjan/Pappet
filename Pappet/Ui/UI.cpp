@@ -8,12 +8,11 @@
 #include "Manager/MapManager.h"
 #include "Item/Tool.h"
 #include "External/Font.h"
+#include "Manager/SEManager.h"
 #include "Manager/MessageManager.h"
 
 namespace
 {
-	const int cFontSizeLarge = 40;
-	const int cFontSizeMedium = 30;
 	const int cHpBarWidth = 200;
 	const int cBossHpBarWidth = 800;
 	const int cStatusDrawX = 180;
@@ -34,11 +33,18 @@ namespace
 	const int cItemTakingX = 480;
 	const int cItemTakingY = 600;
 	const int cOkTextX = 800;
-	const int cOkTextY = 820;
+	const int cOkTextY = 815;
 	const int cPlayerCoreX = 1400;
 	const int cPlayerCoreY = 905;
-	const int cDeadTextX = -150;
-	const int cDeadTextY = 100;
+	const int cDirectionTextX = -150;
+	const int cDirectionTextY = -200;
+	const int cDirectionBackX1 = 0;
+	const int cDirectionBackX2 = 1920;
+	const int cDirectionWinBackY1 = 230;
+	const int cDirectionWinBackY2 = 450;
+	const int cDirectionDeadBackY1 = 250;
+	const int cDirectionDeadBackY2 = 450;
+	const int cDirectionDivide = 2;
 	const int cEnemyHpBarXOffset = -100;
 	const int cEnemyHpBarYOffset = -300;
 	const int cBossNameX = 450;
@@ -96,12 +102,13 @@ namespace
 	const int cStatusIconY = 0;
 	const int cActionUiXOffset = 20;
 	const int cActionTextX = 750;
-	const int cActionTextY = 820;
+	const int cActionTextY = 815;
 	const int cItemTextX = 700;
-	const int cBossTextX = 700;
+	const int cBossTextX = 690;
 	const int cWarpTextX = 750;
-	const int cMessageTextX = 700;
+	const int cMessageTextX = 680;
 	const int cTextColor = 0xffffff;
+	const int cDirectionColor = 0x000000;
 	const int cItemTakingUiX = 500;
 	const int cItemTakingUiYBlackSword = 625;
 	const int cItemTakingUiYDistorted = 645;
@@ -109,6 +116,7 @@ namespace
 	const int cItemTakingUiYBat = 635;
 	const int cItemTakingUiYWoodShield = 635;
 	const int cItemTakingUiCharX = 800;
+	const int cItemTakingUiCharX1 = 650;
 	const int cItemTakingUiCharY = 675;
 
 	bool cItemTakingUi = false;
@@ -119,13 +127,16 @@ namespace
 /// </summary>
 UI::UI() :
 	m_deadReset(false),
+	m_winReset(false),
 	m_waitResetTime(0),
 	m_youDead(0),
+	m_youWin(0),
+	m_alphaValue(false),
 	m_equipmentReturn(false),
 	m_xpad()
 {
 	m_pFont = std::make_shared<Font>();
-	m_pBigFont = std::make_shared<Font>();
+	m_pSmallFont = std::make_shared<Font>();
 }
 
 /// <summary>
@@ -143,8 +154,10 @@ UI::~UI()
 void UI::Init()
 {
 	m_youDead = 0;
+	m_youWin = 0;
 	m_waitResetTime = 0;
 	m_deadReset = false;
+	m_winReset = true;
 
 	m_heelStone = MyLoadGraph("Data/UI/HeelStoneMini.png", 4, 4);
 	m_blackSword = MyLoadGraph("Data/UI/黒い剣UI.png", 3, 3);
@@ -156,6 +169,7 @@ void UI::Init()
 	m_woodShield = MyLoadGraph("Data/UI/WoodShield.png", 4, 4);
 
 	m_dead = MyLoadGraph("Data/UI/YOUDIEDGraph.png", 1, 1);
+	m_victory = MyLoadGraph("Data/UI/GottheCoreback.png", 1, 1);
 	m_backRightBar = MyLoadGraph("Data/UI/StatusBar右端.png", 2, 2);
 	m_backLeftBar = MyLoadGraph("Data/UI/StatusBar左端.png", 2, 2);
 	m_backCenterBar = MyLoadGraph("Data/UI/StatusBar中央.png", 2, 2);
@@ -172,7 +186,7 @@ void UI::Init()
 	m_tagetLock = MyLoadGraph("Data/UI/TagetLock.png", 1, 1);
 
 	m_pFont->FontInit(40);
-	m_pBigFont->FontInit(80);
+	m_pSmallFont->FontInit(30);
 }
 
 /// <summary>
@@ -206,8 +220,6 @@ void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map,
 	//コアバーの描画
 	DrawGraph(cCoreBarX, cCoreBarY, m_coreBackBar, true);
 
-	SetFontSize(cFontSizeLarge);
-
 	//休息するときは　休息する
 	//アイテムの時は　アイテムを取る
 	//ボス部屋に入るときは　白い光の中に入る
@@ -219,27 +231,27 @@ void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map,
 		//休息
 		if (player.GetRestTouch())
 		{
-			DrawFormatString(cActionTextX, cActionTextY, cTextColor, "休息する");
+			DrawStringToHandle(cActionTextX, cActionTextY, "休息する", cTextColor, m_pFont->GetHandle());
 		}
 		//アイテム
 		else if (player.GetItemPick())
 		{
-			DrawFormatString(cItemTextX, cActionTextY, cTextColor, "アイテムを取る");
+			DrawStringToHandle(cItemTextX, cActionTextY, "アイテムを取る", cTextColor, m_pFont->GetHandle());
 		}
 		//ボス部屋入り口
 		else if (player.GetBossEnter())
 		{
-			DrawFormatString(cBossTextX, cActionTextY, cTextColor, "白い光の中に入る");
+			DrawStringToHandle(cBossTextX, cActionTextY, "白い光の中に入る", cTextColor, m_pFont->GetHandle());
 		}
 		//ワープ
 		else if (map.GetCore())
 		{
-			DrawFormatString(cWarpTextX, cActionTextY, cTextColor, "転移する");
+			DrawStringToHandle(cWarpTextX, cActionTextY, "転移する", cTextColor, m_pFont->GetHandle());
 		}
 		//メッセージ
 		else if (player.GetMessagePick())
 		{
-			DrawFormatString(cMessageTextX, cActionTextY, cTextColor, "メッセージを読む");
+			DrawStringToHandle(cMessageTextX, cActionTextY, "メッセージを読む", cTextColor, m_pFont->GetHandle());
 		}
 	}
 
@@ -260,10 +272,10 @@ void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map,
 
 		DrawFormatString(cOkTextX, cOkTextY, cTextColor, "O K");
 
-		ItemTakingUI(item.m_uiItem.u_BlackSword, m_blackSword, cItemTakingUiX, cItemTakingUiYBlackSword, cItemTakingUiCharX, cItemTakingUiCharY, "黒い剣");
-		ItemTakingUI(item.m_uiItem.u_Distorted, m_uglyShield, cItemTakingUiX, cItemTakingUiYDistorted, cItemTakingUiCharX, cItemTakingUiCharY, "歪んだ盾");
-		ItemTakingUI(item.m_uiItem.u_ArmorNormal, m_commonArmor, cItemTakingUiX, cItemTakingUiYArmorNormal, cItemTakingUiCharX, cItemTakingUiCharY, "普通の鎧");
-		ItemTakingUI(item.m_uiItem.u_Bat, m_bat, cItemTakingUiX, cItemTakingUiYBat, cItemTakingUiCharX, cItemTakingUiCharY, "木のバット");
+		ItemTakingUI(item.m_uiItem.u_BlackSword, m_blackSword, cItemTakingUiX, cItemTakingUiYBlackSword, cItemTakingUiCharX, cItemTakingUiCharY, "黒剣");
+		ItemTakingUI(item.m_uiItem.u_Distorted, m_uglyShield, cItemTakingUiX, cItemTakingUiYDistorted, cItemTakingUiCharX, cItemTakingUiCharY, "忌盾");
+		ItemTakingUI(item.m_uiItem.u_ArmorNormal, m_commonArmor, cItemTakingUiX, cItemTakingUiYArmorNormal, cItemTakingUiCharX1, cItemTakingUiCharY, "ノクターニス兵の鎧");
+		ItemTakingUI(item.m_uiItem.u_Bat, m_bat, cItemTakingUiX, cItemTakingUiYBat, cItemTakingUiCharX, cItemTakingUiCharY, "木の棍棒");
 		ItemTakingUI(item.m_uiItem.u_WoodShield, m_woodShield, cItemTakingUiX, cItemTakingUiYWoodShield, cItemTakingUiCharX, cItemTakingUiCharY, "木の盾");
 
 		//Bbuttonを押すと閉じる
@@ -287,13 +299,11 @@ void UI::Draw(Player& player, EnemyManager& enemy, Setting& eq, MapManager& map,
 		DrawGraph(cActionUiX, cActionUiY, m_actionUI, true);
 		DrawGraph(cActionUiX + cActionUiXOffset, cButtonY, m_bButton, true);
 
-		DrawFormatString(cOkTextX, cOkTextY, cTextColor, "O K");
+		DrawStringToHandle(cOkTextX, cOkTextY, "O K", cTextColor, m_pFont->GetHandle());
 	}
 
 	//コア数描画
-	DrawFormatString(cPlayerCoreX, cPlayerCoreY, cTextColor, "%d", player.GetStatus().s_core);
-
-	SetFontSize(cFontSizeLarge);
+	DrawFormatStringToHandle(cPlayerCoreX, cPlayerCoreY, cTextColor, m_pFont->GetHandle(), "%d", player.GetStatus().s_core);
 }
 
 /// <summary>
@@ -513,7 +523,7 @@ void UI::EquipmentUIDraw(Weapon& weapon, Shield& shield, Armor& armor, Tool& too
 		//アイテム
 		DrawGraph(cHeelStoneX, cHeelStoneY, m_heelStone, true);
 
-		DrawFormatString(cHeelStoneTextX, cHeelStoneTextY, cTextColor, "%d", tool.GetHeel().sa_number);
+		DrawFormatStringToHandle(cHeelStoneTextX, cHeelStoneTextY, cTextColor, m_pFont->GetHandle(), "%d", tool.GetHeel().sa_number);
 	}
 }
 
@@ -531,9 +541,9 @@ void UI::ItemTakingUI(int item, int handle, int x, int y, int charX, int charY, 
 	{
 		DrawGraph(x, y, handle, true);
 
-		DrawFormatString(charX, charY, 0xffffff, letter);
+		DrawStringToHandle(charX, charY, letter, cTextColor, m_pFont->GetHandle());
 
-		DrawFormatString(X, Y, 0xffffff, "%d", item);
+		DrawFormatStringToHandle(X, Y, cTextColor, m_pFont->GetHandle(), "%d", item);
 	}
 
 }
@@ -541,15 +551,20 @@ void UI::ItemTakingUI(int item, int handle, int x, int y, int charX, int charY, 
 /// <summary>
 /// 死亡描画処理
 /// </summary>
-void UI::DiedDraw()
+void UI::DiedDraw(SEManager& se)
 {
 	int Max = 255;
 	int WaitTime = 30;
+	int Value = 3;
+	int End = 10;
 
 	//死亡の文字の透過
-	if (m_youDead < Max)
+	if (m_youDead == 0)
 	{
-		m_youDead++;
+		//敗北SE再生
+		PlaySoundMem(se.GetLoserSE(), DX_PLAYTYPE_BACK, true);
+
+		m_alphaValue = true;
 
 		m_waitResetTime = 0;
 	}
@@ -561,13 +576,106 @@ void UI::DiedDraw()
 		}
 		else
 		{
+			m_alphaValue = false;
+			//初期化
+			m_waitResetTime = 0;
+		}
+	}
+	//アルファ値を変化させる
+	if (m_alphaValue)
+	{
+		if (m_youDead < Max)
+		{
+			m_youDead++;
+		}
+	}
+	else
+	{
+		if (m_youDead > End)
+		{
+			m_youDead -= Value;
+		}
+		else if (m_youDead <= End)
+		{
 			m_deadReset = true;
+
+			m_youDead = 0;
 		}
 	}
 
+	//背景の黒い画像を透過する
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_youDead / cDirectionDivide);
+	DrawBox(cDirectionBackX1, cDirectionDeadBackY1, cDirectionBackX2, cDirectionDeadBackY2, cDirectionColor, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 	//死亡時の文字を出す
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_youDead);
-	DrawGraph(cDeadTextX, cDeadTextY, m_dead, true);
+	DrawGraph(cDirectionTextX, 0, m_dead, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}
+/// <summary>
+/// ボスを倒したときの勝利演出描画
+/// </summary>
+void UI::GetCoreDraw(SEManager& se)
+{
+	int Max = 255;
+	int WaitTime = 30;
+	int Value = 3;
+	int End = 10;
+
+	//勝利の文字の透過
+	if (m_youWin == 0)
+	{
+		//勝利SE再生
+		PlaySoundMem(se.GetVictorySE(), DX_PLAYTYPE_BACK, true);
+
+		m_alphaValue = true;
+
+		m_waitResetTime = 0;
+	}
+	else if(m_youWin >= Max)
+	{
+		if (m_waitResetTime <= WaitTime)
+		{
+			m_waitResetTime++;
+		}
+		else
+		{
+			m_alphaValue = false;
+			//初期化
+			m_waitResetTime = 0;
+		}
+	}
+	//アルファ値を変化させる
+	if (m_alphaValue)
+	{
+		if (m_youWin < Max)
+		{
+			m_youWin += Value;
+		}
+	}
+	else
+	{
+		if (m_youWin > End)
+		{
+			m_youWin -= Value;
+		}
+		else if(m_youWin <= End)
+		{
+			m_winReset = false;
+
+			m_youWin = 0;
+		}
+	}
+
+	//背景の黒い画像を透過する
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_youWin / cDirectionDivide);
+	DrawBox(cDirectionBackX1, cDirectionWinBackY1, cDirectionBackX2, cDirectionWinBackY2, cDirectionColor, true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	//勝利時の文字を出す
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_youWin);
+	DrawGraph(cDirectionTextX, cDirectionTextY, m_victory, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
@@ -690,14 +798,11 @@ void UI::BossHPDraw(int hp, int maxHP, const char* name, const char* subName)
 	//HPバーの最大幅を計算
 	int HPBarWidth = (int)((float)hp / maxHP * cBossHpBarWidth);
 
-	SetFontSize(cFontSizeMedium);
 	//ボスの当て字
-	DrawString(cBossNameX, cBossSubnameY, subName, cTextColor);
-
-	SetFontSize(cFontSizeMedium);
+	DrawStringToHandle(cBossNameX, cBossSubnameY, subName, cTextColor, m_pSmallFont->GetHandle());
 
 	//ボスの名前
-	DrawString(cBossNameX, cBossNameY, name, cTextColor);
+	DrawStringToHandle(cBossNameX, cBossNameY, name, cTextColor, m_pFont->GetHandle());
 
 	if (HPBarWidth > 0)
 	{
@@ -718,6 +823,7 @@ void UI::End()
 	DeleteGraph(m_bat);
 	DeleteGraph(m_woodShield);
 	DeleteGraph(m_dead);
+	DeleteGraph(m_victory);
 	DeleteGraph(m_backRightBar);
 	DeleteGraph(m_backLeftBar);
 	DeleteGraph(m_backCenterBar);
