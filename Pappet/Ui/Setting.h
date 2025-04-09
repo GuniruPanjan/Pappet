@@ -66,12 +66,12 @@ public:
 	/// <summary>
 	/// 更新処理
 	/// </summary>
-	void Update();
+	void Update(SEManager& se);
 
 	/// <summary>
 	/// メニューの更新処理
 	/// </summary>
-	void MenuUpdate(Player& player);
+	void MenuUpdate(Player& player, SEManager& se);
 
 	/// <summary>
 	/// ステータス画面を変える更新処理
@@ -86,7 +86,7 @@ public:
 	/// <summary>
 	/// 休息の更新処理
 	/// </summary>
-	void RestUpdate(Player& player, CoreManager& core, bool rest);
+	void RestUpdate(Player& player, CoreManager& core, bool rest, SEManager& se);
 
 	/// <summary>
 	/// レベルアップ処理
@@ -114,44 +114,17 @@ public:
 	void Draw();
 
 	/// <summary>
-	/// 選択中の色を変える
-	/// </summary>
-	/// <param name="select">列挙型</param>
-	/// <param name="now">選択してるもの</param>
-	/// <param name="other1">それ以外１</param>
-	/// <param name="other2">それ以外２</param>
-	/// <param name="other3">それ以外３</param>
-	/// <param name="other4">それ以外４</param>
-	/// <param name="black">黒い画像のブレンド率</param>
-	/// <param name="white">白い画像のブレンド率</param>
-	void BrightColorDraw(int select, int now, int other1, int other2, int other3, int other4, int black, int white);
-
-	// <summary>
-	/// 選択中の色を変える
-	/// </summary>
-	/// <param name="select">列挙型</param>
-	/// <param name="now">選択してるもの</param>
-	/// <param name="other1">それ以外１</param>
-	/// <param name="other2">それ以外２</param>
-	/// <param name="other3">それ以外３</param>
-	/// <param name="other4">それ以外４</param>
-	/// <param name="volume">音量</param>
-	void VolumeColorDraw(int select, int now, int other1, int other2, int other3, int other4, int volume);
-
-	/// <summary>
 	/// 設定の描画
 	/// </summary>
 	/// <param name="volume">音量</param>
-	void SettingDraw(int volume);
+	void SettingDraw(SEManager& se);
 
 	/// <summary>
 	/// メニュー描画
 	/// </summary>
-	void MenuDraw();
+	void MenuDraw(int rb, int lb, int box);
 
-	/// <summary>
-	/// 背景描画
-	/// </summary>
+	//背景を暗くする
 	void MenuBackDraw();
 
 	/// <summary>
@@ -199,6 +172,13 @@ public:
 	/// </summary>
 	/// <returns>音量を返す</returns>
 	int GetVolume() { return m_volumeSize; }
+
+	//SEを取る
+	int GetSe() { return m_seSize; }
+
+	//カメラ感度を取る
+	float GetCamera() { return m_cameraSize; }
+
 
 	/// <summary>
 	/// 設定シーンを出すための判定をとる
@@ -289,7 +269,15 @@ public:
 	bool GetRestWarp() { return m_restWarp; }
 	bool SetRestWarp(bool set) { return m_restWarp = set; }
 
+	//待ち時間を設定する
+	int SetWait(int set) { return m_waitTime = set; }
+
 private:
+
+	void SettingChange(int& setting, int& cSetting, int one, int two, int three, int four, int five, int six, int seven, int eight, int nine, int ten);
+	void CameraChange(float& setting, float& cSetting, float one, float two, float three, float four, float five, float six, float seven, float eight, float nine, float ten);
+	void SettingBarChange(int Decision, float& bar, float& cBar);
+	void SettingBarDraw(float bar, int x, int y);
 
 	void WeaponUpdate(std::list<std::string> list, Weapon& weapon, int right);
 	void WeaponDraw(std::list<std::string> list, int right);
@@ -306,6 +294,8 @@ private:
 	int m_white;              //白い画像格納変数
 	int m_back;               //黒い画像格納変数
 	int m_volumeSize;         //音量
+	int m_seSize;             //SE音量
+	float m_cameraSize;       //カメラ感度
 	int m_menuSelect[5];      //メニュー選択 
 	int m_selectX;            //選択画像のX座標
 	int m_selectY;            //選択画像のY座標
@@ -316,19 +306,26 @@ private:
 	int m_waitTime;           //入力を待つための時間
 	int m_brightnessColor;    //明るさの色
 	int m_bgmColor;           //音量の色
+	int m_seColor;            //SEの色
+	int m_cameraColor;        //カメラの色
 	int m_returnColor;        //戻るの色
-	int m_brightColor[5];     //明るさ選択の色
-	int m_volumeColor[5];     //音量選択の色
 	int m_menuColor[5];       //メニューの色
 	int m_core;               //表記用にコアを取得する
 	int m_right;              //右装備の選んでるところを格納する変数
 	int m_left;               //左装備の選んでるところを格納する変数
 	int m_armor;              //鎧装備の選んでるところを格納する変数
 
+	float m_brightBar;        //明るさのバー
+	float m_volumeBar;        //音量のバー
+	float m_seBar;            //SEのバー
+	float m_cameraBar;        //カメラのバー
+
 	bool m_one;               //単発入力
 	bool m_settingScene;      //設定するための画面を呼ぶ変数
 	bool m_brightness;        //明るさ設定
-	bool m_volume;            //音量設定
+	bool m_volume;            //BGM設定
+	bool m_se;                //SE設定
+	bool m_camera;            //カメラ感度
 	bool m_equipmentMenu;     //装備メニュー
 	bool m_itemMenu;          //アイテムボックスメニュー
 	bool m_decisionEquipment; //装備選択画面
@@ -356,7 +353,6 @@ private:
 	std::list<std::string> m_armorList;       //鎧の入手順に入れるリスト
 
 	//スマートポインタ
-	std::shared_ptr<SEManager> m_pSe = std::make_shared<SEManager>();
 	std::shared_ptr<SelectManager> m_pSelect = std::make_shared<SelectManager>();
 	std::shared_ptr<Font> m_pFont;
 	std::shared_ptr<Font> m_pSmallFont;

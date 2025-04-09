@@ -53,6 +53,8 @@ protected:
 	int m_statusIcon;     //ステータスアイコン画像格納変数
 	int m_equipmentFrame; //装備の枠画像格納変数
 	int m_tagetLock;      //ターゲットロック画像格納変数
+	int m_menu;               //メニュー画像格納変数
+
 
 	//アイテムの画像
 	int m_blackSword;     //黒い剣の画像格納変数
@@ -80,9 +82,6 @@ protected:
 	int m_lStick;         //左スティック画像格納変数
 	int m_rStick;         //右スティック画像格納変数
 	int m_messageUI;      //メッセージ画像格納変数
-
-	//スマートポインタ
-	std::shared_ptr<SEManager> pse = std::make_shared<SEManager>();
 
 	ItemManager* m_pItem;
 };

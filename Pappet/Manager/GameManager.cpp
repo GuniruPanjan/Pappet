@@ -1,6 +1,5 @@
 #include "GameManager.h"
 #include "Character/Player.h"
-#include "Character/CollidableNpc.h"
 #include "Camera/Camera.h"
 #include "Manager/EnemyManager.h"
 #include "Ui/Setting.h"
@@ -139,6 +138,7 @@ void GameManager::Init()
 		cTutorial = false;
 	}
 
+	//ロード時間
 	m_load = 30;
 
 	m_isLoading = true;      //必ず各クラスの後につける
@@ -202,7 +202,7 @@ void GameManager::Update()
 	{
 		m_pEnemy->EnemyGenerate(m_pPhysics, this, *m_pEnemyWeapon, cTutorial);
 
-		m_pCamera->Update(*m_pPlayer);
+		m_pCamera->Update(*m_pPlayer, m_pSetting->GetCamera());
 
 		//フェードインされる準備
 		m_pFade->SetFade(255);
@@ -275,7 +275,7 @@ void GameManager::Update()
 			m_pPlayer->SetCameraAngle(m_pCamera->GetAngle().y);
 
 			//ロックオンしてない時
-			m_pCamera->Update(*m_pPlayer);
+			m_pCamera->Update(*m_pPlayer, m_pSetting->GetCamera());
 			//ボス部屋に入ったらボスをロックオンするようにする
 			if (m_pMap->GetBossRoom() && m_pPlayer->GetLock() && !m_pEnemy->GetBossDead(GetThisMapName()))
 			{
@@ -363,8 +363,6 @@ void GameManager::Update()
 					{
 						cTutorialTime++;
 					}
-
-
 				}
 
 				//ワープする
@@ -377,9 +375,9 @@ void GameManager::Update()
 			m_pMap->Update(m_pPhysics, m_pPlayer->GetWarp(), m_pPlayer->GetBossStart(), m_pEnemy->GetBossDead(GetThisMapName()));
 
 			//メニューを開く
-			if (m_pPlayer->GetMenu() && !m_pSetting->GetEquipment() && !m_pSetting->GetItem())
+			if (m_pPlayer->GetMenu() && !m_pSetting->GetEquipment() && !m_pSetting->GetItem() && !m_pSetting->GetSettingScene())
 			{
-				m_pSetting->MenuUpdate(*m_pPlayer);
+				m_pSetting->MenuUpdate(*m_pPlayer, *m_pSe);
 
 				//タイトルに戻る際のフェードアウトをさせる
 				if (m_pSetting->GetTitle())
@@ -454,7 +452,7 @@ void GameManager::Update()
 				//レベルアップ処理をしていない場合
 				if (!m_pSetting->GetLevel())
 				{
-					m_pSetting->RestUpdate(*m_pPlayer, *m_pCore, m_restMap);
+					m_pSetting->RestUpdate(*m_pPlayer, *m_pCore, m_restMap, *m_pSe);
 				}
 				//レベルアップ処理
 				if (m_pSetting->GetLevel())
@@ -508,6 +506,12 @@ void GameManager::Update()
 					}
 				}
 
+			}
+
+			//設定画面を更新
+			if (m_pSetting->GetSettingScene())
+			{
+				m_pSetting->Update(*m_pSe);
 			}
 
 			cOne = false;
@@ -629,16 +633,17 @@ void GameManager::Draw()
 
 		m_pUi->Draw(*m_pPlayer, *m_pEnemy, *m_pSetting, *m_pMap, *m_pItem, *m_pWeapon, *m_pShield, *m_pArmor, *m_pTool, *m_pMessage);
 
-		//メニューの背景描画
-		if (m_pPlayer->GetMenu())
+		//メニュー画面の背景を暗くする
+		if (m_pSetting->GetEquipment() || m_pSetting->GetItem())
 		{
 			m_pSetting->MenuBackDraw();
 		}
 
+
 		//メニュー画面
-		if (m_pPlayer->GetMenu() && !m_pSetting->GetEquipment() && !m_pSetting->GetItem())
+		if (m_pPlayer->GetMenu() && !m_pSetting->GetEquipment() && !m_pSetting->GetItem() && !m_pSetting->GetSettingScene())
 		{
-			m_pSetting->MenuDraw();
+			m_pSetting->MenuDraw(m_pMessage->GetRB(), m_pMessage->GetLB(), m_pUi->GetBox());
 		}
 		//装備画面
 		else if (m_pSetting->GetEquipment() && !m_pSetting->GetDecision())
@@ -701,9 +706,18 @@ void GameManager::Draw()
 			m_bossEnd.sWin = m_pUi->GetWinReset();
 		}
 
+		//設定画面を描画
+		if (m_pSetting->GetSettingScene())
+		{
+			m_pSetting->Draw();
+
+		}
+
 		//ワープできない時の描画
 		m_pSetting->CaveatDraw();
 	}
+
+	m_pSetting->SettingDraw(*m_pSe);
 
 }
 
