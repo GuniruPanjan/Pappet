@@ -51,16 +51,12 @@ public:
 	Player();
 	virtual ~Player();
 
-	void Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* manager, Weapon& weapon, Shield& shield, Armor& armor, bool anim);
-	void GameInit(std::shared_ptr<MyLibrary::Physics> physics);
+	void Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* manager, Weapon& weapon, Shield& shield, Armor& armor, bool anim, int colData);
+	void GameInit(std::shared_ptr<MyLibrary::Physics> physics, int colData);
 	void Finalize();
 	void Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool, SEManager& se, bool boss, bool dead, std::shared_ptr<MyLibrary::Physics> physics);
 	void Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, bool boss, bool dead);
-	void EffectAction();
 	void WarpMap();
-	void NotWeaponAnimation();
-	void AllAnimation();
-	void WeaponAnimation(Shield& shield);
 	void Draw(Armor& armor, int font);
 	void End();
 
@@ -74,11 +70,38 @@ public:
 	//レベル関係のステータス
 	void ChangeStatus();
 
+	//ガード状態フレームを取得
+	int GetShieldFrame() { return m_moveAnimShieldFrameIndex; }
+	
+	//アクションできるか決定
+	bool GetAction() { return m_action; }
+	bool SetAction(bool set) { return m_action = set; }
+
 	//プレイヤーが生きているかを取得
 	const bool IsGetPlayerDead() const { return m_anim.s_isDead; }
 
+	//アングル関係
+	float GetAngle() { return m_angle; }
+	float SetModelAngle(float angle) { return m_angle = angle; }
+
+	//ジャンプ関係
+	float SetStart(float set) { return m_start = set; }
+	float SetReset(float set) { return m_reset = set; }
+	bool SetLoop(bool set) { return m_loop = set; }
+
+	//攻撃関係
+	int SetAttackNumber(int set) { return m_attackNumber = set; }      //今の攻撃段階を決める
+	bool SetAttackInit(int set) { return m_attackInit = set; }         //攻撃判定を初期化する
+	bool SetAttackEnd(int set) { return m_attackEnd = set; }           //攻撃判定を終了する
+	bool SetStrongAttack(bool set) { return m_attackStrong = set; }    //強攻撃をしたか決める
+	bool SetJumpAttack(bool set) { return m_jumpAttack = set; }        //ジャンプ攻撃をしたか決める
+
+	//回避関係
+	bool SetAvoidance(bool set) { return m_avoidanceNow = set; }
+
 	//カメラ関係
-	void SetCameraAngle(float angle) { m_cameraAngle = angle; }
+	float GetCameraAngle() { return m_cameraAngle; }
+	float SetCameraAngle(float angle) { return m_cameraAngle = angle; }
 	float SetAngle(float angle) { return m_lockAngle = angle; }
 	bool GetLock() { return m_lockonTarget; }
 	float GetSearch() { return m_searchRadius; }
@@ -127,6 +150,7 @@ public:
 	Status GetStatus() { return m_status; }
 	LevelUpStatus GetLevelStatus() { return m_levelStatus; }
 	MaxStatus GetMaxStatus() { return ms_maxStatus; }
+	bool GetStaminaBreak() { return m_staminaBreak; }
 
 	//アイテムなどのステータス関係
 	int GetLevel() { return m_levelStatus.sl_all; }
@@ -145,7 +169,7 @@ public:
 	float GetAttackMuscle() { return m_equipmentMuscle; }
 	float GetAttackSkill() { return m_equipmentSkill; }
 
-	const MyLibrary::LibVec3 GetPos() const { return rigidbody.GetPos(); }
+	const MyLibrary::LibVec3 GetPos() const { return rigidbody->GetPos(); }
 	const MyLibrary::LibVec3 GetShieldPos() const { return m_shieldPos; }
 
 private:
@@ -153,6 +177,7 @@ private:
 private:
 	std::shared_ptr<AttackObject> m_pStrengthAttack;       //強攻撃判定
 	std::shared_ptr<AttackLigObject> m_pLigAttack;         //リグ毎の攻撃判定
+	std::shared_ptr<AttackLigObject> m_pLigLegAttack;      //足のリグ攻撃判定
 	std::shared_ptr<PlayerSearchObject> m_pSearch;         //索敵判定
 	std::shared_ptr<PlayerSearchObject> m_pShieldSearch;   //盾で防げるかの索敵判定
 	std::shared_ptr<ShieldObject> m_pShield;               //盾の判定
@@ -165,7 +190,6 @@ private:
 
 	XINPUT_STATE m_xpad;                //パッド入力
 	int m_mapNow;                       //現在のマップ
-	float m_cameraAngle;                //カメラ情報
 	float m_searchRadius;               //索敵範囲
 	float m_lockAngle;                  //ロックオンしたときのアングル
 	float m_updateX;                    //休息したときの初期化位置X
@@ -190,9 +214,9 @@ private:
 
 	//アニメーション用変数
 	int m_attackNumber;                 //現在の攻撃段階の代入
+	bool m_attackStrong;                //強攻撃をしたかの判定
+	bool m_jumpAttack;                  //ジャンプ攻撃をしたかの判定
 	bool m_avoidanceNow;                //フレーム回避中の判断
-	bool m_shieldNow;                   //防御中の判断
-	bool m_animReverse;                 //アニメーションを逆再生させるための判定
 	bool m_deadReset;                   //死亡完了した判定
 
 	//フレーム用変数
@@ -200,13 +224,25 @@ private:
 	int m_moveAnimFrameRight;
 	int m_attackLig1;                   //攻撃判定のリグ1
 	int m_attackLig2;                   //攻撃判定のリグ2
+	int m_legAttackLig1;                //足の攻撃判定のリグ1
+	int m_legAttackLig2;                //足の攻撃判定のリグ2
 	int m_moveAnimShieldFrameIndex;     //盾を構えるときのアニメーションのフレーム取得
 	int m_moveAnimShieldFrameHandIndex;
 	int m_notRoll;                      //ローリングできないようにする
+	bool m_attackInit;                  //攻撃判定初期化
+	bool m_attackEnd;                   //攻撃判定終了
+	bool m_action;                      //UIから終了する状態遷移用の判定変数
+
+	float m_start;                      //スタートタイムを設定する
+	float m_reset;                      //リセットタイムを設定する
+	bool m_loop;                        //ループ設定する
+
 	MATRIX m_moveWeaponFrameMatrix;     //武器をアタッチするフレームのローカル座標をワールド変換行列を取得する
 	MATRIX m_moveShieldFrameMatrix;
 	VECTOR m_attackLigPos1;             //攻撃判定リグのポジション1
 	VECTOR m_attackLigPos2;             //攻撃判定リグのポジション2
+	VECTOR m_attackLegLigPos1;          //足での攻撃判定リグのポジション1
+	VECTOR m_attackLegLigPos2;          //足での攻撃判定リグのポジション2
 	VECTOR m_rollMove;                  //回避で移動する距離
 	VECTOR m_moveVector;                //モーション中の移動
 	VECTOR m_attackMove;                //攻撃で移動する距離

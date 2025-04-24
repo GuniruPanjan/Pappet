@@ -67,6 +67,7 @@ GameManager::GameManager() :
 	m_pMap = std::make_shared<MapManager>();
 	m_pSe = std::make_shared<SEManager>();
 	m_pFont = std::make_shared<Font>();
+
 }
 
 /// <summary>
@@ -100,7 +101,7 @@ void GameManager::Init()
 	cEffect.Init();
 
 	m_pPlayer = std::make_shared<Player>();
-	m_pPlayer->Init(m_pPhysics, this, *m_pWeapon, *m_pShield, *m_pArmor, true);
+	m_pPlayer->Init(m_pPhysics, this, *m_pWeapon, *m_pShield, *m_pArmor, true, m_pMap->GetCollisionMap());
 	m_pPlayer->SetMapNow(GetThisMapName());
 	m_pEnemy = std::make_shared<EnemyManager>();
 	m_pEnemy->Init(m_nowMap);
@@ -160,7 +161,7 @@ void GameManager::GameInit()
 	m_pMap->Init(m_pPhysics);
 	cEffect.Init();
 
-	m_pPlayer->Init(m_pPhysics, this, *m_pWeapon, *m_pShield, *m_pArmor, false);
+	m_pPlayer->Init(m_pPhysics, this, *m_pWeapon, *m_pShield, *m_pArmor, false, m_pMap->GetCollisionMap());
 	m_pEnemy->Init(m_nowMap);
 	m_pItem->GameInit(m_pPhysics, this);
 	m_pMessage->Init();
@@ -409,23 +410,14 @@ void GameManager::Update()
 				m_pSetting->SetReturn(true);
 			}
 
-			//装備画面とアイテム画面の変更更新
-			if (m_pSetting->GetEquipment() || m_pSetting->GetItem())
-			{
-				if (!m_pSetting->GetDecision())
-				{
-					m_pSetting->MenuChange();
-				}
-
-			}
-
 			//死亡した場合
 			if (m_pUi->GetReset() && m_pFade->GetOut())
 			{
 				//一回だけ実行
 				if (m_deadInit == true)
 				{
-					m_pPlayer->GameInit(m_pPhysics);
+					m_pUi->End();
+					m_pPlayer->GameInit(m_pPhysics, m_pMap->GetCollisionMap());
 					m_pEnemy->GameInit(m_pPhysics, this, *m_pEnemyWeapon, m_deadInit, cTutorial);
 					m_pMap->TriggerReset();
 					m_pUi->Init();
@@ -472,7 +464,7 @@ void GameManager::Update()
 					if (m_pFade->GetOut())
 					{
 						//一回だけ実行
-						m_pPlayer->GameInit(m_pPhysics);
+						m_pPlayer->GameInit(m_pPhysics, m_pMap->GetCollisionMap());
 						m_pPlayer->ChangeStatus();
 						m_pTool->Init();
 
@@ -651,25 +643,11 @@ void GameManager::Draw()
 			m_pSetting->EquipmentDraw(*m_pPlayer);
 			m_pUi->EquipmentDraw(*m_pWeapon, *m_pShield, *m_pArmor);
 		}
-		//アイテム画面
-		else if (m_pSetting->GetItem() && !m_pSetting->GetDecision())
-		{
-			m_pSetting->ItemBoxDraw();
-		}
 		//装備選択画面描画
 		else if (m_pSetting->GetDecision())
 		{
 			m_pSetting->EquipmentDecisionDraw(*m_pItem);
 			EquipmentDraw();
-		}
-
-		//アイテム画面と装備画面の変更描画
-		if (m_pSetting->GetEquipment() || m_pSetting->GetItem())
-		{
-			if (!m_pSetting->GetDecision())
-			{
-				m_pSetting->MenuChangeDraw();
-			}
 		}
 
 		//休息画面描画

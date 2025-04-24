@@ -11,6 +11,10 @@
 #include "Manager/GameManager.h"
 #include "Manager/SEManager.h"
 
+#include "State/Player/PlayerStateIdle.h"
+#include "State/Player/PlayerStateTaking.h"
+#include "Input/Input.h"
+
 #include <cassert>
 
 namespace
@@ -45,14 +49,12 @@ namespace
 	float cAttackMove = 0.0f;
 	//攻撃での追加攻撃時間
 	int cAddAttackTime = 0;
-	//行動での移動距離
-	float cMove = 0.0f;
 	//拳の攻撃範囲
 	constexpr float cFistAttackRadius = 25.0f;
 	//攻撃の判定範囲
 	constexpr float cPartAttackRadius = 16.0f;
 	//強攻撃の攻撃範囲
-	constexpr float cStrengthAttackRadius = 100.0f;
+	constexpr float cStrengthAttackRadius = 60.0f;
 	//盾の幅
 	constexpr float cShieldWidth = 40.0f;
 	//盾の横
@@ -83,11 +85,15 @@ namespace
 
 	int cAnimIdx;
 
-	bool cOne = false;
-	bool cTwo = false;
+	bool cAngle = false;
+	bool cJumpOne = false;
+	bool cRollOne = false;
 
 	bool cHit = false;         //攻撃を体に受けるときの判定
 	bool cShieldHit = false;   //攻撃を盾に受けるときの判定
+
+	//無理やり重力を与える範囲
+	constexpr float cGravity = 20.0f;
 }
 
 Player::Player() :
@@ -118,14 +124,13 @@ Player::Player() :
 	m_moveAnimFrameRight(0),
 	m_attackLig1(0),
 	m_attackLig2(0),
+	m_legAttackLig1(0),
+	m_legAttackLig2(0),
 	m_moveAnimShieldFrameIndex(0),
 	m_moveAnimShieldFrameHandIndex(0),
-	m_cameraAngle(0.0f),
 	m_lockAngle(0.0f),
 	m_avoidanceNow(false),
-	m_shieldNow(false),
 	m_shieldOne(false),
-	m_animReverse(false),
 	m_deadReset(false),
 	m_message(false),
 	m_read(false),
@@ -135,10 +140,20 @@ Player::Player() :
 	m_moveVector(VGet(0.0f,0.0f,0.0f)),
 	m_attackLigPos1(VGet(0.0f,0.0f,0.0f)),
 	m_attackLigPos2(VGet(0.0f, 0.0f, 0.0f)),
+	m_attackLegLigPos1(VGet(0.0f,0.0f,0.0f)),
+	m_attackLegLigPos2(VGet(0.0f,0.0f,0.0f)),
 	m_shieldPos(),
 	m_shieldSize(),
 	m_shieldSearchPos(),
-	m_notRoll(0)
+	m_notRoll(0),
+	m_start(0.0f),
+	m_reset(0.0f),
+	m_loop(false),
+	m_attackStrong(false),
+	m_jumpAttack(false),
+	m_attackInit(false),
+	m_attackEnd(false),
+	m_action(true)
 {
 
 	//カプセル型
@@ -147,6 +162,9 @@ Player::Player() :
 	capsuleCol->m_len = 50.0f;
 	capsuleCol->m_radius = 12.0f;
 	capsuleCol->m_vec = MyLibrary::LibVec3(0.0f, capsuleCol->m_vec.y + 2.0f, 0.0f);
+
+	m_capsuleY = capsuleCol->m_vec.y;
+	m_capsuleRadius = capsuleCol->m_radius;
 
 	//レベルの初期化
 	m_levelStatus.sl_hp = 1;
@@ -170,8 +188,8 @@ Player::Player() :
 	m_animChange.sa_imapact = false;
 	m_animChange.sa_strengthAttack = false;
 	
-	//エフェクトの初期化
-	m_effect.s_heel = false;
+	//キャラクター名を設定
+	m_characterName = "Player";
 
 	//モデル読み込み
 	m_modelHandle = handle.GetModelHandle(cPath);
@@ -203,7 +221,7 @@ Player::~Player()
 /// 初期化処理
 /// </summary>
 /// <param name="physics">物理クラスのポインタ</param>
-void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* manager, Weapon& weapon, Shield& shield, Armor& armor, bool anim)
+void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* manager, Weapon& weapon, Shield& shield, Armor& armor, bool anim, int colData)
 {
 	m_pPhysics = physics;
 
@@ -211,7 +229,7 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* mana
 	Collidable::Init(m_pPhysics);
 
 	//プレイヤーの初期位置設定
-	rigidbody.Init(true);
+	rigidbody->Init(true);
 	if (manager->GetThisMapName() == 0)
 	{
 		m_updateX = -200.0f;
@@ -231,10 +249,10 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* mana
 		m_updateZ = 0.0f;
 	}
 	
-	rigidbody.SetPos(MyLibrary::LibVec3(m_updateX, m_updateY, m_updateZ));
-	rigidbody.SetNextPos(rigidbody.GetPos());
-	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
-	m_collisionPos = rigidbody.GetPos();
+	rigidbody->SetPos(MyLibrary::LibVec3(m_updateX, m_updateY, m_updateZ));
+	rigidbody->SetNextPos(rigidbody->GetPos());
+	rigidbody->SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
+	m_collisionPos = rigidbody->GetPos();
 	SetModelPos();
 	MV1SetPosition(m_modelHandle, m_modelPos.ConversionToVECTOR());
 
@@ -248,27 +266,23 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* mana
 
 	m_pStrengthAttack = std::make_shared<AttackObject>(cStrengthAttackRadius);
 	m_pLigAttack = std::make_shared<AttackLigObject>(MyLibrary::LibVec3(m_attackLigPos1.x, m_attackLigPos1.y, m_attackLigPos1.z), MyLibrary::LibVec3(m_attackLigPos2.x, m_attackLigPos2.y, m_attackLigPos2.z), cFistAttackRadius);
+	m_pLigLegAttack = std::make_shared<AttackLigObject>(MyLibrary::LibVec3(m_attackLegLigPos1.x, m_attackLegLigPos1.y, m_attackLegLigPos1.z), MyLibrary::LibVec3(m_attackLegLigPos2.x, m_attackLegLigPos2.y, m_attackLegLigPos2.z), cFistAttackRadius);
 
 	m_pSearch = std::make_shared<PlayerSearchObject>(m_searchRadius);
-	m_pSearch->Init(m_pPhysics, rigidbody.GetPos());
+	m_pSearch->Init(m_pPhysics, rigidbody->GetPos());
 
 	m_shieldSize = MyLibrary::LibVec3::Size(cShieldWidth, cShieldHight, cShieldDepht);
 
 	m_pShield = std::make_shared<ShieldObject>(cShieldWidth, cShieldHight, cShieldDepht);
 	m_pShieldSearch = std::make_shared<PlayerSearchObject>(cShieldSearchRadius);
 
-	if (anim)
-	{
-		//待機アニメーション設定
-		m_nowAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
-		m_nowAnimIdx = m_animIdx["Idle"];
-	}
+	//ステートパターンの初期化
+	m_pState = std::make_shared<PlayerStateIdle>(std::dynamic_pointer_cast<Player>(shared_from_this()));
+	m_pState->ChangeState(StateBase::StateKind::Idle);
+	m_pState->Init(colData);
 
 	//HPの最大回復量
 	m_maxHeel = 80;
-
-	//移動距離
-	cMove = 0.5f;
 
 	m_staminaBreak = false;
 
@@ -292,7 +306,7 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* mana
 /// ゲームの仕様上で初期化処理
 /// </summary>
 /// <param name="physics"></param>
-void Player::GameInit(std::shared_ptr<MyLibrary::Physics> physics)
+void Player::GameInit(std::shared_ptr<MyLibrary::Physics> physics, int colData)
 {
 	m_pPhysics = physics;
 
@@ -302,7 +316,7 @@ void Player::GameInit(std::shared_ptr<MyLibrary::Physics> physics)
 	if (m_anim.s_isDead)
 	{
 		Collidable::Init(m_pPhysics);
-		m_pSearch->Init(m_pPhysics, rigidbody.GetPos());
+		m_pSearch->Init(m_pPhysics, rigidbody->GetPos());
 
 		m_anim.s_isDead = false;
 	}
@@ -310,13 +324,18 @@ void Player::GameInit(std::shared_ptr<MyLibrary::Physics> physics)
 	CsvLoad::GetInstance().StatusLoad(m_status, "Player");
 
 	//プレイヤーの初期位置設定
-	rigidbody.Init(true);
-	rigidbody.SetPos(MyLibrary::LibVec3(m_updateX, m_updateY, m_updateZ));
-	rigidbody.SetNextPos(rigidbody.GetPos());
-	rigidbody.SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
-	m_collisionPos = rigidbody.GetPos();
+	rigidbody->Init(true);
+	rigidbody->SetPos(MyLibrary::LibVec3(m_updateX, m_updateY, m_updateZ));
+	rigidbody->SetNextPos(rigidbody->GetPos());
+	rigidbody->SetVec(MyLibrary::LibVec3(0.0f, 40.0f, 0.0f));
+	m_collisionPos = rigidbody->GetPos();
 	SetModelPos();
 	MV1SetPosition(m_modelHandle, m_modelPos.ConversionToVECTOR());
+
+	//ステートパターンの初期化
+	m_pState = std::make_shared<PlayerStateIdle>(std::dynamic_pointer_cast<Player>(shared_from_this()));
+	m_pState->ChangeState(StateBase::StateKind::Idle);
+	m_pState->Init(colData);
 
 	m_deadReset = false;
 	m_staminaBreak = false;
@@ -337,6 +356,86 @@ void Player::Finalize()
 
 void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& enemy, CoreManager& core, VECTOR restpos, Tool& tool, SEManager& se, bool boss, bool dead, std::shared_ptr<MyLibrary::Physics> physics)
 {
+	//無理やり修正
+	//マップが休息地点だったら
+	if (m_mapNow == 0)
+	{
+		//ジャンプしていない場合
+		if (rigidbody->GetPos().y < cGravity)
+		{
+			//重力をなかったことにする
+			rigidbody->SetUseGravity(false);
+		}
+		else
+		{
+			//重力を与える
+			rigidbody->SetUseGravity(true);
+		}
+		
+	}
+	else
+	{
+		//重力を与える
+		rigidbody->SetUseGravity(true);
+	}
+
+
+	//ターゲットを代入する
+	m_pState->SetTarget(m_lockonTarget);
+	//ロックオン時アングルを変える
+	if (m_lockonTarget && m_pState->GetState() != StateBase::StateKind::Roll)
+	{
+		if (m_pState->GetState() == StateBase::StateKind::StrongAttack)
+		{
+			//一回だけ補正する
+			if (!cAngle)
+			{
+				m_angle = m_lockAngle;
+
+				cAngle = true;
+			}
+		}
+		else
+		{
+			cAngle = false;
+
+			m_angle = m_lockAngle;
+		}
+		
+	}
+
+	//死んでないときのステートの更新
+	if (!m_anim.s_isDead)
+	{
+		//アクションできなくする
+		if (m_action)
+		{
+			//ステートの更新
+			m_pState->Update();
+		}
+		//アクションできるようにする
+		else if (!m_action)
+		{
+			//回避おしたらアクションできるようにする
+			if (Input::GetInstance().IsReleased("Input_Roll"))
+			{
+				m_action = true;
+			}
+		}
+		
+	}
+
+	if (m_pState->GetState() == StateBase::StateKind::Jump)
+	{
+		//ジャンプ攻撃を可能にする
+		m_jumpCan = true;
+	}
+	else
+	{
+		//ジャンプ攻撃を出来なくする
+		m_jumpCan = false;
+	}
+
 	//とりあえずやっとく
 	m_status.s_core = core.GetCore();
 	m_levelStatus.sl_all = m_levelStatus.sl_hp + m_levelStatus.sl_muscle + m_levelStatus.sl_skill + m_levelStatus.sl_stamina;
@@ -349,7 +448,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	if (weapon.GetFist())
 	{
 		m_attackLig1 = MV1SearchFrame(m_modelHandle, "mixamorig:RightForeArm");
-		m_attackLig2 = MV1SearchFrame(m_modelHandle, "mixamorig:RightHandThumb4_end_end_end");
+		m_attackLig2 = MV1SearchFrame(m_modelHandle, "mixamorig:RightHandThumb4");
 
 		m_attackLigPos1 = MV1GetFramePosition(m_modelHandle, m_attackLig1);
 		m_attackLigPos2 = MV1GetFramePosition(m_modelHandle, m_attackLig2);
@@ -361,6 +460,12 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		m_attackLigPos2 = weapon.WeaponTip();
 	}
 
+	//足のリグを取る
+	m_legAttackLig1 = MV1SearchFrame(m_modelHandle, "mixamorig:RightUpLeg");
+	m_legAttackLig2 = MV1SearchFrame(m_modelHandle, "mixamorig:RightToe_End");
+
+	m_attackLegLigPos1 = MV1GetFramePosition(m_modelHandle, m_legAttackLig1);
+	m_attackLegLigPos2 = MV1GetFramePosition(m_modelHandle, m_legAttackLig2);
 
 	//盾を構える時のアニメーションフレーム取得
 	m_moveAnimShieldFrameIndex = MV1SearchFrame(m_modelHandle, "mixamorig:LeftShoulder");
@@ -369,9 +474,6 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	//武器や盾をアタッチするフレームのローカル→ワールド変換行列を取得する
 	m_moveWeaponFrameMatrix = MV1GetFrameLocalWorldMatrix(m_modelHandle, m_moveAnimFrameRight);
 	m_moveShieldFrameMatrix = MV1GetFrameLocalWorldMatrix(m_modelHandle, m_moveAnimShieldFrameHandIndex);
-
-	
-
 
 	//パッド入力取得
 	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
@@ -388,7 +490,8 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 
 		//アニメーションのブレンド率を設定する
 		MV1SetAttachAnimBlendRate(m_modelHandle, m_prevAnimNo, cAnimBlendRateMax - m_animBlendRate);
-		MV1SetAttachAnimBlendRate(m_modelHandle, m_nowAnimNo, m_animBlendRate);
+		MV1SetAttachAnimBlendRate(m_modelHandle, m_currentAnimNo, m_animBlendRate);
+
 	}
 
 	//死んだ時のアニメーション
@@ -398,9 +501,8 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		{
 			m_anim.s_isDead = true;
 
-			m_nowAnimIdx = m_animIdx["Death"];
+			m_pState->ChangeState(StateBase::StateKind::Death);
 
-			ChangeAnim(m_nowAnimIdx, m_animOne[0], m_animOne);
 			m_lockonTarget = false;
 
 			Finalize();
@@ -413,168 +515,15 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		m_deadReset = true;
 	}
 
-	//アナログスティックを使って移動
-	int analogX = 0;
-	int analogY = 0;
-
-	float SetAngleX = 0.0f;
-	float SetAngleY = 0.0f;
-
-	if (!m_anim.s_isDead && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery && !m_anim.s_hit && !m_animChange.sa_bossEnter
-		&& !m_animChange.sa_imapact && !m_rest && !m_animChange.sa_taking && !m_animChange.sa_strengthAttack)
-	{
-		GetJoypadAnalogInput(&analogX, &analogY, DX_INPUT_PAD1);
-
-		cOneAvoidance = false;
-	}
-
-	if (m_animChange.sa_avoidance && !cOneAvoidance)
-	{
-		GetJoypadAnalogInput(&analogX, &analogY, DX_INPUT_PAD1);
-
-		cOneAvoidance = true;
-	}
-
-	//アナログスティックの入力を格納
-	cAnX = analogX;
-	cAnY = analogY;
-
-	//移動方向を設定する
-	auto moveVec = VGet(static_cast<float>(-analogX), 0.0f, static_cast<float>(analogY));    //ベクトルの長さ
-
-	//ベクトルの長さを取得する
-	float len = VSize(moveVec);
-	//ベクトルの長さを0.0～1.0の割合に変換する
-	float rate = len / 1000.0f;
-	//アナログスティック無効な範囲を除外する
-	rate = (rate - 0.1f) / (0.8f - 0.1f);
-	rate = min(rate, 1.0f);
-	rate = max(rate, 0.0f);
-
-	//速度が決定できるので移動ベクトルに反映する
-	moveVec = VNorm(moveVec);
-	float speed = m_status.s_speed * rate;
-
-	moveVec = VScale(moveVec, speed);
-
-	//cameraの角度から
-	//コントローラーによる移動方向を決定する
-	MATRIX mtx = MGetRotY(m_cameraAngle + DX_PI_F);
-	moveVec = VTransform(moveVec, mtx);
-
-	//ライブラリのベクターに変換する
-	m_moveVec = MyLibrary::LibVec3(static_cast<float>(moveVec.x), static_cast<float>(moveVec.y), static_cast<float>(moveVec.z));
-
-	//移動方向からプレイヤーへの向く方向を決定する
-	//移動していない場合(ゼロベクトル)の場合は変更しない
-	if (VSquareSize(moveVec) > 0.0f)
-	{
-		//ロックオンしてない時と走ったときのアングル
-		if (!m_lockonTarget || m_animChange.sa_dashMove && !m_animChange.sa_avoidance)
-		{
-			//アングルを決定
-			m_angle = atan2f(-moveVec.z, moveVec.x) - DX_PI_F / 2;
-		}
-		//ロックオンした時のアングル
-		else if (m_lockonTarget && !m_animChange.sa_avoidance)
-		{
-			//アングルを決定
-			m_angle = m_lockAngle;
-		}
-		//回避するとき
-		else if (m_animChange.sa_avoidance)
-		{
-			//アングルを決定
-			m_angle = atan2f(-moveVec.z, moveVec.x) - DX_PI_F / 2;
-		}
-
-		//プレイヤーが動いたら
-		m_anim.s_moveflag = true;
-	}
-	//プレイヤーが動いてなかったら
-	else if (VSquareSize(moveVec) <= 0.0f)
-	{
-		m_anim.s_moveflag = false;
-	}
-	
-
-	//回避してないとき
-	if (!m_animChange.sa_avoidance && !m_anim.s_attack)
-	{
-		MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
-		MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(m_moveVec.x, prevVelocity.y, m_moveVec.z);
-		rigidbody.SetVelocity(newVelocity);
-	}
-	//回避してるとき
-	else if(m_animChange.sa_avoidance)
-	{
-		//回避で移動する距離
-		m_rollMove = VScale(VGet(sinf(m_angle), 0.0f, cosf(m_angle)), cAvoidanceMove);
-
-		//アングルの方向に一定距離移動させたい
-		MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
-		MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(-m_rollMove.x, prevVelocity.y, -m_rollMove.z);
-		rigidbody.SetVelocity(newVelocity);
-	}
-	//攻撃してるとき
-	else if (m_anim.s_attack)
-	{
-		m_attackMove = VScale(VGet(sinf(m_angle), 0.0f, cosf(m_angle)), cAttackMove);
-
-		//攻撃の方向に一定距離移動させたい
-		MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
-		MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(-m_attackMove.x, prevVelocity.y, -m_attackMove.z);
-		rigidbody.SetVelocity(newVelocity);
-	}
-
-	//装備していないとき
-	if (weapon.GetFist() && shield.GetFist())
-	{
-		//後ろ歩き
-		if (m_lockonTarget && !m_animChange.sa_dashMove && cAnY > 0 && cAnX < 500 && cAnX > -500)
-		{
-			//逆再生を進める
-			m_animReverse = true;
-		}
-		else
-		{
-			m_animReverse = false;
-		}
-	}
-	//装備しているとき
-	else if (!weapon.GetFist() || !shield.GetFist())
-	{
-		//後ろ歩き
-		if (m_lockonTarget && !m_animChange.sa_dashMove && cAnY > 0 && cAnX < 500 && cAnX > -500)
-		{
-			//逆再生を進める
-			m_animReverse = true;
-		}
-		//右歩き
-		else if (m_lockonTarget && !m_animChange.sa_dashMove && cAnX > 500)
-		{
-			//逆再生を進める
-			m_animReverse = true;
-		}
-		else
-		{
-			m_animReverse = false;
-		}
-	}
-	else
-	{
-		m_animReverse = false;
-	}
-
 	//盾の索敵のポジション更新
-	m_shieldSearchPos = MyLibrary::LibVec3(rigidbody.GetPos().x + sinf(m_angle) * -100.0f, rigidbody.GetPos().y + 15.0f, rigidbody.GetPos().z - cosf(m_angle) * 100.0f);
+	m_shieldSearchPos = MyLibrary::LibVec3(rigidbody->GetPos().x + sinf(m_angle) * -100.0f, rigidbody->GetPos().y + 15.0f, rigidbody->GetPos().z - cosf(m_angle) * 100.0f);
 
 
 	//プレイヤーが生きている時だけ
 	if (!m_anim.s_isDead)
 	{
 		//盾の判定
-		if (m_shieldNow)
+		if (m_pState->GetState() == StateBase::StateKind::Guard || m_animChange.sa_imapact)
 		{
 			if (!m_shieldOne)
 			{
@@ -606,6 +555,12 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		//ダメージを食らう処理
 		if (cHit && !m_animChange.sa_imapact)
 		{
+			//ヒットアニメーションにする
+			m_anim.s_hit = true;
+
+			//ダメージを受けるアニメーション
+			m_pState->ChangeState(StateBase::StateKind::Damage);
+
 			for (auto damage : enemy.GetEnemyDamage())
 			{
 				if (damage > 0)
@@ -614,7 +569,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 				}
 			}
 			//Hitエフェクト
-			cEffect.EffectCreate("Hit", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y + 20.0f, rigidbody.GetPos().z));
+			cEffect.EffectCreate("PlayerHit", VGet(rigidbody->GetPos().x, rigidbody->GetPos().y + 20.0f, rigidbody->GetPos().z));
 			//HitSe再生
 			PlaySoundMem(se.GetPlayerHitSE(), DX_PLAYTYPE_BACK, true);
 
@@ -623,6 +578,12 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		//盾受けしたときの処理
 		else if (!cShieldHit && m_animChange.sa_imapact)
 		{
+			//盾受けアニメーションにする
+			m_anim.s_hit = false;
+
+			//ダメージを受けるアニメーション
+			m_pState->ChangeState(StateBase::StateKind::Damage);
+
 			for (auto damage : enemy.GetEnemyDamage())
 			{
 				if (damage > 0 && shield.GetUgly())
@@ -638,8 +599,6 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			cShieldHit = true;
 		}
 
-		EffectAction();
-
 		//メニューを開いている間はアクションできない
 		if (!m_menuOpen)
 		{
@@ -654,15 +613,40 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		//装備をしていない時のアニメーション
 		if (weapon.GetFist() && shield.GetFist())
 		{
-			NotWeaponAnimation();
+			//装備をしているアニメーションかを判定する
+			m_fist = true;
+			m_sword = false;
+			m_equipment = false;
+			m_shield = false;
 		}
 		//装備したときのアニメーション
 		else if (!weapon.GetFist() || !shield.GetFist())
 		{
-			WeaponAnimation(shield);
-		}
+			//装備をしているアニメーションかを判定する
+			m_equipment = true;
 
-		AllAnimation();
+			//拳か武器かを判断する
+			if (!weapon.GetFist())
+			{
+				m_sword = true;
+				m_fist = false;
+			}
+			else
+			{
+				m_sword = false;
+				m_fist = true;
+			}
+			
+			//盾を判断する
+			if (!shield.GetFist())
+			{
+				m_shield = true;
+			}
+			else
+			{
+				m_shield = false;
+			}
+		}
 
 		//防具をしていない時の処理
 		if (armor.GetBody())
@@ -676,16 +660,16 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		}
 		
 	}
-
+	//死亡してない時のアニメーション更新
 	if (!m_anim.s_isDead)
 	{
 		//アニメーションの更新
-		m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
+		m_isAnimationFinish = UpdateStateAnim(m_currentAnimNo, m_start, m_reset, m_loop);
 	}
 	//死亡したときのアニメーション更新
 	else if (m_anim.s_isDead && m_nowFrame <= 68.0f)
 	{
-		m_isAnimationFinish = UpdateAnim(m_nowAnimNo, ANIMATION_MAX);
+		m_isAnimationFinish = UpdateStateAnim(m_currentAnimNo);
 	}
 
 	//プレイヤーのポジションを入れる
@@ -727,14 +711,23 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	}
 
 	//スタミナ回復
-	if (m_status.s_stamina < ms_maxStatus.sm_stamina && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_dashMove && !m_animChange.sa_strengthAttack && !m_shieldNow)
+	if (m_pState->GetState() != StateBase::StateKind::Attack && m_pState->GetState() != StateBase::StateKind::Damage && m_pState->GetState() != StateBase::StateKind::Dash &&
+		m_pState->GetState() != StateBase::StateKind::Guard && m_pState->GetState() != StateBase::StateKind::Jump && m_pState->GetState() != StateBase::StateKind::Roll &&
+		m_pState->GetState() != StateBase::StateKind::StrongAttack && m_pState->GetState() != StateBase::StateKind::Damage && m_pState->GetState() != StateBase::StateKind::Item)
 	{
-		m_status.s_stamina += 0.5f;
+		//スタミナの最大値未満だと回復する
+		if (m_status.s_stamina < ms_maxStatus.sm_stamina)
+		{
+			m_status.s_stamina += 0.5f;
+		}
 	}
-	//盾を構えた状態だと回復が遅くなる
-	else if (m_shieldNow && m_status.s_stamina < ms_maxStatus.sm_stamina)
+	//盾を構えた状態とアイテム使用状態は回復が遅くなる
+	else if (m_pState->GetState() == StateBase::StateKind::Guard || m_pState->GetState() == StateBase::StateKind::Item)
 	{
-		m_status.s_stamina += 0.2f;
+		if (m_status.s_stamina < ms_maxStatus.sm_stamina)
+		{
+			m_status.s_stamina += 0.2f;
+		}
 	}
 
 	//スタミナ切れ
@@ -750,12 +743,14 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	}
 
 	//判定のポジション更新
-	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
-	MyLibrary::LibVec3 attackPos = MyLibrary::LibVec3(rigidbody.GetPos().x + sinf(m_angle) * -25.0f, rigidbody.GetPos().y + 15.0f, rigidbody.GetPos().z - cosf(m_angle) * 25.0f);
+	MyLibrary::LibVec3 centerPos = rigidbody->GetPos();
+	MyLibrary::LibVec3 attackPos = MyLibrary::LibVec3(rigidbody->GetPos().x + sinf(m_angle) * -25.0f, rigidbody->GetPos().y + 15.0f, rigidbody->GetPos().z - cosf(m_angle) * 25.0f);
 	MyLibrary::LibVec3 ligAttackPos1 = MyLibrary::LibVec3(m_attackLigPos1.x, m_attackLigPos1.y, m_attackLigPos1.z);
 	MyLibrary::LibVec3 ligAttackPos2 = MyLibrary::LibVec3(m_attackLigPos2.x, m_attackLigPos2.y, m_attackLigPos2.z);
-	MyLibrary::LibVec3 StrengthAttackPos = MyLibrary::LibVec3(rigidbody.GetPos().x, rigidbody.GetPos().y, rigidbody.GetPos().z);
-	m_shieldPos = MyLibrary::LibVec3(rigidbody.GetPos().x + sinf(m_angle) * -15.0f, rigidbody.GetPos().y + 25.0f, rigidbody.GetPos().z - cosf(m_angle) * 15.0f);
+	MyLibrary::LibVec3 LegLigAttackPos1 = MyLibrary::LibVec3(m_attackLegLigPos1.x, m_attackLegLigPos1.y, m_attackLegLigPos1.z);
+	MyLibrary::LibVec3 LegLigAttackPos2 = MyLibrary::LibVec3(m_attackLegLigPos2.x, m_attackLegLigPos2.y, m_attackLegLigPos2.z);
+	MyLibrary::LibVec3 StrengthAttackPos = MyLibrary::LibVec3(m_attackLigPos2.x, m_attackLigPos2.y, m_attackLigPos2.z);
+	m_shieldPos = MyLibrary::LibVec3(rigidbody->GetPos().x + sinf(m_angle) * -15.0f, rigidbody->GetPos().y + 25.0f, rigidbody->GetPos().z - cosf(m_angle) * 15.0f);
 
 	//sinでX軸のwidthのサイズを出す
 	if (sinf(m_angle) > 0)
@@ -786,8 +781,8 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 
 	//判定の更新
 	m_pSearch->Update(centerPos);
-	//m_pAttack->Update(attackPos);
 	m_pLigAttack->Update(ligAttackPos1, ligAttackPos2);
+	m_pLigLegAttack->Update(LegLigAttackPos1, LegLigAttackPos2);
 	m_pStrengthAttack->Update(StrengthAttackPos);
 	m_pShield->Update(m_shieldPos, m_shieldSize);
 	m_pShieldSearch->Update(m_shieldSearchPos);
@@ -796,8 +791,8 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	if (m_anim.s_hit)
 	{
 		//攻撃判定リセット
-		//m_pAttack->CollisionEnd();
 		m_pLigAttack->CollisionEnd();
+		m_pLigLegAttack->CollisionEnd();
 	}
 
 	//怯みを終わらせる
@@ -807,217 +802,271 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 	}
 
 	//走った時のスタミナ消費
-	if (m_animChange.sa_dashMove)
+	if (m_pState->GetState() == StateBase::StateKind::Dash)
 	{
 		m_status.s_stamina -= 0.1f;
 	}
-
-	//回避行動中
-	if (!m_isAnimationFinish && m_animChange.sa_avoidance && !m_anim.s_hit)
+	//ジャンプした時のスタミナ消費
+	if (rigidbody->GetJump())
 	{
-		//フレーム回避
-		if (m_nowFrame >= 0.0f && m_nowFrame <= 20.0f)
+		//一回だけ実行
+		if (!cJumpOne)
 		{
-			m_avoidanceNow = true;
+			m_status.s_stamina -= 20.0f;
 
-			cAvoidanceMove = 4.0f;
-		}
-		else if (m_nowFrame >= 20.0f && m_nowFrame <= 30.0f)
-		{
-			m_avoidanceNow = false;
-
-			cAvoidanceMove = 1.0f;
-		}
-		else
-		{
-			m_avoidanceNow = false;
-
-			cAvoidanceMove = 0.2f;
+			cJumpOne = true;
 		}
 	}
-	//回避終了
-	else if (m_isAnimationFinish && m_animChange.sa_avoidance)
+	else
 	{
-		m_animChange.sa_avoidance = false;
+		cJumpOne = false;
+	}
+	//回避によるスタミナ消費
+	if (m_pState->GetState() == StateBase::StateKind::Roll)
+	{
+		//一回だけ実行
+		if (!cRollOne)
+		{
+			m_status.s_stamina -= 20.0f;
+
+			cRollOne = true;
+		}
+	}
+	else
+	{
+		cRollOne = false;
 	}
 
 	//攻撃力格納
 	m_attackDamage = (m_status.s_attack + (m_status.s_muscle * 0.5f) + (m_status.s_skill * 0.5f)) + (cEquipmentAttack + ((m_status.s_muscle - 1) * m_equipmentMuscle) + ((m_status.s_skill - 1) * m_equipmentSkill));
 
-	//攻撃中
-	if (!m_isAnimationFinish && m_anim.s_attack)
+	//攻撃をしている時まとめ
+	//攻撃一段階目
+	if (m_attackNumber == 1)
 	{
-		
+		m_pLigAttack->SetAttack(m_attackDamage);
 
-		//一段階目の攻撃
-		if (m_nowFrame <= 40.0f)
+		if (m_attackInit)
 		{
-			//現在のアタックナンバー
-			cNowAttackNumber = 1;
+			cEffect.EffectCreate("PlayerAttack", m_attackLigPos2);
 
-			m_pLigAttack->SetAttack(m_attackDamage);
+			//攻撃SE再生
+			PlaySoundMem(se.GetAttackSE(), DX_PLAYTYPE_BACK, true);
 
-			//攻撃判定発生フレーム
-			if (m_nowFrame == 25.0f)
-			{
-				//攻撃時の移動距離
-				cAttackMove = 0.5f;
+			m_status.s_stamina -= 25.0f;
+			m_pLigAttack->Init(m_pPhysics);
 
-				//攻撃SE再生
-				PlaySoundMem(se.GetAttackSE(), DX_PLAYTYPE_BACK, true);
+			m_attackInit = false;
+		}
+		else if (m_attackEnd)
+		{
+			//判定をリセット
+			m_pLigAttack->CollisionEnd();
 
-				m_status.s_stamina -= 25.0f;
-				m_pLigAttack->Init(m_pPhysics);
-			}
-			else if (m_nowFrame >= 35.0f && m_nowFrame < 40.0f)
-			{
-				//攻撃時の移動距離
-				cAttackMove = 0.3f;
+			m_attackEnd = false;
+		}
 
-				//判定をリセット
-				m_pLigAttack->CollisionEnd();
-			}
-			//攻撃終了
-			else if (m_nowFrame >= 40.0f && m_attackNumber == 1)
-			{
-				//攻撃時の移動距離
-				cAttackMove = 0.0f;
-
-				cIsEndAttack = 1;
-			}
+		//エフェクトを再生する
+		if (m_nowFrame >= 25.0f && m_nowFrame <= 35.0f)
+		{
+			//切っ先にエフェクトをつける
+			cEffect.UpdateEffectPosition("PlayerAttack", m_attackLigPos2);
+			cEffect.UpdateEffectRotation("PlayerAttack", VGet(0.0f, m_angle - (DX_PI_F / 2.0f), 0.0f));
 
 		}
-		//二段階目の攻撃
-		else if (m_nowFrame <= 70.0f && cIsEndAttack == 1)
+	}
+	//攻撃2段階目
+	else if(m_attackNumber == 2)
+	{
+		m_pLigAttack->SetAttack((m_attackDamage) * 1.1);
+
+		//攻撃判定発生フレーム
+		if (m_attackInit)
 		{
-			//現在のアタックナンバー
-			cNowAttackNumber = 2;
+			cEffect.EffectCreate("PlayerAttack", m_attackLigPos2);
 
-			m_pLigAttack->SetAttack((m_attackDamage) * 1.1);
 
-			//攻撃判定発生フレーム
-			if (m_nowFrame == 55.0f)
-			{
-				//攻撃時の移動距離
-				cAttackMove = 0.5f;
+			//攻撃SE再生
+			PlaySoundMem(se.GetAttackSE(), DX_PLAYTYPE_BACK, true);
 
-				//攻撃SE再生
-				PlaySoundMem(se.GetAttackSE(), DX_PLAYTYPE_BACK, true);
+			m_status.s_stamina -= 25.0f;
+			m_pLigAttack->Init(m_pPhysics);
 
-				m_status.s_stamina -= 25.0f;
-				m_pLigAttack->Init(m_pPhysics);
-			}
-			else if (m_nowFrame >= 65.0f && m_nowFrame < 70.0f)
-			{
-				//攻撃時の移動距離
-				cAttackMove = 0.2f;
-
-				//攻撃判定リセット
-				m_pLigAttack->CollisionEnd();
-
-			}
-			//攻撃終了
-			else if (m_nowFrame >= 70.0f && m_attackNumber == 2)
-			{
-				//攻撃時の移動距離
-				cAttackMove = 0.0f;
-
-				cIsEndAttack = 2;
-			}
+			m_attackInit = false;
 		}
-		//三段階目の攻撃
-		else if (m_nowFrame <= 110.0f && cIsEndAttack == 2)
+		else if (m_attackEnd)
 		{
-			//現在のアタックナンバー
-			cNowAttackNumber = 3;
-
-			m_pLigAttack->SetAttack((m_attackDamage) * 1.2);
-
-			//攻撃判定発生フレーム
-			if (m_nowFrame == 85.0f)
-			{
-				//攻撃時の移動距離
-				cAttackMove = 0.5f;
-
-				//攻撃SE再生
-				PlaySoundMem(se.GetAttackSE(), DX_PLAYTYPE_BACK, true);
-
-				m_status.s_stamina -= 25.0f;
-				m_pLigAttack->Init(m_pPhysics);
-			}
-			else if (m_nowFrame >= 95.0f && m_nowFrame < 110.0f)
-			{
-				//攻撃時の移動距離
-				cAttackMove = 0.2f;
-
-				//攻撃判定リセット
-				m_pLigAttack->CollisionEnd();
-			}
-			//攻撃終了
-			else if (m_nowFrame >= 110.0f)
-			{
-				//攻撃時の移動距離
-				cAttackMove = 0.0f;
-
-				cIsEndAttack = 0;
-			}
-		}
-		else
-		{
-			m_anim.s_attack = false;
-
-			//攻撃段階を初期化する
-			m_attackNumber = 0;
-			//攻撃終了
-			cIsEndAttack = 0;
 			//攻撃判定リセット
-			//m_pAttack->CollisionEnd();
+			m_pLigAttack->CollisionEnd();
+
+			m_attackEnd = false;
+		}
+
+		//エフェクトを再生する
+		if (m_nowFrame >= 55.0f && m_nowFrame <= 65.0f)
+		{
+			//切っ先にエフェクトをつける
+			cEffect.UpdateEffectPosition("PlayerAttack", m_attackLigPos2);
+			cEffect.UpdateEffectRotation("PlayerAttack", VGet(0.0f, m_angle - (DX_PI_F / 2.0f), 0.0f));
+
+		}
+	}
+	//攻撃3段階目
+	else if (m_attackNumber == 3)
+	{
+		m_pLigAttack->SetAttack((m_attackDamage) * 1.2);
+
+		//攻撃判定発生フレーム
+		if (m_attackInit)
+		{
+			cEffect.EffectCreate("PlayerAttack", m_attackLigPos2);
+
+			//攻撃SE再生
+			PlaySoundMem(se.GetAttackSE(), DX_PLAYTYPE_BACK, true);
+
+			m_status.s_stamina -= 25.0f;
+			m_pLigAttack->Init(m_pPhysics);
+
+			m_attackInit = false;
+		}
+		else if (m_attackEnd)
+		{
+			//攻撃判定リセット
+			m_pLigAttack->CollisionEnd();
+
+			m_attackEnd = false;
+		}
+
+		//エフェクトを再生する
+		if (m_nowFrame >= 85.0f && m_nowFrame <= 95.0f)
+		{
+			//切っ先にエフェクトをつける
+			cEffect.UpdateEffectPosition("PlayerAttack", m_attackLigPos2);
+			cEffect.UpdateEffectRotation("PlayerAttack", VGet(0.0f, m_angle - (DX_PI_F / 2.0f), 0.0f));
+
+		}
+	}
+
+
+	//ジャンプ攻撃をした判定
+	if (m_jumpAttack)
+	{
+		m_pLigAttack->SetAttack((m_attackDamage) * 1.8);
+
+		//攻撃判定発生フレーム
+		if (m_nowFrame == 15.0f)
+		{
+			//エフェクトを作る
+			cEffect.EffectCreate("PlayerAttack", m_attackLigPos2);
+
+			m_status.s_stamina -= 50.0f;
+			m_pLigAttack->Init(m_pPhysics);
+		}
+		else if (m_nowFrame >= 20.0f)
+		{
+			//攻撃判定リセット
 			m_pLigAttack->CollisionEnd();
 		}
-	}
-	//攻撃終了
-	else if (m_isAnimationFinish && m_anim.s_attack)
-	{
-		m_anim.s_attack = false;
 
-		//攻撃段階を初期化する
-		m_attackNumber = 0;
-		//攻撃終了
-		cIsEndAttack = 0;
-	}
-
-	//強攻撃
-	if (!m_isAnimationFinish && m_animChange.sa_strengthAttack)
-	{
-		m_pStrengthAttack->SetAttack(120.0f);
-
-		//エフェクトを出す
-		if (m_nowFrame == 25.0f)
+		//エフェクトを再生する
+		if (m_nowFrame >= 15.0f && m_nowFrame <= 20.0f)
 		{
-			//攻撃SE再生
-			PlaySoundMem(se.GetBossAttackSE3(), DX_PLAYTYPE_BACK, true);
-
-			cEffect.EffectCreate("BearLance", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y - 12.0f, rigidbody.GetPos().z));
-		}
-
-		//フレーム中に攻撃を発生
-		if (m_nowFrame == 58.0f)
-		{
-			m_status.s_stamina -= 50.0f;
-			m_pStrengthAttack->Init(m_pPhysics);
-		}
-		else if (m_nowFrame >= 68.0f)
-		{
-			//判定リセット
-			m_pStrengthAttack->CollisionEnd();
+			//切っ先にエフェクトをつける
+			cEffect.UpdateEffectPosition("PlayerAttack", m_attackLigPos2);
+			cEffect.UpdateEffectRotation("PlayerAttack", VGet(0.0f, m_angle - (DX_PI_F / 2.0f), 0.0f));
 		}
 	}
-	//強攻撃終了
-	if (m_animChange.sa_strengthAttack && m_isAnimationFinish)
+	//強い攻撃をした判定
+	else if (m_attackStrong)
 	{
-		m_animChange.sa_strengthAttack = false;
+		//装備が拳だった時
+		if (m_fist)
+		{
+			m_pLigLegAttack->SetAttack((m_attackDamage) * 1.5);
+
+			//攻撃判定発生フレーム
+			if (m_nowFrame == 35.0f)
+			{
+				//エフェクトを作る
+				cEffect.EffectCreate("PlayerShockWave", m_attackLegLigPos2);
+
+				m_status.s_stamina -= 40.0f;
+				m_pLigLegAttack->Init(m_pPhysics);
+			}
+			else if (m_nowFrame >= 45.0f)
+			{
+				//攻撃判定リセット
+				m_pLigLegAttack->CollisionEnd();
+			}
+
+			//エフェクトを再生する
+			if (m_nowFrame >= 35.0f && m_nowFrame <= 45.0f)
+			{
+				cEffect.UpdateEffectPosition("PlayerShockWave", m_attackLegLigPos2);
+				cEffect.UpdateEffectRotation("PlayerShockWave", VGet(0.0f, m_angle, 0.0f));
+			}
+
+		}
+		//装備が剣などの種類だった時
+		else if (m_sword)
+		{
+			m_pLigAttack->SetAttack((m_attackDamage) * 1.8f);
+			m_pStrengthAttack->SetAttack((m_attackDamage) * 1.8f);
+
+			//エフェクトを再生する
+			if (m_nowFrame >= 15.0f && m_nowFrame <= 60.0f)
+			{
+				//切っ先にエフェクトをつける
+				cEffect.UpdateEffectPosition("PlayerStrong", m_attackLigPos2);
+				cEffect.UpdateEffectPosition("PlayerStrongBig", m_attackLigPos2);
+			}
+
+			if (m_nowFrame == 15.0f)
+			{
+				//エフェクトを作る
+				cEffect.EffectCreate("PlayerStrong", m_attackLigPos2);
+			}
+
+			//攻撃判定発生フレーム
+			if (m_nowFrame == 45.0f)
+			{
+				m_status.s_stamina -= 120.0f;
+				m_pLigAttack->Init(m_pPhysics);
+			}
+			if (m_nowFrame == 55.0f)
+			{
+				//エフェクトを作る
+				cEffect.EffectCreate("PlayerStrongBig", m_attackLigPos2);
+				cEffect.EffectCreate("ShockWave", m_attackLigPos2);
+
+				m_pStrengthAttack->Init(m_pPhysics);
+			}
+			else if (m_nowFrame >= 60.0f)
+			{
+				//攻撃判定リセット
+				m_pLigAttack->CollisionEnd();
+				m_pStrengthAttack->CollisionEnd();
+			}
+		}
 	}
 
+	//回復
+	if (m_pState->GetState() == StateBase::StateKind::Item && tool.GetHeel().sa_number > 0)
+	{
+		//一回実行
+		if (!m_animChange.sa_recovery)
+		{
+			tool.SetHeel(1);
+
+			//回復エフェクト
+			cEffect.EffectCreate("Heel", m_collisionPos.ConversionToVECTOR());
+
+			//回復SE再生
+			PlaySoundMem(se.GetHeelSE(), DX_PLAYTYPE_BACK, true);
+
+			m_animChange.sa_recovery = true;
+		}
+	}
 
 	//回復する
 	if (!m_isAnimationFinish && m_animChange.sa_recovery)
@@ -1053,14 +1102,14 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			//最初のステージ
 			if (m_mapNow == 1)
 			{
-				rigidbody.SetPos(MyLibrary::LibVec3(15.0f, 12.0f, 0.0f));
+				rigidbody->SetPos(MyLibrary::LibVec3(15.0f, 12.0f, 0.0f));
 
 				m_angle = 1.5f;
 			}
 			//チュートリアルステージ
 			else if (m_mapNow == 6)
 			{
-				rigidbody.SetPos(MyLibrary::LibVec3(-30.0f, 12.0f, 0.0f));
+				rigidbody->SetPos(MyLibrary::LibVec3(-30.0f, 12.0f, 0.0f));
 
 				m_angle = -1.5f;
 			}
@@ -1069,15 +1118,6 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 
 			cEnterPos = false;
 		}
-
-
-		//回避で移動する距離
-		m_moveVector = VScale(VGet(sinf(m_angle), 0.0f, cosf(m_angle)), cMove);
-
-		//アングルの方向に一定距離移動させたい
-		MyLibrary::LibVec3 prevVelocity = rigidbody.GetVelocity();
-		MyLibrary::LibVec3 newVelocity = MyLibrary::LibVec3(-m_moveVector.x, prevVelocity.y, -m_moveVector.z);
-		rigidbody.SetVelocity(newVelocity);
 	}
 
 	//アイテム取得終了
@@ -1171,173 +1211,6 @@ void Player::Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, b
 		}
 	}
 	
-
-	//Aボタンが押されたらダッシュか回避
-	//スタミナがあれば
-	if (m_xpad.Buttons[12] == 1 && !m_anim.s_attack && !m_staminaBreak)
-	{
-		//ダッシュ
-		if (cAbutton > 30)
-		{
-			m_animChange.sa_avoidance = false;
-
-			//ダッシ中
-			m_animChange.sa_dashMove = true;
-
-			m_status.s_speed = cDashSpeed;
-		}
-
-		if (cAbutton < 31)
-		{
-			cAbutton++;
-		}
-	}
-	else
-	{
-		m_animChange.sa_dashMove = false;
-
-		m_status.s_speed = cWalkSpeed;
-
-		if (m_notRoll >= 10)
-		{
-			//回避に必要なスタミナがある場合
-			if (m_status.s_stamina >= 20 && !m_staminaBreak)
-			{
-				//回避
-				//離した瞬間
-				if (cAbutton > 0 && cAbutton < 30 && m_animChange.sa_avoidance == false)
-				{
-					m_status.s_stamina -= 20;
-
-					m_animChange.sa_avoidance = true;
-				}
-			}
-		}
-		else
-		{
-			m_notRoll++;
-		}
-		
-
-		cAbutton = 0;
-	}
-
-	//攻撃に必要なスタミナがある場合
-	if (m_status.s_stamina >= 25 && !m_staminaBreak)
-	{
-		//攻撃
-	    //Rボタンを押すことで攻撃
-		if (m_xpad.Buttons[9] == 1)
-		{
-			cRbutton++;
-			
-			//一回だけ反応するようにする
-			if (cRbutton == 1)
-			{
-				m_anim.s_attack = true;
-
-				//追加攻撃受付
-				if (cAddAttackTime <= 30 && cAddAttackTime > 0)
-				{
-					//二段階目の攻撃
-					if (cNowAttackNumber == 1)
-					{
-						m_attackNumber = 1;
-					}
-					//三段階目の攻撃
-					else if (cNowAttackNumber == 2)
-					{
-						m_attackNumber = 2;
-					}
-				}
-
-				//追加攻撃時間を初期化
-				cAddAttackTime = 40;
-			}
-		}
-		else
-		{
-			cRbutton = 0;
-		}
-	}
-	
-	//追加攻撃受付時間を減らす
-	if (cAddAttackTime <= 40 && cAddAttackTime > 0 && --cAddAttackTime > -1);
-
-	//強攻撃
-	//ZRボタン
-	//攻撃に必要なスタミナがあったら
-	if (m_status.s_stamina >= 50.0f && !m_staminaBreak)
-	{
-		if (m_xpad.RightTrigger)
-		{
-			m_animChange.sa_strengthAttack = true;
-		}
-	}
-	
-
-	//行動中は防御できない
-	if (!m_anim.s_attack && !m_animChange.sa_avoidance && !m_animChange.sa_recovery && !shield.GetFist() && !m_staminaBreak)
-	{
-		//Lボタンで防御
-		if (m_xpad.Buttons[8] == 1)
-		{
-			m_shieldNow = true;
-
-			if (!m_animChange.sa_shieldIdle)
-			{
-				m_animChange.sa_enterShield = true;
-			}
-			
-			//盾の構えが終了したとき
-			if (m_animChange.sa_enterShield && m_isAnimationFinish)
-			{
-				m_animChange.sa_enterShield = false;
-				m_animChange.sa_shieldIdle = true;
-			}
-		}
-		else
-		{
-			//Lボタンを離した瞬間
-			if (m_animChange.sa_enterShield || m_animChange.sa_shieldIdle)
-			{
-				m_animChange.sa_enterShield = false;
-				m_animChange.sa_shieldIdle = false;
-			}
-
-			m_shieldNow = false;
-
-			FrameEndAnim(cAnimIdx, cOne, cTwo, m_moveAnimShieldFrameIndex);
-			
-		}
-	}
-	else
-	{
-		m_animChange.sa_enterShield = false;
-		m_animChange.sa_shieldIdle = false;
-		m_shieldNow = false;
-
-		FrameEndAnim(cAnimIdx, cOne, cTwo, m_moveAnimShieldFrameIndex);
-
-	}
-
-	//回復
-	//Xボタンが押されたら
-	if (m_xpad.Buttons[14] == 1 && !m_anim.s_attack && tool.GetHeel().sa_number > 0)
-	{
-		//一回実行
-		if (!m_animChange.sa_recovery)
-		{
-			tool.SetHeel(1);
-
-			//回復SE再生
-			PlaySoundMem(se.GetHeelSE(), DX_PLAYTYPE_BACK, true);
-
-			m_effect.s_heel = true;
-			m_animChange.sa_recovery = true;
-		}
-	}
-	
 	//休息
 	//休息できたら
 	if (m_restTouch && m_mapNow != 0)
@@ -1396,6 +1269,8 @@ void Player::Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, b
 		//Yボタンを押したら
 		if (m_xpad.Buttons[15] == 1)
 		{
+			m_pState->ChangeState(StateBase::StateKind::EnterBoss);
+
 			m_animChange.sa_bossEnter = true;
 
 			cEnterPos = true;
@@ -1414,6 +1289,8 @@ void Player::Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, b
 				//アイテム取得SE再生
 				PlaySoundMem(se.GetItemSE(), DX_PLAYTYPE_BACK, true);
 
+				//アイテムを取る
+				m_pState->ChangeState(StateBase::StateKind::Taking);
 				m_animChange.sa_taking = true;
 
 			}
@@ -1430,25 +1307,10 @@ void Player::Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, b
 		}
 	}
 
-
 	//メニューを開く
 	if (m_xpad.Buttons[4] == 1)
 	{
 		m_menuOpen = true;
-	}
-}
-
-/// <summary>
-/// エフェクト関係
-/// </summary>
-void Player::EffectAction()
-{
-	//回復エフェクト
-	if (m_effect.s_heel)
-	{
-		cEffect.EffectCreate("Heel", m_collisionPos.ConversionToVECTOR());
-
-		m_effect.s_heel = false;
 	}
 }
 
@@ -1470,258 +1332,12 @@ void Player::WarpMap()
 }
 
 /// <summary>
-/// 武器を持ってないときのアニメーション
-/// </summary>
-void Player::NotWeaponAnimation()
-{
-	//攻撃が当たってない時
-	//ボス部屋に入っていない時
-	if (!m_anim.s_hit && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact)
-	{
-		//走り
-		if (m_animChange.sa_dashMove && m_anim.s_moveflag)
-		{
-			m_nowAnimIdx = m_animIdx["Run"];
-			ChangeAnim(m_nowAnimIdx, m_animOne[1], m_animOne);
-			NotInitAnim(false);
-
-		}
-		//歩き
-		else if (m_anim.s_moveflag)
-		{
-			//ターゲットしているとき
-			if (!m_lockonTarget)
-			{
-				m_nowAnimIdx = m_animIdx["Walk"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[2], m_animOne);
-				NotInitAnim(false);
-
-			}
-			//ターゲットしているとき
-			else if (m_lockonTarget)
-			{
-				//左歩き
-				if (cAnX < -500)
-				{
-					m_nowAnimIdx = m_animIdx["LeftWalk"];
-					ChangeAnim(m_nowAnimIdx, m_animOne[3], m_animOne);
-					NotInitAnim(false);
-
-				}
-				//右歩き
-				else if (cAnX > 500)
-				{
-					m_nowAnimIdx = m_animIdx["RightWalk"];
-					ChangeAnim(m_nowAnimIdx, m_animOne[4], m_animOne);
-					NotInitAnim(false);
-
-				}
-				//後ろ歩きor歩き
-				if (cAnX < 500 && cAnX > -500)
-				{
-					m_nowAnimIdx = m_animIdx["Walk"];
-					ChangeAnim(m_nowAnimIdx, m_animOne[2], m_animOne, cAnimWalkTime, m_animReverse, cAnimWalkReverseTimeInit);
-					NotInitAnim(false);
-
-				}
-			}
-			
-		}
-	}
-}
-
-/// <summary>
-/// 全ての状態の時に行うアニメーション関数
-/// </summary>
-void Player::AllAnimation()
-{
-	//プレイヤーが生きているときだけ
-	if (!m_anim.s_isDead)
-	{
-		//攻撃が当たった時
-		//ボス部屋に入った時
-		if (m_anim.s_hit && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact)
-		{
-			m_nowAnimIdx = m_animIdx["Hit"];
-			ChangeAnim(m_nowAnimIdx, m_animOne[5], m_animOne);
-			NotInitAnim(false);
-
-		}
-		//攻撃が当たってないとき
-		//ボス部屋に入った時
-		else if (!m_anim.s_hit && !m_animChange.sa_bossEnter && !m_animChange.sa_imapact)
-		{
-			//動いてない時
-			if (!m_anim.s_moveflag && !m_animChange.sa_avoidance && !m_anim.s_attack && !m_animChange.sa_recovery && 
-				!m_shieldNow && !m_animChange.sa_taking && !m_animChange.sa_strengthAttack)
-			{
-				m_nowAnimIdx = m_animIdx["Idle"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[6], m_animOne);
-				NotInitAnim(false);
-
-			}
-			//回避
-			else if (m_animChange.sa_avoidance)
-			{
-				m_nowAnimIdx = m_animIdx["Roll"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[7], m_animOne, 0.8f);
-				NotInitAnim(true);
-			}
-			//攻撃
-			else if (m_anim.s_attack && !m_animChange.sa_avoidance && !m_animChange.sa_recovery)
-			{
-				m_nowAnimIdx = m_animIdx["Attack1"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[8], m_animOne, 1.0f);
-				NotInitAnim(false);
-			}
-			//強攻撃
-			else if (m_animChange.sa_strengthAttack && !m_animChange.sa_avoidance && !m_animChange.sa_recovery)
-			{
-				m_nowAnimIdx = m_animIdx["Attack2"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[9], m_animOne, 0.5f);
-				NotInitAnim(false);
-			}
-			//回復
-			else if (m_animChange.sa_recovery)
-			{
-				m_nowAnimIdx = m_animIdx["Recovery"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[10], m_animOne);
-				NotInitAnim(false);
-
-			}
-			//アイテムを取得するとき
-			else if (m_animChange.sa_taking)
-			{
-				m_nowAnimIdx = m_animIdx["Taking"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[11], m_animOne);
-				NotInitAnim(false);
-
-			}
-			//ギミックを作動させるとき
-			else if (m_animChange.sa_touch)
-			{
-				m_nowAnimIdx = m_animIdx["Touch"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[12], m_animOne);
-				NotInitAnim(false);
-			}
-		}
-		//ボス部屋入り口に入るとき
-		else if (m_animChange.sa_bossEnter && !m_anim.s_hit && !m_animChange.sa_imapact)
-		{
-			m_nowAnimIdx = m_animIdx["BossEnter"];
-			ChangeAnim(m_nowAnimIdx, m_animOne[13], m_animOne);
-			NotInitAnim(true);
-		}
-	}
-}
-
-/// <summary>
-/// 武器を持ってる状態の時に行うアニメーション
-/// </summary>
-void Player::WeaponAnimation(Shield& shield)
-{
-	//とりあえず
-	//m_animChange.sa_imapact = false;
-
-	//プレイヤーが生きている時だけ
-	if (!m_anim.s_isDead)
-	{
-		//盾受けしたとき
-		if (m_animChange.sa_imapact)
-		{
-			m_nowAnimIdx = m_animIdx["ShieldImpact"];
-			ChangeAnim(m_nowAnimIdx, m_animOne[14], m_animOne);
-			NotInitAnim(true);
-		}
-		//攻撃が当たってない時盾受けしていないとき
-		else if (!m_anim.s_hit && !m_animChange.sa_imapact)
-		{
-			//走り
-			if (m_animChange.sa_dashMove && m_anim.s_moveflag)
-			{
-				m_nowAnimIdx = m_animIdx["ShieldRun"];
-				ChangeAnim(m_nowAnimIdx, m_animOne[15], m_animOne);
-				NotInitAnim(false);
-			}
-			//歩き
-			else if (m_anim.s_moveflag)
-			{
-				//ターゲットしていないとき
-				if (!m_lockonTarget)
-				{
-					m_nowAnimIdx = m_animIdx["ShieldWalk"];
-					ChangeAnim(m_nowAnimIdx, m_animOne[16], m_animOne);
-					NotInitAnim(false);
-				}
-				//ターゲットしているとき
-				else if (m_lockonTarget)
-				{
-					//左右歩き
-					if (cAnX < -500 || cAnX > 500)
-					{
-						m_nowAnimIdx = m_animIdx["ShieldSideWalk"];
-						ChangeAnim(m_nowAnimIdx, m_animOne[17], m_animOne, cAnimWalkTime, m_animReverse);
-						NotInitAnim(false);
-
-					}
-					//後ろ歩きor歩き
-					else if (cAnX < 500 && cAnX > -500)
-					{
-						m_nowAnimIdx = m_animIdx["ShieldWalk"];
-						ChangeAnim(m_nowAnimIdx, m_animOne[16], m_animOne, cAnimWalkTime, m_animReverse, cAnimWalkReverseTimeInit);
-						NotInitAnim(false);
-
-					}
-				}
-			}
-			//盾があるとき
-			if (!shield.GetFist())
-			{
-				//防御開始と防御終了
-				if (m_animChange.sa_enterShield)
-				{
-					//キャラが動いていない時
-					if (!m_anim.s_moveflag)
-					{
-						m_nowAnimIdx = m_animIdx["ShieldStart"];
-						ChangeAnim(m_nowAnimIdx, m_animOne[18], m_animOne, 1.0f);
-						NotInitAnim(true);
-					}
-					
-				}
-				//防御中
-				if (m_animChange.sa_shieldIdle)
-				{
-					//キャラが動いていないとき
-					if (!m_anim.s_moveflag)
-					{
-						FrameEndAnim(cAnimIdx, cOne, cTwo, m_moveAnimShieldFrameIndex);
-						m_nowAnimIdx = m_animIdx["ShieldIdle"];
-						ChangeAnim(m_nowAnimIdx, m_animOne[19], m_animOne);
-						NotInitAnim(false);
-					}
-					//キャラが動いているとき
-					else
-					{
-						
-						cAnimIdx = m_animIdx["ShieldTransition"];
-						FrameChangeAnim(cAnimIdx, cOne, cTwo, m_moveAnimShieldFrameIndex);
-					}
-					
-				}
-				
-			}
-		}
-	}
-}
-
-/// <summary>
 /// 描画処理
 /// </summary>
 void Player::Draw(Armor& armor, int font)
 {
-	rigidbody.SetPos(rigidbody.GetNextPos());
-	m_collisionPos = rigidbody.GetPos();
+	rigidbody->SetPos(rigidbody->GetNextPos());
+	m_collisionPos = rigidbody->GetPos();
 
 #if false
 	DrawFormatString(1000, 600, 0xffffff, "move : %d", m_anim.s_moveflag);
@@ -1740,9 +1356,9 @@ void Player::Draw(Armor& armor, int font)
 	DrawFormatString(1000, 650, 0xffffff, "touch : %d", m_animChange.sa_touch);
 #endif
 #if false
-	DrawFormatString(1000, 150, 0xffffff, "posx : %f", rigidbody.GetPos().x);   //15   -700
-	DrawFormatString(1000, 200, 0xffffff, "posy : %f", rigidbody.GetPos().y);   //12   
-	DrawFormatString(1000, 250, 0xffffff, "posz : %f", rigidbody.GetPos().z);   //0    370
+	DrawFormatString(1000, 150, 0xffffff, "posx : %f", rigidbody->GetPos().x);   //15   -700
+	DrawFormatString(1000, 200, 0xffffff, "posy : %f", rigidbody->GetPos().y);   //12   
+	DrawFormatString(1000, 250, 0xffffff, "posz : %f", rigidbody->GetPos().z);   //0    370
 	DrawFormatString(1000, 300, 0xffffff, "m_angle : %f", m_angle);             //1.5
 #endif
 
@@ -1773,7 +1389,6 @@ void Player::Draw(Armor& armor, int font)
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, m_angle, 0.0f));
 	//描画
 	MV1DrawModel(m_modelHandle);
-	
 }
 
 void Player::End()
@@ -1907,16 +1522,13 @@ void Player::ArmorChange(int one, std::string path)
 		//メモリ解放
 		MV1DeleteModel(m_modelHandle);
 		//モデル読み込み
-		m_modelHandle = MV1LoadModel(path.c_str());
+		m_modelHandle = handle.GetModelHandle(path);
 
 		//モデルのサイズ設定
 		MV1SetScale(m_modelHandle, VGet(cModelSizeScale, cModelSizeScale, cModelSizeScale));
 
 		//待機アニメーション設定
-		m_nowAnimIdx = m_animIdx["Idle"];
-
-		ChangeAnim(m_nowAnimIdx, m_animOne[20], m_animOne);
-
+		m_pState->ChangeState(StateBase::StateKind::Idle);
 
 		m_armorOne[one] = true;
 

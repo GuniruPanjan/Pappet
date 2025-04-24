@@ -11,7 +11,7 @@ UIBase::UIBase() :
 	m_eqSword(0),
 	m_eqShield(0),
 	m_equipment(0),
-	m_itemBox(0),
+	//m_itemBox(0),
 	m_selectEquipment(0),
 	m_blackSword(0),
 	m_fist(0),
@@ -48,7 +48,16 @@ UIBase::UIBase() :
 	m_lbButton(0),
 	m_startButton(0),
 	m_messageUI(0),
-	m_tagetLock(0)
+	m_tagetLock(0),
+	m_settingHandle(-1),
+	m_brightnessHandle(-1),
+	m_bgmHandle(-1),
+	m_seHandle(-1),
+	m_cameraHandle(-1),
+	m_returnHandle(-1),
+	m_edgeHandle(-1),
+	m_barHandle(-1),
+	m_lineHandle(-1)
 {
 	
 }
@@ -65,7 +74,7 @@ UIBase::~UIBase()
 	DeleteGraph(m_eqSword);
 	DeleteGraph(m_eqShield);
 	DeleteGraph(m_equipment);
-	DeleteGraph(m_itemBox);
+	//DeleteGraph(m_itemBox);
 	DeleteGraph(m_selectEquipment);
 	DeleteGraph(m_blackSword);
 	DeleteGraph(m_fist);
@@ -88,6 +97,15 @@ UIBase::~UIBase()
 	DeleteGraph(m_messageUI);
 	DeleteGraph(m_tagetLock);
 	DeleteGraph(m_menu);
+	DeleteGraph(m_settingHandle);
+	DeleteGraph(m_brightnessHandle);
+	DeleteGraph(m_bgmHandle);
+	DeleteGraph(m_seHandle);
+	DeleteGraph(m_cameraHandle);
+	DeleteGraph(m_returnHandle);
+	DeleteGraph(m_edgeHandle);
+	DeleteGraph(m_barHandle);
+	DeleteGraph(m_lineHandle);
 }
 
 /// <summary>

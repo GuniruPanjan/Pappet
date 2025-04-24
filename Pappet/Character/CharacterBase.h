@@ -7,6 +7,7 @@
 #include "Object/ShieldObject.h"
 #include "Object/AttackLigObject.h"
 #include "Object/EnemyAttackLigObject.h"
+#include "StateBase.h"
 #include <map>
 #include <string>
 #define ANIMATION_MAX   30
@@ -39,12 +40,6 @@ public:
 		bool s_attack;        //キャラが攻撃したかの判定
 	};
 
-	//エフェクト関係の構造体
-	struct EffectAction
-	{
-		bool s_heel;          //回復
-	};
-
 public:
 	CharacterBase(Priority priority, ObjectTag tag);
 	virtual ~CharacterBase();
@@ -52,20 +47,68 @@ public:
 	//衝突したとき
 	virtual void OnCollideEnter(const std::shared_ptr<Collidable>& colider) = 0;
 
-protected:
+public:
 	//アニメーションの更新
 	bool UpdateAnim(int attachNo, int max, float startTime = 0.0f);
+	//アニメーションの更新
+	bool UpdateStateAnim(int attachNo, float startTime = 0.0f, float resetTime = 0.0f, bool loop = false);
 	//アニメーションの変更
 	void ChangeAnim(int animIndex, bool& one, bool(&all)[30], float animSpeed = 0.5f, bool reverse = false, float resetTime = 0.0f);
+	//Stateでのアニメーション変更
+	void ChangeStateAnim(int animIndex, bool init, float animSpeed = 0.5f, bool reverse = false, float resetTime = 0.0f);
 	//アニメーションのフレームブレンド変更
 	void FrameChangeAnim(int animIndex, bool& one, bool& two, int frame);
+	//アニメーションのフレームブレンド変更(ステート)
+	void FrameStateChangeAnim(int animIndex, int frame, bool& one);
+	//アニメーションのフレームブレンド変更(ステート)
+	void FrameEndStateAnim(int animIndex, int frame, bool& one);
 	//アニメーションのフレームブレンド変更
 	void FrameEndAnim(int animIndex, bool& one, bool& two, int frame);
 	//アニメーションの未初期化
 	void NotInitAnim(bool init = false);
+	//自身のステートクラスから呼ぶ専用
+	void ChangeState(std::shared_ptr<StateBase> next);
+	//キャラクター名を取得
+	const std::string GetCharacterName() const { return m_characterName; }
 
+	//ステータス取得
+	Status GetStatus() { return m_status; }
+	//フレームを取得する
+	float GetFrame() { return m_nowFrame; }
+	//アニメーション終了を取得する
+	bool GetEndAnim() { return m_isAnimationFinish; }
+	//キャラクターのヒット状態を得る
+	bool GetHit() { return m_anim.s_hit; }
+	//カプセルのY座標の大きさを得る
+	float GetCapsuleY() { return m_capsuleY; }
+	//カプセルの半径を得る
+	float GetCapsuleRadius() { return m_capsuleRadius; }
+
+	//装備関係
+	bool GetSword() { return m_sword; }
+	bool GetFist() { return m_fist; }
+	bool GetEquipment() { return m_equipment; }
+	bool GetShield() { return m_shield; }
+
+	//スピードを設定する
+	float SetSpeed(float set) { return m_status.s_speed = set; }
+	//アニメーションタイムを設定する
+	float SetAnimSpeed(float set) { return m_animTime = set; }
+
+	//ジャンプ関係
+	bool GetJumpCan() { return m_jumpCan; }                            //ジャンプ攻撃を可能にする
+
+	//ガード関係
+	bool GetGuard() { return m_guardTransition; }                      //現在のリグ状態を確保する
+	bool SetGuard(bool set) { return m_guardTransition = set; }        //リグ状態を獲得する
+
+
+	//物理データを取得
+	std::shared_ptr<MyLibrary::Rigidbody> GetRigidbody() { return rigidbody; }
 
 protected:
+	//キャラクター名 
+	std::string m_characterName;	
 	//物理クラスのポインタ
 	std::shared_ptr<MyLibrary::Physics> m_pPhysics;
 	//モデルハンドル
@@ -80,8 +123,6 @@ protected:
 	Status m_status;
 	//アニメーション
 	AnimationChange m_anim;
-	//エフェクト
-	EffectAction m_effect;
 
 	//アニメーション関係
 	std::map<std::string, int> m_animIdx;
@@ -100,12 +141,29 @@ protected:
 	bool m_animReverse;       //アニメーションを逆再生させるかどうか
 	VECTOR m_nowPos;        //現在のフレームの座標を取得する
 
+	int m_currentAnimNo;		//現在のアニメーション
+	int m_preAnimIdx;
+
+	//装備関係
+	bool m_equipment;
+	bool m_fist;
+	bool m_shield;
+	bool m_sword;
+
 	//使う変数
 	float m_angle;            //キャラのアングル
 	float m_attackRadius;     //攻撃の当たり判定
 	float m_searchRadius;     //索敵の当たり判定
+	float m_capsuleY;         //カプセルのY座標
+	float m_capsuleRadius;    //カプセルの半径
 	int m_heel;               //HPに追加する回復分
 	int m_maxHeel;            //HPの最大回復量
-	
+	float m_cameraAngle;      //カメラ情報
+	bool m_jumpCan;           //ジャンプ攻撃可能にする
+	bool m_guardTransition;   //リグがガード状態になっているかを判定する
+
+	//Stateパターン
+	std::shared_ptr<StateBase> m_pState;      
+
 };
 

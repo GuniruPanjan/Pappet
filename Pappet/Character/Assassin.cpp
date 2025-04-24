@@ -49,6 +49,9 @@ namespace
 	//攻撃ヒット時の移動距離
 	float cHitMove = 0.0f;
 
+	//足のエフェクトを移動させる
+	VECTOR cLigPos = VGet(0.0f, 0.0f, 0.0f);
+
 	bool cA[4];
 
 	//プレイヤーを発見したとき
@@ -99,6 +102,10 @@ namespace
 	constexpr float cAttackFrame14 = 28.0f;
 	constexpr float cAttackFrame15 = 18.0f;
 	constexpr float cAttackFrame16 = 20.0f;
+
+	// ランダムアクションの範囲
+	constexpr int cRandomActionMax = 6;
+	constexpr int cActionFixed = 5;
 
 }
 
@@ -500,7 +507,7 @@ void Assassin::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos
 	{
 		m_status.s_hp -= m_col->GetAttack() - m_status.s_defense;
 		// Hitエフェクト
-		cEffect.EffectCreate("Hit", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y + cHitEffectOffsetY, rigidbody.GetPos().z));
+		cEffect.EffectCreate("Hit", VGet(rigidbody->GetPos().x, rigidbody->GetPos().y + cHitEffectOffsetY, rigidbody->GetPos().z));
 		// HitSE再生
 		PlaySoundMem(se.GetHitSE(), DX_PLAYTYPE_BACK, true);
 
@@ -515,7 +522,7 @@ void Assassin::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos
 		m_status.s_hp -= m_strengthCol->GetAttack() - m_status.s_defense;
 
 		// Hitエフェクト
-		cEffect.EffectCreate("Hit", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y + cStrongHitEffectOffsetY, rigidbody.GetPos().z));
+		cEffect.EffectCreate("Hit", VGet(rigidbody->GetPos().x, rigidbody->GetPos().y + cStrongHitEffectOffsetY, rigidbody->GetPos().z));
 
 		// HitSE再生
 		PlaySoundMem(se.GetHitSE(), DX_PLAYTYPE_BACK, true);
@@ -549,7 +556,7 @@ void Assassin::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos
 	HitTriggerUpdate();
 
 	// 判定の更新
-	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
+	MyLibrary::LibVec3 centerPos = rigidbody->GetPos();
 	m_pSearch->Update(centerPos);
 
 	// チュートリアルだった場合
@@ -985,13 +992,13 @@ void Assassin::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se,
 			// プレイヤーが見えている時
 			if (cPlayerLook)
 			{
-				m_randomAction = GetRand(6);
+				m_randomAction = GetRand(cRandomActionMax);
 			}
 			// プレイヤーが見えていない時
 			else
 			{
 				// 回避するようにする
-				m_randomAction = 5;
+				m_randomAction = cActionFixed;
 			}
 		}
 
@@ -1196,6 +1203,14 @@ void Assassin::BossAction(MyLibrary::LibVec3 playerPos, bool isChase, SEManager&
 				cAttackMove = 0.0f;
 			}
 
+			//エフェクトを再生する
+			if (m_nowFrame >= cAttackFrame7 && m_nowFrame <= cAttackFrame8)
+			{
+				//攻撃の切っ先にエフェクトをつける
+				cEffect.UpdateEffectPosition("BossAttack", VGet(attackKnifePos2.x, attackKnifePos2.y, attackKnifePos2.z));
+			}
+
+
 			if (m_nowFrame == cAttackFrame1)
 			{
 				InitLigAttack(attackKnifePos1, attackKnifePos2, cAttackRadiusKnife);
@@ -1204,6 +1219,12 @@ void Assassin::BossAction(MyLibrary::LibVec3 playerPos, bool isChase, SEManager&
 			// アニメーションフレーム中に攻撃判定を出す
 			if (m_nowFrame == cAttackFrame3)
 			{
+				//エフェクトを作る
+				cEffect.EffectCreate("BossShockWave", VGet(attackKnifePos2.x, attackKnifePos2.y, attackKnifePos2.z));
+
+				// 攻撃SE再生
+				PlaySoundMem(se.GetKnifeSE(), DX_PLAYTYPE_BACK, true);
+
 				InitAttackUpdate(m_status.s_attack);
 			}
 			if (m_nowFrame == cAttackFrame5)
@@ -1216,6 +1237,9 @@ void Assassin::BossAction(MyLibrary::LibVec3 playerPos, bool isChase, SEManager&
 			// アニメーションフレーム中に攻撃判定を出す
 			if (m_nowFrame == cAttackFrame7)
 			{
+				//エフェクトを作る
+				cEffect.EffectCreate("BossAttack", VGet(attackKnifePos2.x, attackKnifePos2.y, attackKnifePos2.z));
+
 				// 攻撃SE再生
 				PlaySoundMem(se.GetKnifeSE(), DX_PLAYTYPE_BACK, true);
 
@@ -1228,6 +1252,15 @@ void Assassin::BossAction(MyLibrary::LibVec3 playerPos, bool isChase, SEManager&
 				m_pAttack->CollisionEnd();
 				m_pLigAttack->CollisionEnd();
 			}
+
+			//エフェクトを作る
+			if (m_nowFrame >= cAttackFrame3 && m_nowFrame <= cAttackFrame5)
+			{
+				//攻撃判定の周りにエフェクトをつける
+				cEffect.UpdateEffectPosition("BossShockWave", VGet(attackKnifePos2.x, attackKnifePos2.y, attackKnifePos2.z));
+				cEffect.UpdateEffectRotation("BossShockWave", VGet(0.0f, m_angle, 0.0f));
+			}
+
 		}
 		else if (m_randomAction == 1)
 		{
@@ -1237,6 +1270,13 @@ void Assassin::BossAction(MyLibrary::LibVec3 playerPos, bool isChase, SEManager&
 			// 攻撃時の移動する距離
 			cAttackMove = 0.0f;
 
+			//エフェクトを再生する
+			if (m_nowFrame >= cAttackFrame3 && m_nowFrame <= cAttackFrame14)
+			{
+				//攻撃の切っ先にエフェクトをつける
+				cEffect.UpdateEffectPosition("BossAttack", VGet(attackKnifePos2.x, attackKnifePos2.y, attackKnifePos2.z));
+			}
+
 			if (m_nowFrame == cAttackFrame1)
 			{
 				InitLigAttack(attackKnifePos1, attackKnifePos2, cAttackRadiusKnife);
@@ -1245,6 +1285,9 @@ void Assassin::BossAction(MyLibrary::LibVec3 playerPos, bool isChase, SEManager&
 			// アニメーションフレーム中に攻撃判定を出す
 			if (m_nowFrame == cAttackFrame3)
 			{
+				//エフェクトを作る
+				cEffect.EffectCreate("BossAttack", VGet(attackKnifePos2.x, attackKnifePos2.y, attackKnifePos2.z));
+
 				// 攻撃SE再生
 				PlaySoundMem(se.GetKnifeSE(), DX_PLAYTYPE_BACK, true);
 
@@ -1274,6 +1317,9 @@ void Assassin::BossAction(MyLibrary::LibVec3 playerPos, bool isChase, SEManager&
 			// アニメーションフレーム中に攻撃判定を出す
 			if (m_nowFrame == cAttackFrame2)
 			{
+				//エフェクトを作る
+				cEffect.EffectCreate("BossShockWave", VGet(attackKnifePos1.x, attackKnifePos1.y, attackKnifePos1.z));
+
 				// 攻撃SE再生
 				PlaySoundMem(se.GetKnifeSE(), DX_PLAYTYPE_BACK, true);
 
@@ -1286,6 +1332,15 @@ void Assassin::BossAction(MyLibrary::LibVec3 playerPos, bool isChase, SEManager&
 				m_pAttack->CollisionEnd();
 				m_pLigAttack->CollisionEnd();
 			}
+
+			//エフェクトを作る
+			if (m_nowFrame >= cAttackFrame2 && m_nowFrame <= cAttackFrame15)
+			{
+				//攻撃判定の周りにエフェクトをつける
+				cEffect.UpdateEffectPosition("BossShockWave", VGet(attackKnifePos1.x, attackKnifePos1.y, attackKnifePos1.z));
+				cEffect.UpdateEffectRotation("BossShockWave", VGet(0.0f, m_angle, 0.0f));
+			}
+
 		}
 		else if (m_randomAction == 3)
 		{
@@ -1314,14 +1369,50 @@ void Assassin::BossAction(MyLibrary::LibVec3 playerPos, bool isChase, SEManager&
 				cAttackMove = 0.0f;
 			}
 
+			if (m_nowFrame <= cAttackFrame6)
+			{
+				cLigPos = VGet(attackLeftKickPos1.x, attackLeftKickPos1.y, attackLeftKickPos1.z);
+			}
+			else if (m_nowFrame >= cAttackFrame6 && m_nowFrame <= cAttackFrame13)
+			{
+				cLigPos = VGet(attackLeftKickPos2.x, attackLeftKickPos2.y, attackLeftKickPos2.z);
+			}
+
 			if (m_nowFrame == cAttackFrame1)
 			{
+				//エフェクトを作る
+				cEffect.EffectCreate("BossWind", cLigPos);
+
 				InitLigAttack(attackLeftKickPos1, attackLeftKickPos2, cAttackRadiusKick);
 				InitAttackDamage(m_status.s_attack);
 			}
+			else if (m_nowFrame == cAttackFrame2)
+			{
+				//エフェクトを作る
+				cEffect.EffectCreate("BossWind", cLigPos);
+			}
+			else if (m_nowFrame == cAttackFrame4)
+			{
+				//エフェクトを作る
+				cEffect.EffectCreate("BossWind", cLigPos);
+			}
+			else if (m_nowFrame == cAttackFrame6)
+			{
+				//エフェクトを作る
+				cEffect.EffectCreate("BossWind", cLigPos);
+			}
+			else if (m_nowFrame == cAttackFrame8)
+			{
+				//エフェクトを作る
+				cEffect.EffectCreate("BossWind", cLigPos);
+			}
+
 			// アニメーションフレーム中に攻撃判定を出す
 			if (m_nowFrame == cAttackFrame11)
 			{
+				//エフェクトを作る
+				cEffect.EffectCreate("BossWind", cLigPos);
+
 				// 攻撃SE再生
 				PlaySoundMem(se.GetKickSE(), DX_PLAYTYPE_BACK, true);
 
@@ -1333,6 +1424,12 @@ void Assassin::BossAction(MyLibrary::LibVec3 playerPos, bool isChase, SEManager&
 				// 判定をリセット
 				m_pAttack->CollisionEnd();
 				m_pLigAttack->CollisionEnd();
+			}
+
+			//エフェクトを再生する
+			if (m_nowFrame >= cAttackFrame1 && m_nowFrame <= cAttackFrame13)
+			{
+				cEffect.UpdateEffectPosition("BossWind", cLigPos);
 			}
 		}
 		else if (m_randomAction == 4)
@@ -1360,12 +1457,24 @@ void Assassin::BossAction(MyLibrary::LibVec3 playerPos, bool isChase, SEManager&
 
 			if (m_nowFrame == cAttackFrame1)
 			{
+				//エフェクトを作る
+				cEffect.EffectCreate("BossWind", VGet(attackRightKickPos2.x, attackRightKickPos2.y, attackRightKickPos2.z));
+
 				InitLigAttack(attackRightKickPos1, attackRightKickPos2, cAttackRadiusKick);
 				InitAttackDamage(m_status.s_attack);
 			}
+			else if (m_nowFrame == cAttackFrame2)
+			{
+				//エフェクトを作る
+				cEffect.EffectCreate("BossWind", VGet(attackRightKickPos2.x, attackRightKickPos2.y, attackRightKickPos2.z));
+			}
+
 			// アニメーションフレーム中に攻撃判定を出す
 			if (m_nowFrame == cAttackFrame4)
 			{
+				//エフェクトを作る
+				cEffect.EffectCreate("BossWind", VGet(attackRightKickPos2.x, attackRightKickPos2.y, attackRightKickPos2.z));
+
 				// 攻撃SE再生
 				PlaySoundMem(se.GetKickSE(), DX_PLAYTYPE_BACK, true);
 
@@ -1377,6 +1486,12 @@ void Assassin::BossAction(MyLibrary::LibVec3 playerPos, bool isChase, SEManager&
 				// 判定をリセット
 				m_pAttack->CollisionEnd();
 				m_pLigAttack->CollisionEnd();
+			}
+
+			//エフェクトを再生する
+			if (m_nowFrame >= cAttackFrame1 && m_nowFrame <= cAttackFrame6)
+			{
+				cEffect.UpdateEffectPosition("BossWind", VGet(attackRightKickPos2.x, attackRightKickPos2.y, attackRightKickPos2.z));
 			}
 		}
 	}
@@ -1402,13 +1517,13 @@ void Assassin::BossAction(MyLibrary::LibVec3 playerPos, bool isChase, SEManager&
 		// プレイヤーが見えている時
 		if (cPlayerLook)
 		{
-			m_randomAction = GetRand(6);
+			m_randomAction = GetRand(cRandomActionMax);
 		}
 		// プレイヤーが見えていない時
 		else
 		{
 			// 回避するようにする
-			m_randomAction = 5;
+			m_randomAction = cActionFixed;
 		}
 	}
 

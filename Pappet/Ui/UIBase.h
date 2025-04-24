@@ -39,7 +39,7 @@ protected:
 
 	//UI‰æ–Ê
 	int m_equipment;      //‘•”õ‰æ–ÊŠi”[•Ï”
-	int m_itemBox;        //ƒAƒCƒeƒ€‰æ–ÊŠi”[•Ï”
+	//int m_itemBox;        //ƒAƒCƒeƒ€‰æ–ÊŠi”[•Ï”
 	int m_selectEquipment;//‘•”õ‘I‘ğ‰æ–ÊŠi”[•Ï”
 	int m_rest;           //‹x‘§‘I‘ğ‰æ–ÊŠi”[•Ï”
 	int m_levelUp;        //ƒŒƒxƒ‹ƒAƒbƒv‰æ–ÊŠi”[•Ï”
@@ -53,8 +53,18 @@ protected:
 	int m_statusIcon;     //ƒXƒe[ƒ^ƒXƒAƒCƒRƒ“‰æ‘œŠi”[•Ï”
 	int m_equipmentFrame; //‘•”õ‚Ì˜g‰æ‘œŠi”[•Ï”
 	int m_tagetLock;      //ƒ^[ƒQƒbƒgƒƒbƒN‰æ‘œŠi”[•Ï”
-	int m_menu;               //ƒƒjƒ…[‰æ‘œŠi”[•Ï”
+	int m_menu;           //ƒƒjƒ…[‰æ‘œŠi”[•Ï”
 
+	//Setting‰æ–Ê
+	int m_settingHandle;        //İ’è‚Ì•¶š‰æ‘œŠi”[•Ï”
+	int m_brightnessHandle;     //–¾‚é‚³‚Ì•¶š‰æ‘œŠi”[•Ï”
+	int m_bgmHandle;            //BGM‚Ì•¶š‰æ‘œŠi”[•Ï”
+	int m_seHandle;             //SE‚Ì•¶š‰æ‘œŠi”[•Ï”
+	int m_cameraHandle;         //ƒJƒƒ‰‚Ì•¶š‰æ‘œŠi”[•Ï”
+	int m_returnHandle;         //–ß‚é‚Ì•¶š‰æ‘œŠi”[•Ï”
+	int m_edgeHandle;           //’[‚Ì‰æ‘œŠi”[•Ï”
+	int m_barHandle;            //ƒo[‚Ì‰æ‘œŠi”[•Ï”
+	int m_lineHandle;           //ƒ‰ƒCƒ“‚Ì‰æ‘œŠi”[•Ï”
 
 	//ƒAƒCƒeƒ€‚Ì‰æ‘œ
 	int m_blackSword;     //•‚¢Œ•‚Ì‰æ‘œŠi”[•Ï”

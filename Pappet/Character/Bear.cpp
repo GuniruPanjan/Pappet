@@ -10,11 +10,11 @@ namespace
 	//モデルパス
 	constexpr const char* cModelPath = "Data/Enemy/BearModel.mv1";
 	//モデルのサイズの拡大率
-	constexpr float cModelSize = 0.7f;
+	constexpr float cModelSize = 0.66f;
 	//モデルの長さ
-	constexpr float cCapsuleLen = 40.0f;
+	constexpr float cCapsuleLen = 50.0f;
 	//モデルの半径
-	constexpr float cCapsuleRadius = 25.0f;
+	constexpr float cCapsuleRadius = 23.0f;
 	//モデルの座標を合わせる
 	constexpr float cModelPosY = 24.0f;
 	//死亡終了
@@ -34,10 +34,6 @@ namespace
 	//視野の距離
 	constexpr float cAngleDistance = 500.0f;
 
-	int a = 0;
-	int b = 0;
-	int c = 0;
-
 	//敵を回転させない
 	bool cTurn = false;
 
@@ -45,6 +41,30 @@ namespace
 	EffectManager& cEffect = EffectManager::GetInstance();
 
 	bool cOne = false;
+
+	//定数定義
+	constexpr float cWalkFrameThreshold = 30.0f;
+	constexpr float cHitEffectOffsetY = 30.0f;
+	constexpr float cStrengthHitEffectOffsetY = 20.0f;
+	constexpr float cDeathAnimationStartFrame = 60.0f;
+	constexpr float cCorrectionAngleThreshold = 3.0f;
+	constexpr float cTurnAngleThreshold = 0.8f;
+	constexpr float cTurnAngleStep = 0.05f;
+	constexpr float cSpped = 0.01f;
+	constexpr float cAngleFrame = 0.1f;
+	constexpr float cAttackFrame1 = 5.0f;
+	constexpr float cAttackFrame2 = 7.0f;
+	constexpr float cAttackFrame3 = 12.0f;
+	constexpr float cAttackFrame4 = 38.0f;
+	constexpr float cAttackFrame5 = 45.0f;
+	constexpr float cAttackFrame6 = 25.0f;
+	constexpr float cAttackFrame7 = 58.0f;
+	constexpr float cAttackFrame8 = 68.0f;
+	constexpr float cCloseRangeDistance = 80.0f;
+
+	// ランダムアクションの範囲
+	constexpr int cRandomActionMax = 2;
+	constexpr int cRandomActionAway = 1;
 }
 
 /// <summary>
@@ -262,11 +282,10 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bo
 	{
 		m_walk++;
 
-		if (m_walk >= 30)
+		//歩くSE
+		if (m_walk >= cWalkFrameThreshold)
 		{
-			//歩くSE再生
 			PlaySoundMem(se.GetBossWalkSE(), DX_PLAYTYPE_BACK, true);
-
 			m_walk = 0;
 		}
 	}
@@ -281,7 +300,7 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bo
 	{
 		m_status.s_hp -= m_col->GetAttack() - m_status.s_defense;
 		//Hitエフェクト
-		cEffect.EffectCreate("Hit", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y + 30.0f, rigidbody.GetPos().z));
+		cEffect.EffectCreate("Hit", VGet(rigidbody->GetPos().x, rigidbody->GetPos().y + cHitEffectOffsetY, rigidbody->GetPos().z));
 		//HitSE再生
 		PlaySoundMem(se.GetHitSE(), DX_PLAYTYPE_BACK, true);
 
@@ -296,7 +315,7 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bo
 		m_status.s_hp -= m_strengthCol->GetAttack() - m_status.s_defense;
 
 		//Hitエフェクト
-		cEffect.EffectCreate("Hit", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y + 20.0f, rigidbody.GetPos().z));
+		cEffect.EffectCreate("Hit", VGet(rigidbody->GetPos().x, rigidbody->GetPos().y + cStrengthHitEffectOffsetY, rigidbody->GetPos().z));
 
 		//HitSE再生
 		PlaySoundMem(se.GetHitSE(), DX_PLAYTYPE_BACK, true);
@@ -318,7 +337,7 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bo
 	HitTriggerUpdate();
 
 	//判定の更新
-	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
+	MyLibrary::LibVec3 centerPos = rigidbody->GetPos();
 	m_pSearch->Update(centerPos);
 
 	//死んだ時
@@ -331,7 +350,7 @@ void Bear::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bo
 
 		Death();
 
-		if (m_nowFrame == 60)
+		if (m_nowFrame == cDeathAnimationStartFrame)
 		{
 			//死亡SE再生
 			PlaySoundMem(se.GetDiedSE(), DX_PLAYTYPE_BACK, true);
@@ -365,12 +384,12 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 
 	m_correctionAngle = atan2f(Cx, Cz);
 
-	if (m_correctionAngle >= 3.0f)
+	if (m_correctionAngle >= cCorrectionAngleThreshold)
 	{
 
 		cTurn = true;
 	}
-	else if (m_correctionAngle <= -3.0f)
+	else if (m_correctionAngle <= -cCorrectionAngleThreshold)
 	{
 
 		cTurn = true;
@@ -379,16 +398,6 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 	{
 		cTurn = false;
 		
-	}
-
-	//正面
-	if (!IsPlayerInView(playerPos))
-	{
-		a = 1;
-	}
-	else
-	{
-		a = 0;
 	}
 
 	//右側
@@ -405,10 +414,6 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 			}
 		}
 	}
-	else
-	{
-		b = 0;
-	}
 
 	//左側
 	if (IsPlayerOnLeft(playerPos))
@@ -424,11 +429,6 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 			}
 		}
 	}
-	else
-	{
-		c = 0;
-	}
-	
 
 	//左回りしているとき
 	if (m_enemyAnim.s_turnLeft)
@@ -475,9 +475,9 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 
 			//ここのアングル補正がうまくいってない
 			//左回り
-			if (m_angle > m_correctionAngle + 0.8f)
+			if (m_angle > m_correctionAngle + cTurnAngleThreshold)
 			{
-				m_angle -= 0.05f;
+				m_angle -= cTurnAngleStep;
 			}
 
 		}
@@ -489,9 +489,9 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 
 			//ここのアングル補正が上手くいってない
 			//右回り
-			if (m_angle < m_correctionAngle - 0.8f)
+			if (m_angle < m_correctionAngle - cTurnAngleThreshold)
 			{
-				m_angle += 0.05f;
+				m_angle += cTurnAngleStep;
 			}
 
 		}
@@ -508,7 +508,7 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 			//歩くアニメーション
 			m_anim.s_moveflag = true;
 			//スピード
-			m_status.s_speed = 0.01f;
+			m_status.s_speed = cSpped;
 
 			m_move = VScale(m_difPlayer, m_status.s_speed);
 
@@ -556,8 +556,10 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 		{
 			InitAttackLigUpdate(attackRightHandPos1, attackRightHandPos2);
 
+			VECTOR pos = VGet(attackRightHandPos2.x, attackRightHandPos2.y, attackRightHandPos2.z);
+
 			//攻撃の初期化
-			if (m_nowFrame == 5.0f)
+			if (m_nowFrame == cAttackFrame1)
 			{
 				InitLigAttack(attackRightHandPos1, attackRightHandPos2, cAttackRadius1);
 
@@ -565,20 +567,30 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 			}
 
 			//アニメーションフレーム中に攻撃判定を出す
-			if (m_nowFrame == 7.0f)
+			if (m_nowFrame == cAttackFrame2)
 			{
+				//エフェクトを作る
+				cEffect.EffectCreate("BearAttack", pos);
+
 				//攻撃SE再生
 				PlaySoundMem(se.GetBossAttackSE1(), DX_PLAYTYPE_BACK, true);
 
 				InitAttackUpdate(m_status.s_attack);
 			}
-			else if (m_nowFrame >= 12.0f)
+			else if (m_nowFrame >= cAttackFrame3)
 			{
 				InitAttackDamage(0.0f);
 
 				//判定をリセット
 				m_pAttack->CollisionEnd();
 				m_pLigAttack->CollisionEnd();
+			}
+
+			//エフェクトを再生する
+			if (m_nowFrame >= cAttackFrame1 && m_nowFrame <= cAttackFrame3)
+			{
+				cEffect.UpdateEffectPosition("BearAttack", pos);
+				cEffect.UpdateEffectRotation("BearAttack", VGet(0.0f, m_angle - (DX_PI_F / 2.0f), 0.0f));
 			}
 
 		}
@@ -588,39 +600,76 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 			InitAttackLigUpdate(attackLeftHandPos1, attackLeftHandPos2);
 
 			//攻撃の初期化
-			if (m_nowFrame == 5.0f)
+			if (m_nowFrame == cAttackFrame1)
 			{
 				InitLigAttack(attackLeftHandPos1, attackLeftHandPos2, cAttackRadius2);
 
 				InitAttackDamage(m_status.s_attack1);
 			}
 
-			//攻撃発生まではプレイヤーを向く
-			if (m_nowFrame > 0.1f && m_nowFrame < 38.0f)
+			VECTOR pos = VGet(0.0f, 0.0f, 0.0f);
+
+			if (m_nowFrame >= cAngleFrame && m_nowFrame <= cAttackFrame6)
 			{
+				pos = VGet(attackLeftHandPos1.x, attackLeftHandPos1.y, attackLeftHandPos1.z);
+			}
+			else if (m_nowFrame >= cAttackFrame6 && m_nowFrame <= cAttackFrame5)
+			{
+				pos = VGet(attackLeftHandPos2.x, attackLeftHandPos2.y, attackLeftHandPos2.z);
+			}
+
+			else if (m_nowFrame == cAttackFrame1)
+			{
+				//エフェクトをつくる
+				cEffect.EffectCreate("BearWind", pos);
+			}
+			else if (m_nowFrame == cAttackFrame3)
+			{
+				//エフェクトをつくる
+				cEffect.EffectCreate("BearWind", pos);
+
+			}
+			else if (m_nowFrame == cAttackFrame6)
+			{
+				//エフェクトをつくる
+				cEffect.EffectCreate("BearWind", pos);
+			}
+			//攻撃発生まではプレイヤーを向く
+			if (m_nowFrame > cAngleFrame && m_nowFrame < cAttackFrame4)
+			{
+
 				AngleUpdate(playerPos);
 			}
 			//アニメーションフレーム宙に攻撃判定を出す
-			else if (m_nowFrame == 38.0f)
+			else if (m_nowFrame == cAttackFrame4)
 			{
+				//エフェクトをつくる
+				cEffect.EffectCreate("BearWind", pos);
+
 				//攻撃SE再生
 				PlaySoundMem(se.GetBossAttackSE2(), DX_PLAYTYPE_BACK, true);
 
 				InitAttackUpdate(m_status.s_attack1);
 				
 			}
-			else if (m_nowFrame >= 45.0f)
+			else if (m_nowFrame >= cAttackFrame5)
 			{
 				//判定をリセット
 				m_pAttack->CollisionEnd();
 				m_pLigAttack->CollisionEnd();
+			}
+
+			//エフェクトを再生する
+			if (m_nowFrame >= cAttackFrame4 && m_nowFrame <= cAttackFrame5)
+			{
+				cEffect.UpdateEffectPosition("BearWind", pos);
 			}
 		}
 		//ランダムで2が出たら
 		else if (m_randomAction == 2)
 		{
 			//攻撃の初期化
-			if (m_nowFrame == 5.0f)
+			if (m_nowFrame == cAttackFrame1)
 			{
 				//攻撃の初期化
 				InitAttack(cAttackRadius3);
@@ -630,28 +679,30 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 				//咆哮SE再生
 				PlaySoundMem(se.GetBossVoiceSE(), DX_PLAYTYPE_BACK, true);
 			}
-			else if (m_nowFrame > 5.0f)
+			else if (m_nowFrame > cAttackFrame1)
 			{
 				//攻撃判定の更新
-				m_attackPos = MyLibrary::LibVec3(rigidbody.GetPos().x, rigidbody.GetPos().y, rigidbody.GetPos().z);
+				m_attackPos = MyLibrary::LibVec3(rigidbody->GetPos().x, rigidbody->GetPos().y, rigidbody->GetPos().z);
 				m_pAttack->Update(m_attackPos);
 			}
 
 			//エフェクトを出す
-			if (m_nowFrame == 25.0f)
+			if (m_nowFrame == cAttackFrame6)
 			{
 				//攻撃SE再生
 				PlaySoundMem(se.GetBossAttackSE3(), DX_PLAYTYPE_BACK, true);
 
-				cEffect.EffectCreate("BearLance", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y - 25.0f, rigidbody.GetPos().z));
+				cEffect.EffectCreate("BearLance", VGet(rigidbody->GetPos().x, rigidbody->GetPos().y - 25.0f, rigidbody->GetPos().z));
 			}
 
 			//アニメーションフレーム中に攻撃判定を出す
-			if (m_nowFrame == 58.0f)
+			if (m_nowFrame == cAttackFrame7)
 			{
+				cEffect.EffectCreate("ShockWave", VGet(rigidbody->GetPos().x, rigidbody->GetPos().y - 25.0f, rigidbody->GetPos().z));
+
 				InitAttackUpdate(m_status.s_attack2);
 			}
-			else if (m_nowFrame >= 68.0f)
+			else if (m_nowFrame >= cAttackFrame8)
 			{
 				//判定をリセット
 				m_pAttack->CollisionEnd();
@@ -679,15 +730,14 @@ void Bear::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 		m_anim.s_attack = false;
 
 		//近いときのランダム行動
-		if (m_difPSize <= 80.0f)
+		if (m_difPSize <= cCloseRangeDistance)
 		{
-			m_randomAction = GetRand(2);
-			//m_randomAction = 2;
+			m_randomAction = GetRand(cRandomActionMax);
 		}
 		//近くないときのランダム行動
 		else
 		{
-			m_randomAction = GetRand(1) + 1;
+			m_randomAction = GetRand(cRandomActionAway) + cRandomActionAway;
 		}
 		
 	}

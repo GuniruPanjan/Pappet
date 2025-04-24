@@ -3,8 +3,6 @@
 #include "Manager/EffectManager.h"
 #include "Manager/SEManager.h"
 
-//アタックのCollidableが登録されていない
-
 namespace
 {
 	//キャラクター名
@@ -32,6 +30,19 @@ namespace
 
 	//シングルトン
 	EffectManager& cEffect = EffectManager::GetInstance();
+
+	// アニメーションフレーム
+	constexpr float cAttackStartFrame = 5.0f;
+	constexpr float cAttackHitFrame = 22.0f;
+	constexpr float cAttackEndFrame = 35.0f;
+	constexpr float cDeathSoundFrame = 50.0f;
+
+	// スピード
+	constexpr float cWalkSpeed = 0.01f;
+	constexpr float cRunSpeed = 0.3f;
+
+	// ランダムアクションの範囲
+	constexpr int cRandomActionMax = 2;
 }
 
 /// <summary>
@@ -53,6 +64,12 @@ Immortal::Immortal() :
 	m_anim.s_attack = false;
 	m_anim.s_moveflag = false;
 	m_anim.s_hit = false;
+
+	for (int i = 0; i < 2; i++)
+	{
+		m_frameRightHand[i] = -1;
+		m_ligRightPos[i] = VGet(0.0f, 0.0f, 0.0f);
+	}
 }
 
 /// <summary>
@@ -110,8 +127,6 @@ void Immortal::Init(float posX, float posY, float posZ, std::shared_ptr<MyLibrar
 
 	//最大HPを取得
 	m_maxHP = m_status.s_hp;
-
-	//m_status.s_hp = 1.0f;
 
 	//死をfalseにする
 	m_anim.s_isDead = false;
@@ -181,6 +196,12 @@ void Immortal::GameInit(float posX, float posY, float posZ, std::shared_ptr<MyLi
 /// <param name="isChase">プレイヤーと戦えるかどうか</param>
 void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos, bool isChase, SEManager& se, std::shared_ptr<MyLibrary::Physics> physics, EnemyWeapon& weapon)
 {
+	//アニメーションで移動しているフレームの番号を検索する
+	m_frameRightHand[0] = MV1SearchFrame(m_modelHandle, "mixamorig:RightForeArm");
+	m_frameRightHand[1] = MV1SearchFrame(m_modelHandle, "mixamorig:RightHandThumb4");
+
+	m_ligRightPos[0] = MV1GetFramePosition(m_modelHandle, m_frameRightHand[0]);
+	m_ligRightPos[1] = MV1GetFramePosition(m_modelHandle, m_frameRightHand[1]);
 
 	float totalAnimFrame = MV1GetAttachAnimTotalTime(m_modelHandle, m_nowAnimNo);
 
@@ -236,18 +257,21 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos
 
 	//ターゲット状態
 	TargetNow();
+
 	//攻撃を受けた時
-	//攻撃が当たっているとき
-	//怯んでいる時は当たらない
 	if (m_isEnterHit)
 	{
 		m_status.s_hp -= m_col->GetAttack() - m_status.s_defense;
 
 		//Hitエフェクト
-		cEffect.EffectCreate("Hit", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y + 20.0f, rigidbody.GetPos().z));
+		cEffect.EffectCreate("Hit", VGet(rigidbody->GetPos().x, rigidbody->GetPos().y + 20.0f, rigidbody->GetPos().z));
 
 		//HitSE再生
 		PlaySoundMem(se.GetHitSE(), DX_PLAYTYPE_BACK, true);
+
+		//判定をリセット
+		m_pAttack->CollisionEnd();
+		m_pLigAttack->CollisionEnd();
 
 		//HPが0になるとヒットしない
 		if (m_status.s_hp > 0.0f)
@@ -260,10 +284,14 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos
 		m_status.s_hp -= m_strengthCol->GetAttack() - m_status.s_defense;
 
 		//Hitエフェクト
-		cEffect.EffectCreate("Hit", VGet(rigidbody.GetPos().x, rigidbody.GetPos().y + 20.0f, rigidbody.GetPos().z));
+		cEffect.EffectCreate("Hit", VGet(rigidbody->GetPos().x, rigidbody->GetPos().y + 20.0f, rigidbody->GetPos().z));
 
 		//HitSE再生
 		PlaySoundMem(se.GetHitSE(), DX_PLAYTYPE_BACK, true);
+
+		//判定をリセット
+		m_pAttack->CollisionEnd();
+		m_pLigAttack->CollisionEnd();
 
 		//HPが0になるとヒットしない
 		if (m_status.s_hp > 0.0f)
@@ -277,10 +305,8 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos
 
 
 	//判定の更新
-	MyLibrary::LibVec3 centerPos = rigidbody.GetPos();
-	MyLibrary::LibVec3 attackPos = MyLibrary::LibVec3(rigidbody.GetPos().x + sinf(m_angle) * -25.0f, rigidbody.GetPos().y, rigidbody.GetPos().z - cosf(m_angle) * 25.0f);
+	MyLibrary::LibVec3 centerPos = rigidbody->GetPos();
 	m_pSearch->Update(centerPos);
-	m_pAttack->Update(attackPos);
 
 	//死んだとき
 	if (m_status.s_hp <= 0.0f)
@@ -292,7 +318,7 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos
 
 		Death();
 
-		if (m_nowFrame == 50)
+		if (m_nowFrame == cDeathSoundFrame)
 		{
 			//死亡SE再生
 			PlaySoundMem(se.GetDiedSE(), DX_PLAYTYPE_BACK, true);
@@ -310,6 +336,10 @@ void Immortal::Update(MyLibrary::LibVec3 playerPos, MyLibrary::LibVec3 shieldPos
 /// <param name="isChase">プレイヤーと戦えるかどうか</param>
 void Immortal::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 {
+	MyLibrary::LibVec3 attackRightHandPos1 = MyLibrary::LibVec3(m_ligRightPos[0].x, m_ligRightPos[0].y, m_ligRightPos[0].z);
+	MyLibrary::LibVec3 attackRightHandPos2 = MyLibrary::LibVec3(m_ligRightPos[1].x, m_ligRightPos[1].y, m_ligRightPos[1].z);
+
+
 	//プレイヤーを見つけた時
 	if (m_pSearch->GetIsStay())
 	{
@@ -335,7 +365,7 @@ void Immortal::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 				//歩くアニメーション
 				m_anim.s_moveflag = true;
 
-				m_status.s_speed = 0.01f;
+				m_status.s_speed = cWalkSpeed;
 
 				m_move = VScale(m_difPlayer, m_status.s_speed);
 			}
@@ -343,7 +373,7 @@ void Immortal::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 		//近くに行った時の行動
 		else if (m_difPSize <= cNear)
 		{
-			m_status.s_speed = 0.3f;
+			m_status.s_speed = cRunSpeed;
 
 			m_move = VNorm(m_difPlayer);
 
@@ -381,36 +411,57 @@ void Immortal::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 				m_move = VGet(0.0f, 0.0f, 0.0f);
 
 				AttackUpdate("Attack1", 5);
-				
-
-				if (m_nowFrame == 5)
-				{
-					InitAttack(cAttackRadius);
-					InitAttackDamage(m_status.s_attack);
-				}
-				//アニメーションフレーム中に攻撃判定を出す
-				if (m_nowFrame == 22)
-				{
-					//攻撃SE再生
-					PlaySoundMem(se.GetAttackSE(), DX_PLAYTYPE_BACK, true);
-
-					InitAttackUpdate(m_status.s_attack);
-				}
-				else if (m_nowFrame >= 35.0f)
-				{
-					InitAttackDamage(0.0f);
-					//判定をリセット
-					m_pAttack->CollisionEnd();
-				}
 
 				m_anim.s_moveflag = false;
 			}
+
 		}
+
+		//攻撃での判定
+		if (m_randomAction == 2 && m_anim.s_attack)
+		{
+			InitAttackLigUpdate(attackRightHandPos1, attackRightHandPos2);
+
+			//エフェクトを再生する
+			if (m_nowFrame >= cAttackHitFrame && m_nowFrame <= cAttackEndFrame)
+			{
+				//攻撃の切っ先にエフェクトをつける
+				cEffect.UpdateEffectPosition("EnemyAttack", VGet(attackRightHandPos2.x, attackRightHandPos2.y, attackRightHandPos2.z));
+				cEffect.UpdateEffectRotation("EnemyAttack", VGet(0.0f, m_angle - (DX_PI_F / 2.0f), 0.0f));
+
+			}
+
+
+			if (m_nowFrame == cAttackStartFrame)
+			{
+				InitLigAttack(attackRightHandPos1, attackRightHandPos2, cAttackRadius);
+				InitAttackDamage(m_status.s_attack);
+			}
+			//アニメーションフレーム中に攻撃判定を出す
+			if (m_nowFrame == cAttackHitFrame)
+			{
+				//エフェクトを作る
+				cEffect.EffectCreate("EnemyAttack", VGet(attackRightHandPos2.x, attackRightHandPos2.y, attackRightHandPos2.z));
+
+				//攻撃SE再生
+				PlaySoundMem(se.GetAttackSE(), DX_PLAYTYPE_BACK, true);
+
+				InitAttackUpdate(m_status.s_attack);
+			}
+			else if (m_nowFrame >= cAttackEndFrame)
+			{
+				InitAttackDamage(0.0f);
+				//判定をリセット
+				m_pAttack->CollisionEnd();
+				m_pLigAttack->CollisionEnd();
+			}
+		}
+
 
 		//アニメーションが終わる度にランダムな行動を行う
 		if (m_isAnimationFinish)
 		{
-			m_randomAction = GetRand(2);
+			m_randomAction = GetRand(cRandomActionMax);
 		}
 
 		//移動方向
@@ -427,6 +478,7 @@ void Immortal::Action(MyLibrary::LibVec3 playerPos, bool isChase, SEManager& se)
 		m_anim.s_attack = false;
 		//判定をリセット
 		m_pAttack->CollisionEnd();
+		m_pLigAttack->CollisionEnd();
 
 		m_moveVec = MyLibrary::LibVec3(0.0f, 0.0f, 0.0f);
 	}
@@ -455,6 +507,6 @@ void Immortal::DrawUI(UI& ui)
 	if (m_pSearch->GetIsStay())
 	{
 		//HPバーの描画
-		ui.EnemyHPDraw(rigidbody.GetPos().GetVector(), m_status.s_hp, m_maxHP);
+		ui.EnemyHPDraw(rigidbody->GetPos().GetVector(), m_status.s_hp, m_maxHP);
 	}
 }

@@ -38,6 +38,32 @@ void EffectManager::Init()
 	EffectLoad("Hit", "Data/Effect/HitEffect.efkefc", 30, 15.0f);
 	//休息エフェクト
 	EffectLoad("RestLuminescence", "Data/Effect/Thunder.efkefc", 80, 20.0f);
+	//PlayerのHitエフェクト
+	EffectLoad("PlayerHit", "Data/Effect/PlayerHitEffect.efkefc", 30, 15.0f);
+	//Playerの弱攻撃エフェクト
+	EffectLoad("PlayerAttack", "Data/Effect/PlayerDestinationEffect.efkefc", 30, 2.0f);
+	//Playerの衝撃系攻撃エフェクト
+	EffectLoad("PlayerShockWave", "Data/Effect/PlayerShockWave.efkefc", 30, 2.0f);
+	//Playerの強攻撃エフェクト
+	EffectLoad("PlayerStrong", "Data/Effect/PlayerAttackWind.efkefc", 120, 10.0f);
+	EffectLoad("PlayerStrongBig", "Data/Effect/PlayerAttackWindBig.efkefc", 15, 50.0f);
+	//モブEnemyの攻撃エフェクト
+	EffectLoad("EnemyAttack", "Data/Effect/EnemyDestinationEffect.efkefc", 30, 2.0f);
+	//Bossの攻撃エフェクト
+	EffectLoad("BossAttack", "Data/Effect/BossDestinationEffect.efkefc", 30, 2.0f);
+	//Bossの衝撃波攻撃エフェクト
+	EffectLoad("BossShockWave", "Data/Effect/BossShockWave.efkefc", 30, 5.0f);
+	//Bossの嵐攻撃エフェクト
+	EffectLoad("BossWind", "Data/Effect/BossAttackWind.efkefc", 30, 15.0f);
+
+	//Beraの嵐攻撃エフェクト
+	EffectLoad("BearWind", "Data/Effect/BossAttackWindBear.efkefc", 30, 25.0f);
+	//Bearの攻撃エフェクト
+	EffectLoad("BearAttack", "Data/Effect/BearDestinationEffect.efkefc", 30, 5.0f);
+
+	//強い攻撃なんかが地面に触れたりした場合
+	EffectLoad("ShockWave", "Data/Effect/ShockWave.efkefc", 200, 8.0f);
+
 }
 
 /// <summary>
@@ -119,6 +145,46 @@ void EffectManager::End()
 	for (auto& effect : m_effect)
 	{
 		DeleteEffekseerEffect(effect.second->emitterHandle);
+	}
+}
+
+/// <summary>
+/// エフェクトの位置を更新
+/// </summary>
+/// <param name="name"></param>
+/// <param name="pos"></param>
+void EffectManager::UpdateEffectPosition(std::string name, VECTOR pos)
+{
+	auto it = m_effect.find(name);
+	if (it != m_effect.end())
+	{		
+		for (auto& effect : it->second->effects)
+		{
+			effect.x = pos.x;
+			effect.y = pos.y;
+			effect.z = pos.z;
+
+			// Effekseerのエフェクト位置を更新
+			SetPosPlayingEffekseer3DEffect(effect.handle, effect.x, effect.y, effect.z);
+		}
+	}
+}
+
+/// <summary>
+/// エフェクトの角度を更新する
+/// </summary>
+/// <param name="name"></param>
+/// <param name="rotation"></param>
+void EffectManager::UpdateEffectRotation(std::string name, VECTOR rotation)
+{
+	auto it = m_effect.find(name);
+	if (it != m_effect.end())
+	{
+		for (auto& effect : it->second->effects)
+		{
+			// Effekseerのエフェクト角度を更新
+			SetRotationPlayingEffekseer3DEffect(effect.handle, rotation.x, rotation.y, rotation.z);
+		}
 	}
 }
 

@@ -94,6 +94,8 @@ namespace MyLibrary
 		void AddNewCollideInfo(const std::shared_ptr<Collidable>& objA, const std::shared_ptr<Collidable>& objB, SendCollideInfo& info);
 		//移動予定の座標を修正する
 		void FixNextPosition(const Rigidbody& primaryRigid, Rigidbody& secondaryRigid, CollidableData* primaryCollider, CollidableData* secondaryCollider) const;
+		//ジャンプ中の移動予定の座標を修正する
+		void FixJumpNextPosition(const Rigidbody& primaryRigid, Rigidbody& secondaryRigid, CollidableData* primaryCollider, CollidableData* secondaryCollider) const;
 		//種類毎に衝突通知を飛ばす配列に追加する
 		void CheckSendOnCollideInfo(SendCollideInfo& preSendInfo, SendCollideInfo& newSendInfo, bool isTrigger);
 		//衝突通知を飛ばす配列に追加する
@@ -144,6 +146,8 @@ namespace MyLibrary
 		bool m_isMoveFlag = false;
 		//ポリゴンに当たったかどうか
 		bool m_isHitFlag = false;
+		//ポリゴンにあたったかどうか(Enemy)
+		bool m_isHitEnemyFlag = false;
 		//壁ポリゴンに当たったかどうか
 		bool m_isHitWallFlag;
 		//壁ポリゴンと判断されたポリゴン数
@@ -151,10 +155,16 @@ namespace MyLibrary
 		//床ポリゴンと判断されたポリゴン数
 		int m_floorNum = 0;
 
+		//地面に触れているかの判定
+		bool m_playerFloor = false;
+		bool m_enemyFloor = false;
+
 		VECTOR m_ret;
 
 		//当たり判定結果構造体
 		MV1_COLL_RESULT_POLY_DIM m_hitDim{};
+		//当たり判定結果構造体
+		MV1_COLL_RESULT_POLY_DIM m_hitEnemyDim{};
 		//壁ポリゴンと判断されたポリゴンの構造体のアドレスを保存しておくためのポインタ配列
 		MV1_COLL_RESULT_POLY* m_pWallPoly[ColInfo::kMaxColHitPoly]{};
 		//床ポリゴンと判断されたポリゴンの構造体のアドレスを保存しておくためのポインタ配列

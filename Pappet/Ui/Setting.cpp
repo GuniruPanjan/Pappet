@@ -84,7 +84,185 @@ namespace
 	constexpr int cSecondY = 200;
 	constexpr int cDifferenceY = 155;
 
-	bool cNo = false;    //力技用
+	// 定数の定義
+	constexpr int cWaitTimeThreshold = 10;
+	constexpr int cWaitTimePush = 30;
+	constexpr int cThumbstickThreshold = 2000;
+	constexpr int cButtonA = 12;
+	constexpr int cButtonB = 13;
+	constexpr int cSelectDecisionBrightness = 6;
+	constexpr int cSelectDecisionVolume = 7;
+	constexpr int cSelectDecisionSe = 8;
+	constexpr int cSelectDecisionCamera = 9;
+	constexpr int cSelectDecisionReturn = 10;
+	constexpr int cBrightness1 = 125;
+	constexpr int cBrightness2 = 100;
+	constexpr int cBrightness3 = 75;
+	constexpr int cBrightness4 = 50;
+	constexpr int cBrightness5 = 25;
+	constexpr int cSeVolume1 = 225;
+	constexpr int cSeVolume2 = 200;
+	constexpr int cSeVolume3 = 175;
+	constexpr int cSeVolume4 = 150;
+	constexpr int cSeVolume5 = 125;
+	constexpr int cSeVolume6 = 100;
+	constexpr int cSeVolume7 = 75;
+	constexpr int cSeVolume8 = 50;
+	constexpr int cSeVolume9 = 25;
+	constexpr int cSeVolume10 = 0;
+	constexpr float cCamera1 = 4.0f;
+	constexpr float cCamera2 = 3.8f;
+	constexpr float cCamera3 = 3.6f;
+	constexpr float cCamera4 = 3.4f;
+	constexpr float cCamera5 = 3.2f;
+	constexpr float cCamera6 = 3.0f;
+	constexpr float cCamera7 = 2.7f;
+	constexpr float cCamera8 = 2.5f;
+	constexpr float cCamera9 = 2.3f;
+	constexpr float cCamera10 = 2.0f;
+
+	constexpr int cMenuSelectDecisionEquipment = 7;
+	constexpr int cMenuSelectDecisionSetting = 8;
+	constexpr int cMenuSelectDecisionReturn = 9;
+	constexpr int cMenuSelectDecisionTitle = 10;
+
+	constexpr int cEquipmentSelectDecisionRight = 8;
+	constexpr int cEquipmentSelectDecisionLeft = 9;
+	constexpr int cEquipmentSelectDecisionArmor = 10;
+
+	constexpr int cSelectDecisionRest = 7;
+	constexpr int cSelectDecisionNormalRest = 8;
+	constexpr int cSelectDecisionLevelUpRest = 8;
+	constexpr int cSelectDecisionTransferRest = 9;
+	constexpr int cSelectDecisionLeaveRest = 10;
+
+	constexpr int cBlendAlpha = 150;
+	constexpr int cSelectColor = 0xffff00;
+	constexpr int cDefaultColor = 0xffffff;
+	constexpr int cSelectX = 100;
+	constexpr int cSelectY1 = 50;
+	constexpr int cSelectY2 = 180;
+	constexpr int cSelectY3 = 360;
+	constexpr int cSelectY4 = 540;
+	constexpr int cSelectY5 = 720;
+	constexpr int cSelectY6 = 900;
+	constexpr int cBarX = 500;
+	constexpr int cBarY1 = 200;
+	constexpr int cBarY2 = 380;
+	constexpr int cBarY3 = 560;
+	constexpr int cBarY4 = 740;
+
+	constexpr int cBlendAlphaMax = 100;
+	constexpr int cBlendAlphaMin = 10;
+	constexpr int cMenuDrawX1 = 900;
+	constexpr int cMenuDrawY1 = 100;
+	constexpr float cMenuDrawScale1 = 0.5f;
+	constexpr int cMenuDrawX2 = 935;
+	constexpr int cMenuDrawY2 = 0;
+	constexpr int cMenuDrawX3 = 1550;
+	constexpr int cMenuDrawY3 = 100;
+	constexpr int cMenuDrawX4 = 1225;
+	constexpr int cMenuDrawY4 = 200;
+	constexpr float cMenuDrawScale2 = 0.8f;
+	constexpr int cMenuTextX = 1130;
+	constexpr int cMenuTextY = 190;
+	constexpr int cMenuTextColor = 0xffffff;
+	constexpr int cMenuBoxColor = 0x000fff;
+
+	constexpr int cDrawAlpha = 100;
+	constexpr int cLevelUpX = 1100;
+	constexpr int cLevelUpY = 400;
+	constexpr int cStatusX = 1150;
+	constexpr int cStatusY1 = 515;
+	constexpr int cStatusY2 = 600;
+	constexpr int cStatusY3 = 680;
+	constexpr int cStatusY4 = 760;
+	constexpr int cStatusLabelX = 1300;
+	constexpr int cStatusLabelY1 = 515;
+	constexpr int cStatusLabelY2 = 615;
+	constexpr int cStatusLabelY3 = 715;
+	constexpr int cStatusValueY1 = 565;
+	constexpr int cStatusValueY2 = 665;
+	constexpr int cStatusValueY3 = 765;
+
+	constexpr int cRestSelectX = 300;
+	constexpr int cRestSelectY1 = 330;
+	constexpr int cRestSelectY2 = 430;
+	constexpr int cRestSelectY3 = 530;
+	constexpr int cRestSelectY4 = 630;
+	constexpr float cSelectUiScale = 0.7f;
+	constexpr float cRestScale = 1.5f;
+	constexpr int cRestX = 300;
+	constexpr int cRestY = 450;
+	constexpr int cRestTextX = 720;
+	constexpr int cRestTextY = 350;
+	constexpr int cRestTitleX = 150;
+	constexpr int cRestTitleY = 50;
+	constexpr int cRestOptionX = 150;
+	constexpr int cRestOptionY1 = 300;
+	constexpr int cRestOptionY2 = 400;
+	constexpr int cRestOptionY3 = 500;
+	constexpr int cRestOptionY4 = 600;
+	constexpr int cRestColor = 0x000000;
+	constexpr int cRestNotColor = 0xffffff;
+
+	constexpr int cLevelUpGraphX = -50;
+	constexpr int cLevelUpGraphY = 0;
+	constexpr int cLevelSelectX1 = 310;
+	constexpr int cLevelSelectY1 = 540;
+	constexpr int cLevelSelectY2 = 635;
+	constexpr int cLevelSelectY3 = 730;
+	constexpr int cLevelSelectY4 = 825;
+	constexpr int cLevelSelectX2 = 825;
+	constexpr int cLevelSelectY5 = 940;
+	constexpr float cGraphSize1 = 0.6f;
+	constexpr float cGraphSize2 = 0.9f;
+	constexpr int cLevelTextX = 90;
+	constexpr int cLevelTextY1 = 150;
+	constexpr int cLevelTextY2 = 250;
+	constexpr int cLevelTextY3 = 300;
+	constexpr int cStatusTextX = 290;
+	constexpr int cStatusTextY1 = 510;
+	constexpr int cStatusTextY2 = 605;
+	constexpr int cStatusTextY3 = 700;
+	constexpr int cStatusTextY4 = 795;
+	constexpr int cMaxStatusTextX = 600;
+	constexpr int cMaxStatusTextY1 = 200;
+	constexpr int cMaxStatusTextY2 = 400;
+	constexpr int cMaxStatusTextY3 = 600;
+	constexpr int cDecisionTextX = 750;
+	constexpr int cDecisionTextY = 900;
+	constexpr int cLevelUpTextColor = 0x000000;
+	constexpr int cLevelUpTextColor2 = 0xffffff;
+
+	constexpr int cBlueColor = 0x000fff;
+
+	constexpr int cCaveatGraphX = 600;
+	constexpr int cCaveatGraphY = 200;
+	constexpr int cCaveatTextX = 720;
+	constexpr int cCaveatTextY = 350;
+	constexpr int cCaveatTextColor = 0xffffff;
+
+	constexpr int cWeaponNameX = 400;
+	constexpr int cWeaponNameY = 100;
+	constexpr int cWeaponDescX = 400;
+	constexpr int cWeaponDescY1 = 300;
+	constexpr int cWeaponDescY2 = 450;
+	constexpr int cWeaponTextColor = 0xffffff;
+
+	constexpr int cShieldNameX = 400;
+	constexpr int cShieldNameY = 100;
+	constexpr int cShieldDescX = 400;
+	constexpr int cShieldDescY1 = 300;
+	constexpr int cShieldDescY2 = 450;
+	constexpr int cShieldTextColor = 0xffffff;
+
+	constexpr int cArmorNameX = 400;
+	constexpr int cArmorNameY = 100;
+	constexpr int cArmorDescX = 400;
+	constexpr int cArmorDescY1 = 300;
+	constexpr int cArmorDescY2 = 400;
+	constexpr int cArmorTextColor = 0xffffff;
 }
 
 /// <summary>
@@ -206,13 +384,22 @@ void Setting::Init()
 	m_bgmColor = 0xffffff;
 	m_returnColor = 0xffffff;
 
-	m_equipment = MyLoadGraph("Data/UI/装備画面UI.png", 1, 1);
-	m_itemBox = MyLoadGraph("Data/UI/アイテム画面UI.png", 1, 1);
+	m_equipment = MyLoadGraph("Data/UI/新装備画面UI.png", 1, 1);
+	//m_itemBox = MyLoadGraph("Data/UI/アイテム画面UI.png", 1, 1);
 	m_selectEquipment = MyLoadGraph("Data/UI/装備選択画面UI.png", 1, 1);
 	m_rest = MyLoadGraph("Data/UI/四角の白い長方形の囲い.png", 1, 1);
-	m_selectUi = MyLoadGraph("Data/UI/選択UI.png", 2, 2);
+	m_selectUi = MyLoadGraph("Data/UI/選択UI.png", 1, 1);
 	m_levelUp = MyLoadGraph("Data/UI/レベルステータスUI.png", 1, 1);
 	m_menu = MyLoadGraph("Data/UI/MenuUI.png", 1, 1);
+
+	m_settingHandle = MyLoadGraph("Data/UI/Setting.png", 1, 1);
+	m_brightnessHandle = MyLoadGraph("Data/UI/Setting.png", 2, 2);
+	m_bgmHandle = MyLoadGraph("Data/UI/BGM.png", 2, 2);
+	m_seHandle = MyLoadGraph("Data/UI/SE.png", 2, 2);
+	m_cameraHandle = MyLoadGraph("Data/UI/Camera.png", 2, 2);
+	m_returnHandle = MyLoadGraph("Data/UI/Camera.png", 2, 2);
+	m_edgeHandle = MyLoadGraph("Data/UI/Edge.png", 2, 2);
+	m_lineHandle = MyLoadGraph("Data/UI/Edge.png", 2, 2);
 
 	m_pFont->FontInit(50);
 	m_pSmallFont->FontInit(30);
@@ -224,220 +411,194 @@ void Setting::Init()
 /// </summary>
 void Setting::Update(SEManager& se)
 {
-	//パッド入力所得
 	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
 
-	if (m_waitTime > 10)
+	if (m_waitTime > cWaitTimeThreshold)
 	{
-		//上
-		if (m_xpad.ThumbLY > 2000 || m_xpad.Buttons[0] == 1)
+		// 上
+		if (m_xpad.ThumbLY > cThumbstickThreshold || m_xpad.Buttons[0] == 1)
 		{
 			m_button++;
 		}
-		//下
+		// 下
 		else if (m_xpad.ThumbLY < 0 || m_xpad.Buttons[1] == 1)
 		{
 			m_button--;
 		}
-		//右
-		else if (m_xpad.ThumbLX > 2000 || m_xpad.Buttons[3] == 1)
+		// 右
+		else if (m_xpad.ThumbLX > cThumbstickThreshold || m_xpad.Buttons[3] == 1)
 		{
 			m_thumb--;
 		}
-		//左
+		// 左
 		else if (m_xpad.ThumbLX < 0 || m_xpad.Buttons[2] == 1)
 		{
 			m_thumb++;
 		}
 		else
 		{
-			//初期化
+			// 初期化
 			m_button = 0;
 			m_thumb = 0;
-
 			m_one = false;
 		}
 
-		//選択中
-		if (m_brightness == false && m_volume == false && m_se == false && m_camera == false)
+		// 選択中
+		if (!m_brightness && !m_volume && !m_se && !m_camera)
 		{
-			m_pSelect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, m_pSelect->Six);
+			m_pSelect->Menu_Update(m_button, m_one, m_xpad.Buttons[cButtonA], selectDecision, m_pSelect->Six);
 		}
-		//明るさの選択中
-		if (m_brightness == true && m_volume == false && m_se == false && m_camera == false)
+		// 明るさの選択中
+		if (m_brightness && !m_volume && !m_se && !m_camera)
 		{
-			m_pSelect->Menu_Update(m_thumb, m_one, m_xpad.Buttons[13], brightDecision, m_pSelect->One);
+			m_pSelect->Menu_Update(m_thumb, m_one, m_xpad.Buttons[cButtonB], brightDecision, m_pSelect->One);
 		}
-		//音量の選択中
-		if (m_brightness == false && m_volume == true && m_se == false && m_camera == false)
+		// 音量の選択中
+		if (!m_brightness && m_volume && !m_se && !m_camera)
 		{
-			m_pSelect->Menu_Update(m_thumb, m_one, m_xpad.Buttons[13], volumeDecision, m_pSelect->One);
+			m_pSelect->Menu_Update(m_thumb, m_one, m_xpad.Buttons[cButtonB], volumeDecision, m_pSelect->One);
 		}
-		//SEの選択中
-		if (m_brightness == false && m_volume == false && m_se == true && m_camera == false)
+		// SEの選択中
+		if (!m_brightness && !m_volume && m_se && !m_camera)
 		{
-			m_pSelect->Menu_Update(m_thumb, m_one, m_xpad.Buttons[13], seDecision, m_pSelect->One);
+			m_pSelect->Menu_Update(m_thumb, m_one, m_xpad.Buttons[cButtonB], seDecision, m_pSelect->One);
 		}
-		//カメラ感度の選択中
-		if (m_brightness == false && m_volume == false && m_se == false && m_camera == true)
+		// カメラ感度の選択中
+		if (!m_brightness && !m_volume && !m_se && m_camera)
 		{
-			m_pSelect->Menu_Update(m_thumb, m_one, m_xpad.Buttons[13], cameraDecision, m_pSelect->One);
+			m_pSelect->Menu_Update(m_thumb, m_one, m_xpad.Buttons[cButtonB], cameraDecision, m_pSelect->One);
 		}
 
 		if (m_brightness)
 		{
-			//暗さを決める
-			SettingChange(m_blackPal, cBrightnessBlack, 125, 100, 75, 50, 0, 0, 0, 0, 0, 0);
-			//明るさを決める
-			SettingChange(m_whitePal, cBrightnessWhite, 0, 0, 0, 0, 0, 25, 50, 75, 100, 125);
+			// 暗さを決める
+			SettingChange(m_blackPal, cBrightnessBlack, cBrightness1, cBrightness2, cBrightness3, cBrightness4, 0, 0, 0, 0, 0, 0);
+			// 明るさを決める
+			SettingChange(m_whitePal, cBrightnessWhite, 0, 0, 0, 0, 0, cBrightness5, cBrightness4, cBrightness3, cBrightness2, cBrightness1);
 		}
-		else if(m_volume)
+		else if (m_volume)
 		{
-			//音量を決める
-			SettingChange(m_volumeSize, cVolume, 0, 25, 50, 75, 100, 125, 150, 175, 200, 225);
+			// 音量を決める
+			SettingChange(m_volumeSize, cVolume, cSeVolume10, cSeVolume9, cSeVolume8, cSeVolume7, cSeVolume6, cSeVolume5, cSeVolume4, cSeVolume3, cSeVolume2, cSeVolume1);
 		}
 		else if (m_se)
 		{
-			//SEを決める
-			SettingChange(m_seSize, cSe, 0, 25, 50, 75, 100, 125, 150, 175, 200, 225);
+			// SEを決める
+			SettingChange(m_seSize, cSe, cSeVolume10, cSeVolume9, cSeVolume8, cSeVolume7, cSeVolume6, cSeVolume5, cSeVolume4, cSeVolume3, cSeVolume2, cSeVolume1);
 		}
 		else if (m_camera)
 		{
-			//カメラ感度を決める
-			CameraChange(m_cameraSize, cCamera, 2.0f, 2.3f, 2.5f, 2.7f, 3.0f, 3.2f, 3.4f, 3.6f, 3.8f, 4.0f);
+			// カメラ感度を決める
+			CameraChange(m_cameraSize, cCamera, cCamera10, cCamera9, cCamera8, cCamera7, cCamera6, cCamera5, cCamera4, cCamera3, cCamera2, cCamera1);
 		}
 
-
-		//Aボタンを押したら
-		if (m_xpad.Buttons[12] == 1 && !m_brightness && !m_volume && !m_se && !m_camera)
+		// Aボタンを押したら
+		if (m_xpad.Buttons[cButtonA] == 1 && !m_brightness && !m_volume && !m_se && !m_camera)
 		{
 			PlaySoundMem(se.GetButtonSE(), DX_PLAYTYPE_BACK, true);
 
-			//明るさ設定
-			if (selectDecision == 6)
+			// 明るさ設定
+			if (selectDecision == cSelectDecisionBrightness)
 			{
 				m_brightness = true;
-
-				//初期化
+				// 初期化
 				m_waitTime = 0;
 			}
-			//BGM設定
-			if (selectDecision == 7)
+			// BGM設定
+			if (selectDecision == cSelectDecisionVolume)
 			{
 				m_volume = true;
-
-				//初期化
+				// 初期化
 				m_waitTime = 0;
 			}
-			//SE設定
-			if (selectDecision == 8)
+			// SE設定
+			if (selectDecision == cSelectDecisionSe)
 			{
 				m_se = true;
-
-				//初期化
+				// 初期化
 				m_waitTime = 0;
 			}
-			//カメラ感度
-			if (selectDecision == 9)
+			// カメラ感度
+			if (selectDecision == cSelectDecisionCamera)
 			{
 				m_camera = true;
-
-				//初期化
+				// 初期化
 				m_waitTime = 0;
 			}
-			//元の画面に戻る
-			if (selectDecision == 10)
+			// 元の画面に戻る
+			if (selectDecision == cSelectDecisionReturn)
 			{
 				m_settingScene = false;
-
-				//初期化
+				// 初期化
 				m_waitTime = 0;
 			}
 		}
 
-		//明るさ設定を押したら
-		if (m_brightness == true && m_waitTime != 0)
+		// 明るさ設定を押したら
+		if (m_brightness && m_waitTime != 0)
 		{
-			//ABボタンを押したら
-			if (m_xpad.Buttons[12] == 1 || m_xpad.Buttons[13] == 1)
+			// ABボタンを押したら
+			if (m_xpad.Buttons[cButtonA] == 1 || m_xpad.Buttons[cButtonB] == 1)
 			{
 				PlaySoundMem(se.GetButtonSE(), DX_PLAYTYPE_BACK, true);
-
 				m_pSelect->NowSelect = 5;
-
-				//初期化
+				// 初期化
 				m_waitTime = 0;
-
 				m_brightness = false;
 			}
 		}
-		//音量設定を押したら
-		else if (m_volume == true && m_waitTime != 0)
+		// 音量設定を押したら
+		else if (m_volume && m_waitTime != 0)
 		{
-			//Bボタンを押したら
-			if (m_xpad.Buttons[12] == 1 || m_xpad.Buttons[13] == 1)
+			// Bボタンを押したら
+			if (m_xpad.Buttons[cButtonA] == 1 || m_xpad.Buttons[cButtonB] == 1)
 			{
 				PlaySoundMem(se.GetButtonSE(), DX_PLAYTYPE_BACK, true);
-
 				m_pSelect->NowSelect = 6;
-
-				//初期化
+				// 初期化
 				m_waitTime = 0;
-
 				m_volume = false;
 			}
 		}
-		//SE設定を押したら
-		else if (m_se == true && m_waitTime != 0)
+		// SE設定を押したら
+		else if (m_se && m_waitTime != 0)
 		{
-			//Bボタンを押したら
-			if (m_xpad.Buttons[12] == 1 || m_xpad.Buttons[13] == 1)
+			// Bボタンを押したら
+			if (m_xpad.Buttons[cButtonA] == 1 || m_xpad.Buttons[cButtonB] == 1)
 			{
 				PlaySoundMem(se.GetButtonSE(), DX_PLAYTYPE_BACK, true);
-
 				m_pSelect->NowSelect = 7;
-
-				//初期化
+				// 初期化
 				m_waitTime = 0;
-
 				m_se = false;
 			}
 		}
-		//カメラ感度を設定
-		else if (m_camera == true && m_waitTime != 0)
+		// カメラ感度を設定
+		else if (m_camera && m_waitTime != 0)
 		{
-			//Bボタンを押したら
-			if (m_xpad.Buttons[12] == 1 || m_xpad.Buttons[13] == 1)
+			// Bボタンを押したら
+			if (m_xpad.Buttons[cButtonA] == 1 || m_xpad.Buttons[cButtonB] == 1)
 			{
 				PlaySoundMem(se.GetButtonSE(), DX_PLAYTYPE_BACK, true);
-
 				m_pSelect->NowSelect = 8;
-
-				//初期化
+				// 初期化
 				m_waitTime = 0;
-
 				m_camera = false;
 			}
 		}
-		//画面に戻る
+		// 画面に戻る
 		else
 		{
-			//Bボタンを押したら
-			if (m_xpad.Buttons[13] == 1)
+			// Bボタンを押したら
+			if (m_xpad.Buttons[cButtonB] == 1)
 			{
 				PlaySoundMem(se.GetButtonSE(), DX_PLAYTYPE_BACK, true);
-
 				m_pSelect->NowSelect = 7;
-
-				//初期化
+				// 初期化
 				m_waitTime = 0;
-
 				m_settingScene = false;
 			}
 		}
-		
-
-		
 	}
 	else
 	{
@@ -477,7 +638,7 @@ void Setting::MenuUpdate(Player& player, SEManager& se)
 
 	m_pSelect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, m_pSelect->Seven);
 
-	if (cWaitTime >= 10)
+	if (cWaitTime >= cWaitTimeThreshold)
 	{
 		//Aボタンが押されたら
 		if (m_xpad.Buttons[12] == 1)
@@ -485,7 +646,7 @@ void Setting::MenuUpdate(Player& player, SEManager& se)
 			PlaySoundMem(se.GetButtonSE(), DX_PLAYTYPE_BACK, true);
 
 			//装備選択
-			if (selectDecision == 7)
+			if (selectDecision == cMenuSelectDecisionEquipment)
 			{
 				m_equipmentMenu = true;
 
@@ -493,7 +654,7 @@ void Setting::MenuUpdate(Player& player, SEManager& se)
 				cWaitTime = 0;
 			}
 			//設定
-			if (selectDecision == 8)
+			if (selectDecision == cMenuSelectDecisionSetting)
 			{
 				//初期化する
 				m_waitTime = 0;
@@ -504,14 +665,15 @@ void Setting::MenuUpdate(Player& player, SEManager& se)
 				cWaitTime = 0;
 			}
 			//元の画面に戻る
-			if (selectDecision == 9)
+			if (selectDecision == cMenuSelectDecisionReturn)
 			{
 				m_returnMenu = false;
 
-				player.SetRoll(0);
+				//ジャンプできないようにする
+				player.SetAction(false);
 			}
 			//タイトルに戻る
-			if (selectDecision == 10)
+			if (selectDecision == cMenuSelectDecisionTitle)
 			{
 				m_titleMenu = true;
 
@@ -531,7 +693,8 @@ void Setting::MenuUpdate(Player& player, SEManager& se)
 			//リセット
 			cWaitTime = 0;
 
-			player.SetRoll(0);
+			//ローリングできないようにする
+			player.SetAction(false);
 
 		}
 	}
@@ -540,32 +703,6 @@ void Setting::MenuUpdate(Player& player, SEManager& se)
 		cWaitTime++;
 	}
 
-}
-
-/// <summary>
-/// ステータス画面を変える更新処理
-/// </summary>
-void Setting::MenuChange()
-{
-	//パッド入力所得
-	GetJoypadXInputState(DX_INPUT_KEY_PAD1, &m_xpad);
-
-	//Rボタンが押されたら
-	if (m_xpad.Buttons[9] == 1)
-	{
-		//装備画面から戻る
-		m_equipmentMenu = false;
-		//アイテム画面に移る
-		m_itemMenu = true;
-	}
-	//Lボタンが押されたら
-	else if (m_xpad.Buttons[8] == 1)
-	{
-		//アイテム画面から戻る
-		m_itemMenu = false;
-		//装備画面に移る
-		m_equipmentMenu = true;
-	}
 }
 
 /// <summary>
@@ -606,7 +743,7 @@ void Setting::EquipmentUpdate()
 	m_pSelect->Menu_Update(m_thumb, m_one, m_xpad.Buttons[12], selectDecision, m_pSelect->Eight);
 
 
-	if (cWaitTime >= 10)
+	if (cWaitTime >= cWaitTimeThreshold)
 	{
 		//Bボタンが押されたら
 		if (m_xpad.Buttons[13] == 1)
@@ -623,21 +760,21 @@ void Setting::EquipmentUpdate()
 		{
 			//右装備選択
 			//右アイテム選択
-			if (selectDecision == 8)
+			if (selectDecision == cEquipmentSelectDecisionRight)
 			{
 				m_select.right = true;
 			}
 			//左装備選択
 			//右指輪選択
 			//真ん中アイテム選択
-			else if (selectDecision == 9)
+			else if (selectDecision == cEquipmentSelectDecisionLeft)
 			{
 				m_select.left = true;
 			}
 			//防具選択
 			//左指輪選択
 			//左アイテム選択
-			else if (selectDecision == 10)
+			else if (selectDecision == cEquipmentSelectDecisionArmor)
 			{
 				m_select.armor = true;
 			}
@@ -688,7 +825,7 @@ void Setting::RestUpdate(Player& player, CoreManager& core, bool rest, SEManager
 	{
 		m_pSelect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, m_pSelect->Eight);
 
-		if (cWaitTime >= 10)
+		if (cWaitTime >= cWaitTimeThreshold)
 		{
 			//Aボタンが押されたら
 			if (m_xpad.Buttons[12] == 1)
@@ -696,12 +833,12 @@ void Setting::RestUpdate(Player& player, CoreManager& core, bool rest, SEManager
 				PlaySoundMem(se.GetButtonSE(), DX_PLAYTYPE_BACK, true);
 
 				//休息する
-				if (selectDecision == 8)
+				if (selectDecision == cSelectDecisionNormalRest)
 				{
 					m_reset = true;
 				}
 				//転送
-				if (selectDecision == 9)
+				if (selectDecision == cSelectDecisionTransferRest)
 				{
 					//休息地点に転送する
 					if (rest)
@@ -715,22 +852,24 @@ void Setting::RestUpdate(Player& player, CoreManager& core, bool rest, SEManager
 					}
 				}
 				//休息をやめる
-				if (selectDecision == 10)
+				if (selectDecision == cSelectDecisionLeaveRest)
 				{
 					player.SetNotRest(false);
 
-					player.SetRoll(0);
+					//ジャンプできないようにする
+					player.SetAction(false);
 				}
 
 				//リセット
 				cWaitTime = 0;
 			}
 
-			//Aボタンが押されたら休息をやめる
+			//Bボタンが押されたら休息をやめる
 			if (m_xpad.Buttons[13] == 1)
 			{
 				PlaySoundMem(se.GetButtonSE(), DX_PLAYTYPE_BACK, true);
-
+				//ローリングできないようにする
+				player.SetAction(false);
 				player.SetNotRest(false);
 			}
 		}
@@ -745,7 +884,7 @@ void Setting::RestUpdate(Player& player, CoreManager& core, bool rest, SEManager
 	{
 		m_pSelect->Menu_Update(m_button, m_one, m_xpad.Buttons[12], selectDecision, m_pSelect->Seven);
 
-		if (cWaitTime >= 10)
+		if (cWaitTime >= cWaitTimeThreshold)
 		{
 			//Aボタンが押されたら
 			if (m_xpad.Buttons[12] == 1)
@@ -753,12 +892,12 @@ void Setting::RestUpdate(Player& player, CoreManager& core, bool rest, SEManager
 				PlaySoundMem(se.GetButtonSE(), DX_PLAYTYPE_BACK, true);
 
 				//休息する
-				if (selectDecision == 7)
+				if (selectDecision == cSelectDecisionRest)
 				{
 					m_reset = true;
 				}
 				//レベルを上げる
-				if (selectDecision == 8)
+				if (selectDecision == cSelectDecisionLevelUpRest)
 				{
 					m_statusLevel = true;
 
@@ -771,7 +910,7 @@ void Setting::RestUpdate(Player& player, CoreManager& core, bool rest, SEManager
 
 				}
 				//転送
-				if (selectDecision == 9)
+				if (selectDecision == cSelectDecisionTransferRest)
 				{
 					//休息地点に転送する
 					if (rest)
@@ -786,22 +925,25 @@ void Setting::RestUpdate(Player& player, CoreManager& core, bool rest, SEManager
 
 				}
 				//休息をやめる
-				if (selectDecision == 10)
+				if (selectDecision == cSelectDecisionLeaveRest)
 				{
 					player.SetNotRest(false);
 
-					player.SetRoll(0);
+					//ジャンプできないようにする
+					player.SetAction(false);
 				}
 
 				//リセット
 				cWaitTime = 0;
 			}
 
-			//Aボタンが押されたら休息をやめる
+			//Bボタンが押されたら休息をやめる
 			if (m_xpad.Buttons[13] == 1)
 			{
 				PlaySoundMem(se.GetButtonSE(), DX_PLAYTYPE_BACK, true);
 
+				//ローリングできないようにする
+				player.SetAction(false);
 				player.SetNotRest(false);
 			}
 
@@ -858,7 +1000,7 @@ void Setting::LevelUpdate(Player& player, CoreManager& core)
 		m_up = false;
 	}
 
-	if (cWaitTime >= 10)
+	if (cWaitTime >= cWaitTimeThreshold)
 	{
 		//Bボタンが押されたら
 		if (m_xpad.Buttons[13] == 1)
@@ -903,7 +1045,7 @@ void Setting::LevelUpdate(Player& player, CoreManager& core)
 
 void Setting::LevelUp(CoreManager& core, int origin, int& level, int now)
 {
-	if (cPush >= 30)
+	if (cPush >= cWaitTimePush)
 	{
 		if (m_pSelect->NowSelect == now)
 		{
@@ -1098,7 +1240,7 @@ void Setting::EquipmentDecisionUpdate(Weapon& weapon, Shield& shield, Armor& arm
 	}
 
 
-	if (cWaitTime >= 10)
+	if (cWaitTime >= cWaitTimeThreshold)
 	{
 		//Bボタンが押されたら
 		if (m_xpad.Buttons[13] == 1)
@@ -1147,7 +1289,7 @@ void Setting::EquipmentDecisionUpdate(Weapon& weapon, Shield& shield, Armor& arm
 void Setting::Draw()
 {
 	//背景の色を薄くする
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, cBlendAlpha);
 	DrawGraph(0, 0, m_back, false);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
@@ -1156,43 +1298,43 @@ void Setting::Draw()
 	{
 		if (m_pSelect->NowSelect == m_pSelect->Six)
 		{
-			m_brightnessColor = 0xffff00;
-			m_bgmColor = 0xffffff;
-			m_seColor = 0xffffff;
-			m_cameraColor = 0xffffff;
-			m_returnColor = 0xffffff;
+			m_brightnessColor = cSelectColor;
+			m_bgmColor = cDefaultColor;
+			m_seColor = cDefaultColor;
+			m_cameraColor = cDefaultColor;
+			m_returnColor = cDefaultColor;
 		}
 		else if (m_pSelect->NowSelect == m_pSelect->Seven)
 		{
-			m_brightnessColor = 0xffffff;
-			m_bgmColor = 0xffff00;
-			m_seColor = 0xffffff;
-			m_cameraColor = 0xffffff;
-			m_returnColor = 0xffffff;
+			m_brightnessColor = cDefaultColor;
+			m_bgmColor = cSelectColor;
+			m_seColor = cDefaultColor;
+			m_cameraColor = cDefaultColor;
+			m_returnColor = cDefaultColor;
 		}
 		else if (m_pSelect->NowSelect == m_pSelect->Eight)
 		{
-			m_brightnessColor = 0xffffff;
-			m_bgmColor = 0xffffff;
-			m_seColor = 0xffff00;
-			m_cameraColor = 0xffffff;
-			m_returnColor = 0xffffff;
+			m_brightnessColor = cDefaultColor;
+			m_bgmColor = cDefaultColor;
+			m_seColor = cSelectColor;
+			m_cameraColor = cDefaultColor;
+			m_returnColor = cDefaultColor;
 		}
 		else if (m_pSelect->NowSelect == m_pSelect->Nine)
 		{
-			m_brightnessColor = 0xffffff;
-			m_bgmColor = 0xffffff;
-			m_seColor = 0xffffff;
-			m_cameraColor = 0xffff00;
-			m_returnColor = 0xffffff;
+			m_brightnessColor = cDefaultColor;
+			m_bgmColor = cDefaultColor;
+			m_seColor = cDefaultColor;
+			m_cameraColor = cSelectColor;
+			m_returnColor = cDefaultColor;
 		}
 		else if (m_pSelect->NowSelect == m_pSelect->Ten)
 		{
-			m_brightnessColor = 0xffffff;
-			m_bgmColor = 0xffffff;
-			m_seColor = 0xffffff;
-			m_cameraColor = 0xffffff;
-			m_returnColor = 0xffff00;
+			m_brightnessColor = cDefaultColor;
+			m_bgmColor = cDefaultColor;
+			m_seColor = cDefaultColor;
+			m_cameraColor = cDefaultColor;
+			m_returnColor = cSelectColor;
 		}
 	}
 	//明るさを選択
@@ -1223,18 +1365,18 @@ void Setting::Draw()
 
 	}
 
-	DrawStringToHandle(100, 50, "設定", 0xffffff, m_pBigFont->GetHandle());
+	DrawStringToHandle(cSelectX, cSelectY1, "設定", cDefaultColor, m_pBigFont->GetHandle());
 
-	DrawStringToHandle(100, 180, "明るさ設定", m_brightnessColor, m_pFont->GetHandle());
-	DrawStringToHandle(100, 360, "BGM設定", m_bgmColor, m_pFont->GetHandle());
-	DrawStringToHandle(100, 540, "SE設定", m_seColor, m_pFont->GetHandle());
-	DrawStringToHandle(100, 720, "カメラ感度", m_cameraColor, m_pFont->GetHandle());
-	DrawStringToHandle(100, 900, "戻る", m_returnColor, m_pFont->GetHandle());
+	DrawStringToHandle(cSelectX, cSelectY2, "明るさ設定", m_brightnessColor, m_pFont->GetHandle());
+	DrawStringToHandle(cSelectX, cSelectY3, "BGM設定", m_bgmColor, m_pFont->GetHandle());
+	DrawStringToHandle(cSelectX, cSelectY4, "SE設定", m_seColor, m_pFont->GetHandle());
+	DrawStringToHandle(cSelectX, cSelectY5, "カメラ感度", m_cameraColor, m_pFont->GetHandle());
+	DrawStringToHandle(cSelectX, cSelectY6, "戻る", m_returnColor, m_pFont->GetHandle());
 
-	SettingBarDraw(m_brightBar, 500, 200);
-	SettingBarDraw(m_volumeBar, 500, 380);
-	SettingBarDraw(m_seBar, 500, 560);
-	SettingBarDraw(m_cameraBar, 500, 740);
+	SettingBarDraw(m_brightBar, cBarX, cBarY1);
+	SettingBarDraw(m_volumeBar, cBarX, cBarY2);
+	SettingBarDraw(m_seBar, cBarX, cBarY3);
+	SettingBarDraw(m_cameraBar, cBarX, cBarY4);
 	
 	m_pSelect->Draw();
 }
@@ -1266,10 +1408,10 @@ void Setting::MenuDraw(int rb, int lb, int box)
 	int y2 = 155;
 	const char* menu = "";
 
-	//アルファ値をいじる
+	// アルファ値をいじる
 	if (!m_blend)
 	{
-		if (cBlenda < 100)
+		if (cBlenda < cBlendAlphaMax)
 		{
 			cBlenda++;
 		}
@@ -1280,7 +1422,7 @@ void Setting::MenuDraw(int rb, int lb, int box)
 	}
 	else if (m_blend)
 	{
-		if (cBlenda > 10)
+		if (cBlenda > cBlendAlphaMin)
 		{
 			cBlenda--;
 		}
@@ -1321,15 +1463,15 @@ void Setting::MenuDraw(int rb, int lb, int box)
 	}
 	
 	
-	DrawRotaGraph(900, 100, 0.5f, 0.0f, lb, true);
-	DrawGraph(935, 0, m_menu, true);
-	DrawRotaGraph(1550, 100, 0.5f, 0.0f, rb, true);
-	DrawRotaGraph(1225, 200, 0.8f, 0.0f, box, true);
+	DrawRotaGraph(cMenuDrawX1, cMenuDrawY1, cMenuDrawScale1, 0.0f, lb, true);
+	DrawGraph(cMenuDrawX2, cMenuDrawY2, m_menu, true);
+	DrawRotaGraph(cMenuDrawX3, cMenuDrawY3, cMenuDrawScale1, 0.0f, rb, true);
+	DrawRotaGraph(cMenuDrawX4, cMenuDrawY4, cMenuDrawScale2, 0.0f, box, true);
 
-	DrawStringToHandle(1130, 190, menu, 0xffffff, m_pSmallFont->GetHandle());
+	DrawStringToHandle(cMenuTextX, cMenuTextY, menu, cMenuTextColor, m_pSmallFont->GetHandle());
 
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, cBlenda);
-	DrawBox(x1, y1, x2, y2, 0x000fff, true);
+	DrawBox(x1, y1, x2, y2, cMenuBoxColor, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
@@ -1337,42 +1479,8 @@ void Setting::MenuDraw(int rb, int lb, int box)
 void Setting::MenuBackDraw()
 {
 	//画面を暗くする
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, cBlendAlpha);
 	DrawGraph(0, 0, m_black, false);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-}
-
-/// <summary>
-/// メニューを変更する所の描画処理
-/// </summary>
-void Setting::MenuChangeDraw()
-{
-	if (!m_blend)
-	{
-		if (cBlenda < 100)
-		{
-			cBlenda++;
-		}
-		else
-		{
-			m_blend = true;
-		}
-	}
-	else if (m_blend)
-	{
-		if (cBlenda > 10)
-		{
-			cBlenda--;
-		}
-		else
-		{
-			m_blend = false;
-		}
-	}
-
-
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, cBlenda);
-	DrawBox(m_change.oneX, m_change.oneY, m_change.secondX, m_change.secondY, 0x000fff, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
@@ -1405,7 +1513,7 @@ void Setting::EquipmentDraw(Player& player)
 		m_equipmentColorPos.secondY = cArmorEquipmentSecondY;
 	}
 
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, cDrawAlpha);
 	DrawBox(m_equipmentColorPos.oneX, m_equipmentColorPos.oneY, m_equipmentColorPos.secondX, m_equipmentColorPos.secondY, 0x000fff, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
@@ -1416,21 +1524,19 @@ void Setting::EquipmentDraw(Player& player)
 	ms_levelUP.sl_muscle = player.GetMuscleLevel();
 	ms_levelUP.sl_skill = player.GetSkillLevel();
 
-	DrawFormatStringToHandle(1100, 400, 0xffffff, m_pFont->GetHandle(), "レベル　　　%d", ms_levelUP.sl_all);
+	DrawFormatStringToHandle(cLevelUpX, cLevelUpY, 0xffffff, m_pFont->GetHandle(), "レベル　　　%d", ms_levelUP.sl_all);
 
-	DrawFormatStringToHandle(1150, 515, 0xffffff, m_pFont->GetHandle(), "%d", ms_levelUP.sl_hp);
-	DrawFormatStringToHandle(1150, 600, 0xffffff, m_pFont->GetHandle(), "%d", ms_levelUP.sl_stamina);
-	DrawFormatStringToHandle(1150, 680, 0xffffff, m_pFont->GetHandle(), "%d", ms_levelUP.sl_muscle);
-	DrawFormatStringToHandle(1150, 760, 0xffffff, m_pFont->GetHandle(), "%d", ms_levelUP.sl_skill);
+	DrawFormatStringToHandle(cStatusX, cStatusY1, 0xffffff, m_pFont->GetHandle(), "%d", ms_levelUP.sl_hp);
+	DrawFormatStringToHandle(cStatusX, cStatusY2, 0xffffff, m_pFont->GetHandle(), "%d", ms_levelUP.sl_stamina);
+	DrawFormatStringToHandle(cStatusX, cStatusY3, 0xffffff, m_pFont->GetHandle(), "%d", ms_levelUP.sl_muscle);
+	DrawFormatStringToHandle(cStatusX, cStatusY4, 0xffffff, m_pFont->GetHandle(), "%d", ms_levelUP.sl_skill);
 
-
-	DrawStringToHandle(1300, 515, "生命力", 0xffffff, m_pFont->GetHandle());
-	DrawFormatStringToHandle(1300, 565, 0xffffff, m_pFont->GetHandle(), "%d", static_cast<int>(player.GetStatus().s_hp));
-	DrawStringToHandle(1300, 615, "体力", 0xffffff, m_pFont->GetHandle());
-	DrawFormatStringToHandle(1300, 665, 0xffffff, m_pFont->GetHandle(), "%d", static_cast<int>(player.GetStatus().s_stamina));
-	DrawStringToHandle(1300, 715, "攻撃力", 0xffffff, m_pFont->GetHandle());
-	DrawFormatStringToHandle(1300, 765, 0xffffff, m_pFont->GetHandle(), "%d", static_cast<int>(player.GetAttackDamage() + ((ms_levelUP.sl_muscle - 1) * player.GetAttackMuscle()) + ((ms_levelUP.sl_skill - 1) * player.GetAttackSkill())));
-
+	DrawStringToHandle(cStatusLabelX, cStatusLabelY1, "生命力", 0xffffff, m_pFont->GetHandle());
+	DrawFormatStringToHandle(cStatusLabelX, cStatusValueY1, 0xffffff, m_pFont->GetHandle(), "%d", static_cast<int>(player.GetStatus().s_hp));
+	DrawStringToHandle(cStatusLabelX, cStatusLabelY2, "体力", 0xffffff, m_pFont->GetHandle());
+	DrawFormatStringToHandle(cStatusLabelX, cStatusValueY2, 0xffffff, m_pFont->GetHandle(), "%d", static_cast<int>(player.GetStatus().s_stamina));
+	DrawStringToHandle(cStatusLabelX, cStatusLabelY3, "攻撃力", 0xffffff, m_pFont->GetHandle());
+	DrawFormatStringToHandle(cStatusLabelX, cStatusValueY3, 0xffffff, m_pFont->GetHandle(), "%d", static_cast<int>(player.GetAttackDamage() + ((ms_levelUP.sl_muscle - 1) * player.GetAttackMuscle()) + ((ms_levelUP.sl_skill - 1) * player.GetAttackSkill())));
 }
 
 /// <summary>
@@ -1438,105 +1544,93 @@ void Setting::EquipmentDraw(Player& player)
 /// </summary>
 void Setting::RestDraw(bool rest)
 {
-	DrawRotaGraph(300, 450, 1.5f, DX_PI_F / 2, m_rest, true);
+	DrawRotaGraph(cRestX, cRestY, cRestScale, DX_PI_F / 2, m_rest, true);
 
-	m_selectX = 130;
+	m_selectX = cRestSelectX;
 
-	DrawGraph(m_selectX, m_selectY, m_selectUi, true);
+	DrawRotaGraph(m_selectX, m_selectY, cSelectUiScale, 0.0f, m_selectUi, true);
 
 	//普通の休息
 	if (!rest)
 	{
 		if (m_pSelect->NowSelect == m_pSelect->Eight)
 		{
-			m_selectY = 255;
+			m_selectY = cRestSelectY1;
 
-			m_menuColor[0] = 0x000000;
-			m_menuColor[1] = 0xffffff;
-			m_menuColor[2] = 0xffffff;
+			m_menuColor[0] = cRestColor;
+			m_menuColor[1] = cRestNotColor;
+			m_menuColor[2] = cRestNotColor;
 		}
 		else if (m_pSelect->NowSelect == m_pSelect->Nine)
 		{
-			m_selectY = 355;
+			m_selectY = cRestSelectY2;
 
-			m_menuColor[0] = 0xffffff;
-			m_menuColor[1] = 0x000000;
-			m_menuColor[2] = 0xffffff;
+			m_menuColor[0] = cRestNotColor;
+			m_menuColor[1] = cRestColor;
+			m_menuColor[2] = cRestNotColor;
 		}
 		else if (m_pSelect->NowSelect == m_pSelect->Ten)
 		{
-			m_selectY = 455;
+			m_selectY = cRestSelectY3;
 
-			m_menuColor[0] = 0xffffff;
-			m_menuColor[1] = 0xffffff;
-			m_menuColor[2] = 0x000000;
+			m_menuColor[0] = cRestNotColor;
+			m_menuColor[1] = cRestNotColor;
+			m_menuColor[2] = cRestColor;
 		}
 
-		//フォントのサイズ変更
-		SetFontSize(60);
+		DrawStringToHandle(cRestTitleX, cRestTitleY, "棺桶", 0xffffff, m_pBigFont->GetHandle());
 
-		DrawString(150, 50, "棺桶", 0xffffff);
-
-		//フォントのサイズ変更
-		SetFontSize(40);
-
-		DrawString(150, 300, "休息", m_menuColor[0]);
-		DrawString(150, 400, "魂器へ転送", m_menuColor[1]);
-		DrawString(150, 500, "立ち去る", m_menuColor[2]);
+		DrawStringToHandle(cRestOptionX, cRestOptionY1, "休息", m_menuColor[0], m_pFont->GetHandle());
+		DrawStringToHandle(cRestOptionX, cRestOptionY2, "魂器へ転送", m_menuColor[1], m_pFont->GetHandle());
+		DrawStringToHandle(cRestOptionX, cRestOptionY3, "立ち去る", m_menuColor[2], m_pFont->GetHandle());
 	}
 	//レベル上げられる休息
 	else
 	{
 		if (m_pSelect->NowSelect == m_pSelect->Seven)
 		{
-			m_selectY = 255;
+			m_selectY = cRestSelectY1;
 
-			m_menuColor[0] = 0x000000;
-			m_menuColor[1] = 0xffffff;
-			m_menuColor[2] = 0xffffff;
-			m_menuColor[3] = 0xffffff;
+			m_menuColor[0] = cRestColor;
+			m_menuColor[1] = cRestNotColor;
+			m_menuColor[2] = cRestNotColor;
+			m_menuColor[3] = cRestNotColor;
 		}
 		else if (m_pSelect->NowSelect == m_pSelect->Eight)
 		{
-			m_selectY = 355;
+			m_selectY = cRestSelectY2;
 
-			m_menuColor[0] = 0xffffff;
-			m_menuColor[1] = 0x000000;
-			m_menuColor[2] = 0xffffff;
-			m_menuColor[3] = 0xffffff;
+			m_menuColor[0] = cRestNotColor;
+			m_menuColor[1] = cRestColor;
+			m_menuColor[2] = cRestNotColor;
+			m_menuColor[3] = cRestNotColor;
 		}
 		else if (m_pSelect->NowSelect == m_pSelect->Nine)
 		{
-			m_selectY = 455;
+			m_selectY = cRestSelectY3;
 
-			m_menuColor[0] = 0xffffff;
-			m_menuColor[1] = 0xffffff;
-			m_menuColor[2] = 0x000000;
-			m_menuColor[3] = 0xffffff;
+			m_menuColor[0] = cRestNotColor;
+			m_menuColor[1] = cRestNotColor;
+			m_menuColor[2] = cRestColor;
+			m_menuColor[3] = cRestNotColor;
 
 		}
 		else if (m_pSelect->NowSelect == m_pSelect->Ten)
 		{
-			m_selectY = 555;
+			m_selectY = cRestSelectY4;
 
-			m_menuColor[0] = 0xffffff;
-			m_menuColor[1] = 0xffffff;
-			m_menuColor[2] = 0xffffff;
-			m_menuColor[3] = 0x000000;
+			m_menuColor[0] = cRestNotColor;
+			m_menuColor[1] = cRestNotColor;
+			m_menuColor[2] = cRestNotColor;
+			m_menuColor[3] = cRestColor;
 		}
 
-		//フォントのサイズ変更
-		SetFontSize(60);
+		DrawStringToHandle(cRestTitleX, cRestTitleY, "魂器", 0xffffff, m_pBigFont->GetHandle());
 
-		DrawString(150, 50, "魂器", 0xffffff);
-
-		//フォントのサイズ変更
-		SetFontSize(40);
-
-		DrawString(150, 300, "休息", m_menuColor[0]);
-		DrawString(150, 400, "レベル上げ", m_menuColor[1]);
-		DrawString(150, 500, "魂器へ転送", m_menuColor[2]);
-		DrawString(150, 600, "立ち去る", m_menuColor[3]);
+		DrawStringToHandle(cRestOptionX, cRestOptionY1, "休息", m_menuColor[0], m_pFont->GetHandle());
+		DrawStringToHandle(cRestOptionX, cRestOptionY2, "レベル上げ", m_menuColor[1], m_pFont->GetHandle());
+		DrawStringToHandle(cRestOptionX, cRestOptionY3, "魂器へ転送", m_menuColor[2], m_pFont->GetHandle());
+		DrawStringToHandle(cRestOptionX, cRestOptionY4, "立ち去る", m_menuColor[3], m_pFont->GetHandle());
 	}
 }
 
@@ -1547,105 +1641,98 @@ void Setting::RestDraw(bool rest)
 void Setting::LevelUpDraw(Player& player, CoreManager& core)
 {
 
-	DrawGraph(-50, 0, m_levelUp, true);
+	DrawGraph(cLevelUpGraphX, cLevelUpGraphY, m_levelUp, true);
 	DrawRotaGraph(m_selectX, m_selectY, cGraphSize, DX_PI_F, m_selectUi, true);
 
 	if (m_pSelect->NowSelect == m_pSelect->Six)
 	{
-		m_selectX = 300;
-		m_selectY = 540;
-		cGraphSize = 1.0f;
+		m_selectX = cLevelSelectX1;
+		m_selectY = cLevelSelectY1;
+		cGraphSize = cGraphSize1;
 
-		m_menuColor[0] = 0x000000;
-		m_menuColor[1] = 0xffffff;
-		m_menuColor[2] = 0xffffff;
-		m_menuColor[3] = 0xffffff;
-		m_menuColor[4] = 0xffffff;
+		m_menuColor[0] = cLevelUpTextColor;
+		m_menuColor[1] = cLevelUpTextColor2;
+		m_menuColor[2] = cLevelUpTextColor2;
+		m_menuColor[3] = cLevelUpTextColor2;
+		m_menuColor[4] = cLevelUpTextColor2;
 	}
 	else if (m_pSelect->NowSelect == m_pSelect->Seven)
 	{
-		m_selectX = 300;
-		m_selectY = 635;
-		cGraphSize = 1.0f;
+		m_selectX = cLevelSelectX1;
+		m_selectY = cLevelSelectY2;
+		cGraphSize = cGraphSize1;
 
-		m_menuColor[0] = 0xffffff;
-		m_menuColor[1] = 0x000000;
-		m_menuColor[2] = 0xffffff;
-		m_menuColor[3] = 0xffffff;
-		m_menuColor[4] = 0xffffff;
+		m_menuColor[0] = cLevelUpTextColor2;
+		m_menuColor[1] = cLevelUpTextColor;
+		m_menuColor[2] = cLevelUpTextColor2;
+		m_menuColor[3] = cLevelUpTextColor2;
+		m_menuColor[4] = cLevelUpTextColor2;
 	}
 	else if (m_pSelect->NowSelect == m_pSelect->Eight)
 	{
-		m_selectX = 300;
-		m_selectY = 730;
-		cGraphSize = 1.0f;
+		m_selectX = cLevelSelectX1;
+		m_selectY = cLevelSelectY3;
+		cGraphSize = cGraphSize1;
 
-		m_menuColor[0] = 0xffffff;
-		m_menuColor[1] = 0xffffff;
-		m_menuColor[2] = 0x000000;
-		m_menuColor[3] = 0xffffff;
-		m_menuColor[4] = 0xffffff;
+		m_menuColor[0] = cLevelUpTextColor2;
+		m_menuColor[1] = cLevelUpTextColor2;
+		m_menuColor[2] = cLevelUpTextColor;
+		m_menuColor[3] = cLevelUpTextColor2;
+		m_menuColor[4] = cLevelUpTextColor2;
 	}
 	else if (m_pSelect->NowSelect == m_pSelect->Nine)
 	{
-		m_selectX = 300;
-		m_selectY = 825;
-		cGraphSize = 1.0f;
+		m_selectX = cLevelSelectX1;
+		m_selectY = cLevelSelectY4;
+		cGraphSize = cGraphSize1;
 
-		m_menuColor[0] = 0xffffff;
-		m_menuColor[1] = 0xffffff;
-		m_menuColor[2] = 0xffffff;
-		m_menuColor[3] = 0x000000;
-		m_menuColor[4] = 0xffffff;
+		m_menuColor[0] = cLevelUpTextColor2;
+		m_menuColor[1] = cLevelUpTextColor2;
+		m_menuColor[2] = cLevelUpTextColor2;
+		m_menuColor[3] = cLevelUpTextColor;
+		m_menuColor[4] = cLevelUpTextColor2;
 	}
 	else if (m_pSelect->NowSelect == m_pSelect->Ten)
 	{
-		m_selectX = 815;
-		m_selectY = 930;
-		cGraphSize = 1.3f;
+		m_selectX = cLevelSelectX2;
+		m_selectY = cLevelSelectY5;
+		cGraphSize = cGraphSize2;
 
-		m_menuColor[0] = 0xffffff;
-		m_menuColor[1] = 0xffffff;
-		m_menuColor[2] = 0xffffff;
-		m_menuColor[3] = 0xffffff;
-		m_menuColor[4] = 0x000000;
+		m_menuColor[0] = cLevelUpTextColor2;
+		m_menuColor[1] = cLevelUpTextColor2;
+		m_menuColor[2] = cLevelUpTextColor2;
+		m_menuColor[3] = cLevelUpTextColor2;
+		m_menuColor[4] = cLevelUpTextColor;
 	}
 
+	DrawFormatStringToHandle(cLevelTextX, cLevelTextY1, cLevelUpTextColor2, m_pFont->GetHandle(), "レベル      %d", ms_levelUP.sl_all);
+	DrawFormatStringToHandle(cLevelTextX, cLevelTextY2, cLevelUpTextColor2, m_pFont->GetHandle(), "所持コア  %d", m_core);
+	DrawFormatStringToHandle(cLevelTextX, cLevelTextY3, cLevelUpTextColor2, m_pFont->GetHandle(), "必要コア  %d", core.NeedCore(ms_levelUP.sl_all));
 
-	//フォントのサイズ変更
-	SetFontSize(40);
 
-	DrawFormatString(90, 150, 0xffffff, "レベル      %d", ms_levelUP.sl_all);
-	DrawFormatString(90, 250, 0xffffff, "所持コア  %d", m_core);
-	DrawFormatString(90, 300, 0xffffff, "必要コア  %d", core.NeedCore(ms_levelUP.sl_all));
 
 	//左の変数がレベル上げる前のレベルで右の変数がレベルを上げた後のレベル
-	DrawFormatString(290, 520, m_menuColor[0], "%d", ms_levelUP.sl_hp);
-	DrawFormatString(290, 615, m_menuColor[1], "%d", ms_levelUP.sl_stamina);
-	DrawFormatString(290, 710, m_menuColor[2], "%d", ms_levelUP.sl_muscle);
-	DrawFormatString(290, 805, m_menuColor[3], "%d", ms_levelUP.sl_skill);
+	DrawFormatStringToHandle(cStatusTextX, cStatusTextY1, m_menuColor[0], m_pFont->GetHandle(), "%d", ms_levelUP.sl_hp);
+	DrawFormatStringToHandle(cStatusTextX, cStatusTextY2, m_menuColor[1], m_pFont->GetHandle(), "%d", ms_levelUP.sl_stamina);
+	DrawFormatStringToHandle(cStatusTextX, cStatusTextY3, m_menuColor[2], m_pFont->GetHandle(), "%d", ms_levelUP.sl_muscle);
+	DrawFormatStringToHandle(cStatusTextX, cStatusTextY4, m_menuColor[3], m_pFont->GetHandle(), "%d", ms_levelUP.sl_skill);
 
 	//レベルを上げた時のステータス変動
-	DrawFormatString(600, 200, 0xffffff, "最大生命力 :   %d", static_cast<int>(player.GetStatus().s_hp + ((ms_levelUP.sl_hp - 1) * 30.0f)));
-	DrawFormatString(600, 400, 0xffffff, "最大体力   :   %d", static_cast<int>(player.GetStatus().s_stamina + ((ms_levelUP.sl_stamina - 1) * 10.0f)));
-	DrawFormatString(600, 600, 0xffffff, "攻撃力     :   %d", static_cast<int>(player.GetAttackDamage() + ((ms_levelUP.sl_muscle - 1) * player.GetAttackMuscle()) + ((ms_levelUP.sl_skill - 1) * player.GetAttackSkill())));
+	DrawFormatStringToHandle(cMaxStatusTextX, cMaxStatusTextY1, cLevelUpTextColor2, m_pFont->GetHandle(), "最大生命力 :   %d", static_cast<int>(player.GetStatus().s_hp + ((ms_levelUP.sl_hp - 1) * 30.0f)));
+	DrawFormatStringToHandle(cMaxStatusTextX, cMaxStatusTextY2, cLevelUpTextColor2, m_pFont->GetHandle(), "最大体力   :   %d", static_cast<int>(player.GetStatus().s_stamina + ((ms_levelUP.sl_stamina - 1) * 10.0f)));
+	DrawFormatStringToHandle(cMaxStatusTextX, cMaxStatusTextY3, cLevelUpTextColor2, m_pFont->GetHandle(), "攻撃力     :   %d", static_cast<int>(player.GetAttackDamage() + ((ms_levelUP.sl_muscle - 1) * player.GetAttackMuscle()) + ((ms_levelUP.sl_skill - 1) * player.GetAttackSkill())));
 
-	//フォントのサイズ変更
-	SetFontSize(60);
+	DrawStringToHandle(cDecisionTextX, cDecisionTextY, "決定", m_menuColor[4], m_pBigFont->GetHandle());
 
-	DrawString(750, 900, "決定", m_menuColor[4]);
-
-	//フォントのサイズ変更
-	SetFontSize(40);
 }
 
 /// <summary>
 /// アイテム画面
 /// </summary>
-void Setting::ItemBoxDraw()
-{
-	DrawGraph(0, 0, m_itemBox, true);
-}
+//void Setting::ItemBoxDraw()
+//{
+//	DrawGraph(0, 0, m_itemBox, true);
+//}
 
 /// <summary>
 /// 装備選択画面
@@ -1875,8 +1962,8 @@ void Setting::EquipmentDecisionDraw(ItemManager& item)
 		ArmorDraw(m_armorList, m_armor);
 	}
 
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
-	DrawBox(m_selectObject.oneX, m_selectObject.oneY, m_selectObject.secondX, m_selectObject.secondY, 0x000fff, true);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, cDrawAlpha);
+	DrawBox(m_selectObject.oneX, m_selectObject.oneY, m_selectObject.secondX, m_selectObject.secondY, cBlueColor, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
@@ -1891,9 +1978,8 @@ void Setting::CaveatDraw()
 		//時間中注意書きを表示する
 		if (cTime <= cTimeMax)
 		{
-			DrawGraph(600, 200, m_rest, true);
-
-			DrawStringToHandle(720, 350, "転送できない", 0xffffff, m_pFont->GetHandle());
+			DrawGraph(cCaveatGraphX, cCaveatGraphY, m_rest, true);
+			DrawStringToHandle(cCaveatTextX, cCaveatTextY, "転送できない", cCaveatTextColor, m_pFont->GetHandle());
 		}
 		else
 		{
@@ -1917,11 +2003,20 @@ void Setting::End()
 	DeleteGraph(m_back);
 	DeleteGraph(m_white);
 	DeleteGraph(m_equipment);
-	DeleteGraph(m_itemBox);
+	//DeleteGraph(m_itemBox);
 	DeleteGraph(m_selectEquipment);
 	DeleteGraph(m_rest);
 	DeleteGraph(m_selectUi);
 	DeleteGraph(m_levelUp);
+	DeleteGraph(m_settingHandle);
+	DeleteGraph(m_brightnessHandle);
+	DeleteGraph(m_bgmHandle);
+	DeleteGraph(m_seHandle);
+	DeleteGraph(m_cameraHandle);
+	DeleteGraph(m_returnHandle);
+	DeleteGraph(m_edgeHandle);
+	DeleteGraph(m_barHandle);
+	DeleteGraph(m_lineHandle);
 }
 
 //設定関数
@@ -2178,9 +2273,8 @@ void Setting::WeaponDraw(std::list<std::string> list, int right)
 	//素手選択
 	if (right == 0)
 	{
-		DrawStringToHandle(400, 100, "素手", 0xffffff, m_pBigFont->GetHandle());
-
-		DrawStringToHandle(400, 300, "信じるべきは己の力のみ", 0xffffff, m_pFont->GetHandle());
+		DrawStringToHandle(cWeaponNameX, cWeaponNameY, "素手", cWeaponTextColor, m_pBigFont->GetHandle());
+		DrawStringToHandle(cWeaponDescX, cWeaponDescY1, "信じるべきは己の力のみ", cWeaponTextColor, m_pFont->GetHandle());
 	}
 	//武器選択
 	else if (right >= 1)
@@ -2192,23 +2286,18 @@ void Setting::WeaponDraw(std::list<std::string> list, int right)
 				//黒い剣選択
 				if (item == "BlackSword")
 				{
-					DrawStringToHandle(400, 100, "黒剣", 0xffffff, m_pBigFont->GetHandle());
-
-					DrawStringToHandle(400, 300, "その漆黒の刃は、まるで夜そのものを\n鍛え上げたかのように光を吸い込み、\n沈黙の中に冷たい輝きを宿す", 0xffffff, m_pFont->GetHandle());
-					DrawStringToHandle(400, 450, "この剣を振るう者は、\n刃に秘められた深淵を覗き込むこととなる\n迷いなき者には忠実な刃となり、\n心揺らぐ者には破滅の影を落とす", 0xffffff, m_pFont->GetHandle());
+					DrawStringToHandle(cWeaponNameX, cWeaponNameY, "黒剣", cWeaponTextColor, m_pBigFont->GetHandle());
+					DrawStringToHandle(cWeaponDescX, cWeaponDescY1, "その漆黒の刃は、まるで夜そのものを\n鍛え上げたかのように光を吸い込み、\n沈黙の中に冷たい輝きを宿す", cWeaponTextColor, m_pFont->GetHandle());
+					DrawStringToHandle(cWeaponDescX, cWeaponDescY2, "この剣を振るう者は、\n刃に秘められた深淵を覗き込むこととなる\n迷いなき者には忠実な刃となり、\n心揺らぐ者には破滅の影を落とす", cWeaponTextColor, m_pFont->GetHandle());
 				}
 				//木のバット選択
 				if (item == "Bat")
 				{
-					DrawStringToHandle(400, 100, "木の棍棒", 0xffffff, m_pBigFont->GetHandle());
-
-					DrawStringToHandle(400, 300, "人形の一部を削り出した棍棒\n幾千もの戦いを耐え抜いた木肌は\n鋼にも劣らぬ強度を誇る", 0xffffff, m_pFont->GetHandle());
-					DrawStringToHandle(400, 450, "かつての人形の記憶を宿し、\n持ち主の手に馴染むその感触は、\n不思議な安心感すら与える", 0xffffff, m_pFont->GetHandle());
-
+					DrawStringToHandle(cWeaponNameX, cWeaponNameY, "木の棍棒", cWeaponTextColor, m_pBigFont->GetHandle());
+					DrawStringToHandle(cWeaponDescX, cWeaponDescY1, "人形の一部を削り出した棍棒\n幾千もの戦いを耐え抜いた木肌は\n鋼にも劣らぬ強度を誇る", cWeaponTextColor, m_pFont->GetHandle());
+					DrawStringToHandle(cWeaponDescX, cWeaponDescY2, "かつての人形の記憶を宿し、\n持ち主の手に馴染むその感触は、\n不思議な安心感すら与える", cWeaponTextColor, m_pFont->GetHandle());
 				}
-
 			}
-
 			select++;
 		}
 	}
@@ -2264,7 +2353,6 @@ void Setting::ShieldUpdate(std::list<std::string> list, Shield& shield, int left
 					shield.Init();
 
 					m_pSelect->NowSelect = 8;
-
 				}
 			}
 
@@ -2285,9 +2373,8 @@ void Setting::ShieldDraw(std::list<std::string> list, int left)
 	//素手選択
 	if (left == 0)
 	{
-		DrawStringToHandle(400, 100, "素手", 0xffffff, m_pBigFont->GetHandle());
-
-		DrawStringToHandle(400, 300, "信じるべきは己の力のみ", 0xffffff, m_pFont->GetHandle());
+		DrawStringToHandle(cShieldNameX, cShieldNameY, "素手", cShieldTextColor, m_pBigFont->GetHandle());
+		DrawStringToHandle(cShieldDescX, cShieldDescY1, "信じるべきは己の力のみ", cShieldTextColor, m_pFont->GetHandle());
 	}
 	//盾選択
 	else if (left >= 1)
@@ -2299,24 +2386,18 @@ void Setting::ShieldDraw(std::list<std::string> list, int left)
 				//歪んだ盾選択
 				if (item == "Distorted")
 				{
-					DrawStringToHandle(400, 100, "忌盾", 0xffffff, m_pBigFont->GetHandle());
-
-					DrawStringToHandle(400, 300, "神への反逆を試みた者が捧げた、呪われし盾\n触れる者の心に微かな囁きを落とすという\n刃も魔も弾くが、持ち主の魂を蝕む", 0xffffff, m_pFont->GetHandle());
-					DrawStringToHandle(400, 450, "選ぶのなら覚悟せよこの盾は、\n持つ者を守るのではなく、試すのだから", 0xffffff, m_pFont->GetHandle());
-
+					DrawStringToHandle(cShieldNameX, cShieldNameY, "忌盾", cShieldTextColor, m_pBigFont->GetHandle());
+					DrawStringToHandle(cShieldDescX, cShieldDescY1, "神への反逆を試みた者が捧げた、呪われし盾\n触れる者の心に微かな囁きを落とすという\n刃も魔も弾くが、持ち主の魂を蝕む", cShieldTextColor, m_pFont->GetHandle());
+					DrawStringToHandle(cShieldDescX, cShieldDescY2, "選ぶのなら覚悟せよこの盾は、\n持つ者を守るのではなく、試すのだから", cShieldTextColor, m_pFont->GetHandle());
 				}
 				//木の盾選択
 				if (item == "WoodShield")
 				{
-					DrawStringToHandle(400, 100, "木の盾", 0xffffff, m_pBigFont->GetHandle());
-
-					DrawStringToHandle(400, 300, "人形の一部を削り出した盾\nその木目にはかつての嵐と戦火を\n耐え抜いた誇りが刻まれている", 0xffffff, m_pFont->GetHandle());
-					DrawStringToHandle(400, 450, "剣をも弾く堅牢さと、\nしなやかに衝撃を受け流す柔軟さを兼ね備え、\n持ち主を静かに、しかし確かに守り続ける", 0xffffff, m_pFont->GetHandle());
-
+					DrawStringToHandle(cShieldNameX, cShieldNameY, "木の盾", cShieldTextColor, m_pBigFont->GetHandle());
+					DrawStringToHandle(cShieldDescX, cShieldDescY1, "人形の一部を削り出した盾\nその木目にはかつての嵐と戦火を\n耐え抜いた誇りが刻まれている", cShieldTextColor, m_pFont->GetHandle());
+					DrawStringToHandle(cShieldDescX, cShieldDescY2, "剣をも弾く堅牢さと、\nしなやかに衝撃を受け流す柔軟さを兼ね備え、\n持ち主を静かに、しかし確かに守り続ける", cShieldTextColor, m_pFont->GetHandle());
 				}
-
 			}
-
 			select++;
 		}
 	}
@@ -2352,7 +2433,6 @@ void Setting::ArmorUpdate(std::list<std::string> list, Armor& armor, int body)
 					armor.Init();
 
 					m_pSelect->NowSelect = 9;
-
 				}
 			}
 
@@ -2373,9 +2453,8 @@ void Setting::ArmorDraw(std::list<std::string> list, int body)
 	//裸体選択
 	if (body == 0)
 	{
-		DrawStringToHandle(400, 100, "裸体", 0xffffff, m_pBigFont->GetHandle());
-
-		DrawStringToHandle(400, 300, "信じるべきは己の力のみ", 0xffffff, m_pFont->GetHandle());
+		DrawStringToHandle(cArmorNameX, cArmorNameY, "裸体", cArmorTextColor, m_pBigFont->GetHandle());
+		DrawStringToHandle(cArmorDescX, cArmorDescY1, "信じるべきは己の力のみ", cArmorTextColor, m_pFont->GetHandle());
 	}
 	//防具選択
 	else if (body >= 1)
@@ -2384,18 +2463,14 @@ void Setting::ArmorDraw(std::list<std::string> list, int body)
 		{
 			if (body == select)
 			{
-				//歪んだ盾選択
+				//普通の鎧選択
 				if (item == "ArmorNormal")
 				{
-					DrawStringToHandle(400, 100, "ノクターニス兵の鎧", 0xffffff, m_pBigFont->GetHandle());
-
-					DrawStringToHandle(400, 300, "ノクターニス城を守護する兵たちの鎧\n絶望を吸い込み、静寂を纏う", 0xffffff, m_pFont->GetHandle());
-					DrawStringToHandle(400, 400, "鍛え上げられた鋼は剣を弾き、魔を拒む\n夜が終わるまで戦い続ける\nそれがノクターニス兵の宿命である", 0xffffff, m_pFont->GetHandle());
-
+					DrawStringToHandle(cArmorNameX, cArmorNameY, "ノクターニス兵の鎧", cArmorTextColor, m_pBigFont->GetHandle());
+					DrawStringToHandle(cArmorDescX, cArmorDescY1, "ノクターニス城を守護する兵たちの鎧\n絶望を吸い込み、静寂を纏う", cArmorTextColor, m_pFont->GetHandle());
+					DrawStringToHandle(cArmorDescX, cArmorDescY2, "鍛え上げられた鋼は剣を弾き、魔を拒む\n夜が終わるまで戦い続ける\nそれがノクターニス兵の宿命である", cArmorTextColor, m_pFont->GetHandle());
 				}
-
 			}
-
 			select++;
 		}
 	}

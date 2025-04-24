@@ -11,7 +11,9 @@ MyLibrary::Rigidbody::Rigidbody():
 	m_velocity(),
 	m_pos1(),
 	m_pos2(),
-	m_useGravity(true)
+	m_useGravity(true),
+	m_jump(false),
+	m_jumpNow(false)
 {
 }
 
