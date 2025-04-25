@@ -532,7 +532,7 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 				m_shieldOne = true;
 			}
 
-			//結構適当にしたけどこれでいいと思う
+			//盾でガードできる敵
 			if (m_pShieldSearch->GetIsStay())
 			{
 				//盾の当たり判定
@@ -595,6 +595,9 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 					m_status.s_stamina -= damage - (shield.GetStrengthWood() / 10);
 				}
 			}
+
+			//GuardSe再生
+			PlaySoundMem(se.GetGuardSE(), DX_PLAYTYPE_BACK, true);
 
 			cShieldHit = true;
 		}
@@ -1025,6 +1028,9 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			{
 				//エフェクトを作る
 				cEffect.EffectCreate("PlayerStrong", m_attackLigPos2);
+
+				//嵐SEを流す
+				PlaySoundMem(se.GetStormSE(), DX_PLAYTYPE_BACK, true);
 			}
 
 			//攻撃判定発生フレーム
@@ -1038,6 +1044,9 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 				//エフェクトを作る
 				cEffect.EffectCreate("PlayerStrongBig", m_attackLigPos2);
 				cEffect.EffectCreate("ShockWave", m_attackLigPos2);
+
+				//衝撃SEを流す
+				PlaySoundMem(se.GetImpactSE(), DX_PLAYTYPE_BACK, true);
 
 				m_pStrengthAttack->Init(m_pPhysics);
 			}
@@ -1306,6 +1315,11 @@ void Player::Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, b
 			m_read = true;
 		}
 	}
+	//メッセージを読めなくする
+	else
+	{
+		m_read = false;
+	}
 
 	//メニューを開く
 	if (m_xpad.Buttons[4] == 1)
@@ -1506,6 +1520,7 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 	printfDx(message.c_str());
 #endif
 }
+
 
 /// <summary>
 /// 防具を変える
