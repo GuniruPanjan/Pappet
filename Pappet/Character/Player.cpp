@@ -82,6 +82,9 @@ namespace
 	auto& handle = HandleManager::GetInstance();
 	auto& cEffect = EffectManager::GetInstance();
 
+	constexpr float cStaminaUnder = -10.0f;       //スタミナ最低値
+	constexpr float cStaminaUnderTo = -9.0f;      //スタミナ最低値からの移動
+
 
 	int cAnimIdx;
 
@@ -281,6 +284,11 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* mana
 	m_pState->ChangeState(StateBase::StateKind::Idle);
 	m_pState->Init(colData);
 
+	//攻撃判定を初期化する
+	m_attackNumber = 0;
+	m_jumpAttack = false;
+	m_attackStrong = false;
+
 	//HPの最大回復量
 	m_maxHeel = 80;
 
@@ -336,6 +344,11 @@ void Player::GameInit(std::shared_ptr<MyLibrary::Physics> physics, int colData)
 	m_pState = std::make_shared<PlayerStateIdle>(std::dynamic_pointer_cast<Player>(shared_from_this()));
 	m_pState->ChangeState(StateBase::StateKind::Idle);
 	m_pState->Init(colData);
+
+	//攻撃判定を初期化する
+	m_attackNumber = 0;
+	m_jumpAttack = false;
+	m_attackStrong = false;
 
 	m_deadReset = false;
 	m_staminaBreak = false;
@@ -600,6 +613,12 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 			PlaySoundMem(se.GetGuardSE(), DX_PLAYTYPE_BACK, true);
 
 			cShieldHit = true;
+		}
+
+		//スタミナが一定値以下になったら減らないようにする
+		if (m_status.s_stamina <= cStaminaUnder)
+		{
+			m_status.s_stamina = cStaminaUnderTo;
 		}
 
 		//メニューを開いている間はアクションできない
@@ -1395,7 +1414,7 @@ void Player::Draw(Armor& armor, int font)
 #endif
 
 #if false
-	DrawFormatString(200, 300, 0xffffff, "pos1 : %f");
+	DrawFormatString(200, 300, 0xffffff, "アニメ : %d", m_currentAnimNo);
 #endif
 
 	MV1SetPosition(m_modelHandle, VSub(m_modelPos.ConversionToVECTOR(), VGet(0.0f, 12.0f, 0.0f)));
@@ -1529,11 +1548,16 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& collidable)
 /// <param name="path">パス</param>
 void Player::ArmorChange(int one, std::string path)
 {
-	//防具を変えた時にアニメーションのバグが発生する
-
 	//一回だけ実行
 	if (!m_armorOne[one])
 	{
+		//アニメーションが無かった場合は通る
+		if (m_currentAnimNo != 1)
+		{
+			//待機アニメーション設定
+			m_pState->ChangeState(StateBase::StateKind::Idle);
+		}
+
 		//メモリ解放
 		MV1DeleteModel(m_modelHandle);
 		//モデル読み込み
