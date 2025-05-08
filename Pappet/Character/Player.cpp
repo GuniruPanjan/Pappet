@@ -101,7 +101,7 @@ namespace
 
 Player::Player() :
 	CharacterBase(Collidable::Priority::Low, ObjectTag::Player),
-	m_attackMove(VGet(0.0f,0.0f,0.0f)),
+	m_attackMove(VGet(0.0f, 0.0f, 0.0f)),
 	m_pEnemyAttackCol(),
 	m_staminaBreak(false),
 	ms_maxStatus(),
@@ -122,6 +122,7 @@ Player::Player() :
 	m_bigRest(false),
 	m_lockonTarget(false),
 	m_warp(false),
+	m_warpSecond(false),
 	m_bossStart(false),
 	m_moveAnimFrameIndex(0),
 	m_moveAnimFrameRight(0),
@@ -244,6 +245,12 @@ void Player::Init(std::shared_ptr<MyLibrary::Physics> physics, GameManager* mana
 		m_updateX = 485.0f;
 		m_updateY = 12.0f;
 		m_updateZ = -800.0f;
+	}
+	else if (manager->GetThisMapName() == 2)
+	{
+		m_updateX = 0.0f;
+		m_updateY = 12.0f;
+		m_updateZ = 0.0f;
 	}
 	else if (manager->GetThisMapName() == 6)
 	{
@@ -431,6 +438,11 @@ void Player::Update(Weapon& weapon, Shield& shield, Armor& armor, EnemyManager& 
 		{
 			//回避おしたらアクションできるようにする
 			if (Input::GetInstance().IsReleased("Input_Roll"))
+			{
+				m_action = true;
+			}
+			//Aボタンが押されたらアクションできるようにする
+			if (Input::GetInstance().IsReleased("Input_Jump"))
 			{
 				m_action = true;
 			}
@@ -1350,18 +1362,30 @@ void Player::Action(VECTOR restpos, Tool& tool, Shield& shield, SEManager& se, b
 /// <summary>
 /// マップをワープするための関数
 /// </summary>
-void Player::WarpMap()
+void Player::WarpMap(bool Core, bool Second)
 {
+
 	//Yボタンが押されたら
 	if (m_xpad.Buttons[15] == 1)
 	{
 		//マップを変える
-		m_warp = true;
+		//コアだった場合
+		if (Core)
+		{
+			m_warp = true;
+		}
+		//エリア2だった場合
+		else if (Second)
+		{
+			m_warpSecond = true;
+		}
 	}
 	else
 	{
 		m_warp = false;
+		m_warpSecond = false;
 	}
+	
 }
 
 /// <summary>

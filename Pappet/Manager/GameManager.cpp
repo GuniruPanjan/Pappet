@@ -92,6 +92,7 @@ void GameManager::Init()
 	
 	//0が休息マップデータ
 	//1がHARIBOのマップデータ
+	//2がセカンドマップデータだがまだできていない
 	//6がチュートリアルマップデータ
 	m_pMap->DataInit(6);
 
@@ -237,7 +238,7 @@ void GameManager::Update()
 			m_pFade->FadeOut(5);
 		}
 		//ワープ時のフェードアウト
-		else if (m_pPlayer->GetWarp() || m_pSetting->GetRestWarp())
+		else if (m_pPlayer->GetWarp() || m_pSetting->GetRestWarp() || m_pPlayer->GetSecondWarp())
 		{
 			//フェードアウト可能にする
 			m_pFade->SetOut(false);
@@ -260,7 +261,7 @@ void GameManager::Update()
 		}
 
 		//ワープしてない時
-		if (!m_pPlayer->GetWarp() && !cClearTutorial && !m_pSetting->GetRestWarp())
+		if (!m_pPlayer->GetWarp() && !cClearTutorial && !m_pSetting->GetRestWarp() && !m_pPlayer->GetSecondWarp())
 		{
 			m_pBgm->Update(m_pSetting->GetVolume());
 
@@ -373,9 +374,9 @@ void GameManager::Update()
 				}
 
 				//ワープする
-				if (m_pMap->GetCore())
+				if (m_pMap->GetCore() || m_pMap->GetMapSecond())
 				{
-					m_pPlayer->WarpMap();
+					m_pPlayer->WarpMap(m_pMap->GetCore(), m_pMap->GetMapSecond());
 				}
 			}
 
@@ -523,7 +524,7 @@ void GameManager::Update()
 			
 		}
 		//ワープしたとき
-		else if (m_pPlayer->GetWarp() || cClearTutorial || m_pSetting->GetRestWarp())
+		else if (m_pPlayer->GetWarp() || cClearTutorial || m_pSetting->GetRestWarp() || m_pPlayer->GetSecondWarp())
 		{
 			//チュートリアルをクリアしたら強制ワープ
 			if (cClearTutorial)
@@ -533,7 +534,7 @@ void GameManager::Update()
 
 			if (m_pFade->GetOut() || cClearTutorial)
 			{
-				m_pMap->WarpUpdate(m_pPhysics, m_pPlayer->GetWarp(), false, m_pSetting->GetRestWarp());
+				m_pMap->WarpUpdate(m_pPhysics, m_pPlayer->GetWarp(), m_pPlayer->GetSecondWarp(), false, m_pSetting->GetRestWarp());
 
 				//一回だけ実行
 				if (!cOne)
@@ -548,6 +549,7 @@ void GameManager::Update()
 
 					m_pPlayer->SetNotRest(false);
 					m_pPlayer->SetWarp(false);
+					m_pPlayer->SetSecondWarp(false);
 					m_pSetting->SetRestWarp(false);
 
 					cOne = true;
@@ -734,6 +736,12 @@ void GameManager::ChangeStage(const char* stageName)
 	{
 		m_nowMap = eMapName::FirstMap;
 		m_pPlayer->SetMapNow(FirstMap);
+	}
+	//マップ2だった場合
+	if (stageName == "stage2")
+	{
+		m_nowMap = eMapName::SecondMap;
+		m_pPlayer->SetMapNow(SecondMap);
 	}
 	//チュートリアルだった場合
 	if (stageName == "stageTutorial")
